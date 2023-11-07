@@ -1,0 +1,64 @@
+.headerContainer {
+    min-height: 110px;
+    margin: 0 4%;
+    padding: 16px 0;
+}
+
+.headerComponent {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    height: 100%;
+}
+
+.headerContent {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.headerContainerLogo {
+    display: flex;
+    align-items: center;
+}
+
+.headerContainerItems {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.headerContainerLogin {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    gap: 16px;
+    height: 100%;
+}
+
+.headerContainerPlayerMenu {
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+}
+
+@media only screen and (max-width: 1050px) {
+    .headerContainerLinks {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1050px) {
+    .headerContainerItems {
+        gap: 4px;
+    }
+}
+
+@media only screen and (max-width: 1050px) {
+    .headerContainer {
+        margin: 0;
+        padding: 0;
+    }
+}

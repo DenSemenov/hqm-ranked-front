@@ -1,0 +1,13 @@
+.serversContainer {
+    height: 116px;
+}
+
+.serversContent {
+    padding: 16px 32px;
+    height: 88px;
+}
+
+.serversFlex {
+    display: flex;
+    align-items: center;
+}

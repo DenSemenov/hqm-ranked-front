@@ -2,7 +2,7 @@ import { notification } from 'antd';
 import axios, { AxiosRequestHeaders } from 'axios';
 import { stringify } from 'qs';
 
-export const API_URL = "https://localhost:7199";
+export const API_URL = "https://api.hqmfun.space";
 
 const $api = axios.create({
     withCredentials: true,

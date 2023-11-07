@@ -1,0 +1,38 @@
+.adsContainer {
+    height: 100%;
+    background: url("../images/discord-rectangle.png");
+    background-position: center;
+    background-size: cover;
+}
+
+.adsContent {
+    padding: 16px 32px;
+    height: calc(-32px + 100%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.discordContainer {
+    width: 64px;
+    height: 64px;
+    background-color: #0054B6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.comeToUs {
+    background: var(--primary);
+    color: var(--layout);
+    position: absolute;
+    right: 0;
+    height: 100%;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    text-align: center;
+}

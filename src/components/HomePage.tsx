@@ -7,9 +7,10 @@ import Ads from "./Ads";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { getCurrentUser } from "stores/auth/async-actions";
 import { useEffect } from "react";
-import { getSeasons, getSeasonsStats } from "stores/season/async-actions";
+import { getSeasons, getSeasonsGames, getSeasonsStats } from "stores/season/async-actions";
 import { selectCurrentSeason } from "stores/season";
 import { useSelector } from "react-redux";
+import { getActiveServers } from "stores/server/async-actions";
 
 const HomePage = () => {
     const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ const HomePage = () => {
         }
 
         dispatch(getSeasons());
+        dispatch(getActiveServers());
     }, [])
 
     useEffect(() => {
@@ -29,18 +31,22 @@ const HomePage = () => {
             dispatch(getSeasonsStats({
                 seasonId: currentSeason
             }));
+            dispatch(getSeasonsGames({
+                seasonId: currentSeason
+            }));
+
         }
     }, [currentSeason])
 
     return (
         <Row gutter={[32, 32]}>
             <Col sm={14} xs={24}>
-                <PlayersTable />
+                <PlayersTable full={false} />
             </Col>
-            <Col sm={5} xs={24}>
+            {/* <Col sm={5} xs={24}>
                 <Events />
-            </Col>
-            <Col sm={5} xs={24}>
+            </Col> */}
+            <Col sm={10} xs={24}>
                 <Games />
             </Col>
             <Col sm={14}>

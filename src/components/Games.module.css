@@ -4,4 +4,31 @@
 
 .gamesContent {
     padding: 32px;
+    height: calc(-64px + 100%);
+}
+
+.gamesItems {
+    margin-top: 16px;
+    height: calc(-36px + 100%);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.gameContentName {
+    display: flex;
+    gap: 4px;
+    flex-direction: column;
+    align-content: center;
+}
+
+.gameContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gameContentTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

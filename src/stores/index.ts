@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import auth from "./auth";
 import season from "./season";
 import { loadState } from "./save-load";
+import server from "./server";
 
 export const store = configureStore({
     reducer: {
         auth,
-        season
+        season,
+        server
     },
     preloadedState: loadState(),
 });

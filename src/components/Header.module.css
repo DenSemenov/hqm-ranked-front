@@ -64,7 +64,11 @@
 }
 
 .headerContainerMobile {
+    position: absolute;
+    width: 100vw;
+    bottom: 0;
     height: 48px;
+    z-index: 1;
     border-top: 1px solid var(--border);
 }
 

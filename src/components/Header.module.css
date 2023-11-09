@@ -65,6 +65,7 @@
 
 .headerContainerMobile {
     position: fixed;
+    background-color: var(--layout-accent);
     width: 100vw;
     bottom: 0;
     height: 48px;

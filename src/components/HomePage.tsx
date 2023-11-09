@@ -2,60 +2,75 @@ import { Col, Row } from "antd";
 import PlayersTable from "./PlayersTable";
 import Servers from "./Servers";
 import Games from "./Games";
-import Events from "./Events";
 import Ads from "./Ads";
-import { useAppDispatch } from "hooks/useAppDispatch";
-import { getCurrentUser } from "stores/auth/async-actions";
-import { useEffect } from "react";
-import { getSeasons, getSeasonsGames, getSeasonsStats } from "stores/season/async-actions";
-import { selectCurrentSeason } from "stores/season";
-import { useSelector } from "react-redux";
-import { getActiveServers } from "stores/server/async-actions";
+import { useEffect, useState } from "react";
+import { BrowserView, MobileView } from "react-device-detect";
+import CardComponent, { EdgeType } from "shared/CardComponent";
+import styles from './HomePage.module.css'
 
 const HomePage = () => {
-    const dispatch = useAppDispatch();
+    const [height, setHeight] = useState<number>(0);
 
-    const currentSeason = useSelector(selectCurrentSeason);
-
-    useEffect(() => {
-        if (localStorage.getItem('token')) {
-            dispatch(getCurrentUser());
-        }
-
-        dispatch(getSeasons());
-        dispatch(getActiveServers());
-    }, [])
 
     useEffect(() => {
-        if (currentSeason) {
-            dispatch(getSeasonsStats({
-                seasonId: currentSeason
-            }));
-            dispatch(getSeasonsGames({
-                seasonId: currentSeason
-            }));
+        setTableHeightAction();
+        window.addEventListener('resize', setTableHeightAction, true);
+    }, []);
 
-        }
-    }, [currentSeason])
+    const setTableHeightAction = () => {
+        let h = document.body.clientHeight - 142 - 32 - 100 - 32 * 2;
+        setHeight(h);
+    }
 
     return (
-        <Row gutter={[32, 32]}>
-            <Col sm={14} xs={24}>
-                <PlayersTable full={false} />
-            </Col>
-            {/* <Col sm={5} xs={24}>
-                <Events />
-            </Col> */}
-            <Col sm={10} xs={24}>
-                <Games />
-            </Col>
-            <Col sm={14}>
-                <Servers />
-            </Col>
-            <Col sm={10}>
-                <Ads />
-            </Col>
-        </Row>
+        <>
+            <BrowserView>
+                <Row gutter={[32, 32]}>
+                    <Col sm={14} xs={24} style={{ height: height }} >
+                        <CardComponent edges={[EdgeType.LeftBottom, EdgeType.RightTop]} >
+                            <div className={styles.container}>
+                                <PlayersTable full={false} />
+                            </div>
+                        </CardComponent>
+                    </Col>
+                    <Col sm={10} xs={24} style={{ height: height }}>
+                        <CardComponent edges={[]}>
+                            <div className={styles.container}>
+                                <Games />
+                            </div>
+                        </CardComponent>
+                    </Col>
+                    <Col sm={14}>
+                        <CardComponent edges={[EdgeType.LeftBottom, EdgeType.RightTop]}>
+                            <Servers />
+                        </CardComponent>
+                    </Col>
+                    <Col sm={10}>
+                        <CardComponent edges={[]}>
+                            <Ads />
+                        </CardComponent>
+                    </Col>
+                </Row>
+            </BrowserView>
+            <MobileView>
+                <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                        <PlayersTable full={false} />
+                    </Col>
+                    <Col span={24}>
+                        <div className={styles.mobileContainer}>
+                            <Games />
+                        </div>
+                    </Col>
+                    <Col span={24}>
+                        <Servers />
+                    </Col>
+                    <Col span={24}>
+                        <Ads />
+                    </Col>
+                </Row >
+            </MobileView>
+        </>
     )
 }
 

@@ -2,11 +2,6 @@
     height: 100%;
 }
 
-.gamesContent {
-    padding: 32px;
-    height: calc(-64px + 100%);
-}
-
 .gamesItems {
     margin-top: 16px;
     height: calc(-36px + 100%);

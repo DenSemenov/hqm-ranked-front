@@ -23,9 +23,9 @@ body {
 }
 
 .content {
-  height: calc(-110px + 100%);
+  height: calc(-142px + 100vh);
   overflow: auto;
-  padding: 32px 4% 0 4%;
+  padding: 0 4% 0 4%;
 }
 
 .ant-table-wrapper .ant-table-thead>tr>th,
@@ -71,29 +71,37 @@ body {
   text-align: right;
 }
 
+.center-align {
+  text-align: center;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgb(179, 177, 177);
+  background: var(--layout);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(136, 136, 136);
+  background: var(--layout-accent);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(100, 100, 100);
+  background: var(--layout-accent);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background: rgb(68, 68, 68);
+  background: var(--layout-accent);
   border-radius: 10px;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 .ant-table-body {
@@ -103,4 +111,68 @@ body {
 .subtitle {
   color: var(--text-secondary);
   font-size: 12px;
+}
+
+.mobile-content {
+  height: calc(-96px + 100vh);
+  overflow: auto;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.app {
+  background-color: var(--layout);
+  color: var(--text);
+}
+
+.ant-table-wrapper .ant-table {
+  background-color: var(--layout);
+}
+
+.ant-btn-link {
+  color: var(--text);
+}
+
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: var(--layout-accent);
+  border-color: var(--border);
+}
+
+.ant-select-dropdown {
+  background-color: var(--layout-accent);
+  color: var(--text);
+}
+
+.ant-select-dropdown .ant-select-item {
+  color: var(--text);
+}
+
+.ant-modal .ant-modal-content {
+  background-color: var(--layout);
+}
+
+.ant-table-wrapper .ant-table-cell-fix-left,
+.ant-table-wrapper .ant-table-cell-fix-right {
+  background-color: var(--layout);
+}
+
+.ant-table-wrapper .ant-table-ping-left .ant-table-cell-fix-left-first::after,
+.ant-table-wrapper .ant-table-ping-left .ant-table-cell-fix-left-last::after {
+  box-shadow: none;
+}
+
+.ant-table-wrapper .ant-table-ping-left:not(.ant-table-has-fix-left) .ant-table-container::before {
+  box-shadow: none;
+}
+
+.ant-table-wrapper .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after {
+  box-shadow: none;
+}
+
+.ant-table-wrapper .ant-table-cell-scrollbar:not([rowspan]) {
+  box-shadow: none;
+}
+
+.ant-table-wrapper .ant-table-tbody .ant-table-row>.ant-table-cell-row-hover {
+  background-color: var(--layout-accent);
 }

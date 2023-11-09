@@ -6,11 +6,13 @@ import { RootState } from "stores"
 export interface IAuthState {
     isAuth: boolean,
     currentUser: ICurrentUserResponse | null;
+    theme: string | null
 }
 
 const initialState: IAuthState = {
     isAuth: false,
-    currentUser: null
+    currentUser: null,
+    theme: null
 }
 
 export const authSlicer = createSlice({
@@ -29,16 +31,21 @@ export const authSlicer = createSlice({
         setCurrentUser: (state: IAuthState, action: PayloadAction<ICurrentUserResponse | null>) => {
             state.currentUser = action.payload;
         },
+        setTheme: (state: IAuthState, action: PayloadAction<string>) => {
+            state.theme = action.payload;
+        },
     },
 })
 
 export const {
     setIsAuth,
-    setCurrentUser
+    setCurrentUser,
+    setTheme
 } =
     authSlicer.actions
 
 export const selectIsAuth = (state: RootState) => state.auth.isAuth;
 export const selectCurrentUser = (state: RootState) => state.auth.currentUser;
+export const selectTheme = (state: RootState) => state.auth.theme;
 
 export default authSlicer.reducer

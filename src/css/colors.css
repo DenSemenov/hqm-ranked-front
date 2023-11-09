@@ -13,3 +13,19 @@
     --semantic-silver: hsla(0, 0%, 60%, 1);
     --semantic-bronze: hsla(43, 32%, 58%, 1);
 }
+
+.dark {
+    --layout: hsl(215deg 15% 15.69%);
+    --layout-accent: hsl(214.29deg 13.46% 20.39%);
+    --layout-overlay: hsl(215deg 15% 15.69%);
+    --text: hsla(216, 20%, 95%, 1);
+    --text-secondary: hsla(215, 20%, 67%, 1);
+    --primary: hsla(215, 100%, 41%, 1);
+    --border: hsla(215, 20%, 10%, 1);
+    --divider: hsla(215, 20%, 10%, 1);
+    --semantic-success: hsla(132, 50%, 33%, 1);
+    --semantic-danger: hsla(2, 65%, 33%, 1);
+    --semantic-gold: hsla(50, 100%, 50%, 1);
+    --semantic-silver: hsla(0, 0%, 60%, 1);
+    --semantic-bronze: hsla(43, 32%, 58%, 1);
+}

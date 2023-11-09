@@ -2,10 +2,6 @@
     height: 400px;
 }
 
-.playersTableContent {
-    padding: 32px;
-}
-
 .playersTableContentButtons {
     position: absolute;
     bottom: 32px;

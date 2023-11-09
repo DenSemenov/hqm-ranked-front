@@ -1,0 +1,9 @@
+.container {
+    padding: 16px;
+    overflow: auto;
+    height: calc(-32px + 100%);
+}
+
+.mobileContainer {
+    padding: 16px;
+}

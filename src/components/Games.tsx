@@ -6,8 +6,12 @@ import { Col, Row } from "antd";
 import { convertDate } from "shared/DateConverter";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
+import PlayerItem from "shared/PlayerItem";
+import { useNavigate } from "react-router-dom";
 
 const Games = () => {
+    const navigate = useNavigate();
+
     const currentSeasonGames = useSelector(selectCurrentSeasonGames);
 
     const [height, setHeight] = useState<number>(0);
@@ -32,7 +36,7 @@ const Games = () => {
             <div className={styles.gamesContent}>
                 <div className={styles.gamesItems}>
                     {currentSeasonGames.map(game => (
-                        <>
+                        <div className={styles.gamesItem} onClick={() => navigate("/game/" + game.gameId)}>
                             <Row gutter={[8, 8]} >
                                 <Col span={12}>
                                     <span className="subtitle">{convertDate(game.date)}</span>
@@ -46,9 +50,9 @@ const Games = () => {
                             </Row>
                             <Row gutter={[8, 8]} style={{ marginBottom: 16 }}>
                                 <Col span={12} className={styles.gameContentName}>
-                                    <div>{"TEAM " + game.teamNameRed}</div>
+                                    <div>{"TEAM "}<PlayerItem id={game.teamRedId} name={game.teamNameRed} /></div>
                                     <div>{"VS"}</div>
-                                    <div>{"TEAM " + game.teamNameBlue}</div>
+                                    <div>{"TEAM "}<PlayerItem id={game.teamBlueId} name={game.teamNameBlue} /></div>
                                 </Col>
                                 <Col span={6} className={styles.gameContent} >
                                     {game.redScore + " - " + game.blueScore}
@@ -57,7 +61,7 @@ const Games = () => {
                                     {game.status}
                                 </Col>
                             </Row>
-                        </>
+                        </div>
                     ))}
                 </div>
             </div>

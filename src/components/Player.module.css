@@ -1,0 +1,72 @@
+.playerLeft {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px;
+    gap: 16px
+}
+
+.playerLeftTitle {
+    margin-bottom: 16px;
+}
+
+.playerLeftStats {
+    width: 100%;
+}
+
+.playerLeftStatsCount {
+    display: block;
+    margin-block-start: 1.33em;
+    margin-block-end: 1.33em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: 100;
+    opacity: 0.7;
+}
+
+.playerCenter {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    gap: 16px
+}
+
+.playerCenterStats {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.playerCenterItem {
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.playerCenterGames {
+    display: flex;
+    gap: 16px;
+    flex-direction: column;
+}
+
+.playerCenterGamesItem {
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.playerCenterGamesItemScore {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+
+}
+
+.playerRight {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    gap: 16px
+}

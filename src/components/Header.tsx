@@ -10,7 +10,7 @@ import { selectCurrentUser, selectIsAuth, setCurrentUser, setIsAuth } from 'stor
 import { getCurrentUser } from 'stores/auth/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import ChangePasswordModal from './ChangePasswordModal';
-import { selectCurrentSeason, selectSeasons, setCurrentSeason } from 'stores/season';
+import { selectCurrentDivision, selectCurrentSeason, selectDivisions, selectSeasons, setCurrentDivision, setCurrentSeason } from 'stores/season';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { useNavigate } from 'react-router-dom';
 import ThemeButton from './ThemeButton';
@@ -22,7 +22,9 @@ const Header = () => {
     const isAuth = useSelector(selectIsAuth);
     const currentUser = useSelector(selectCurrentUser);
     const seasons = useSelector(selectSeasons);
+    const divisions = useSelector(selectDivisions);
     const currentSeason = useSelector(selectCurrentSeason);
+    const currentDivision = useSelector(selectCurrentDivision);
 
 
     const [loginModalOpen, setLoginModalOpen] = useState<boolean>(false);
@@ -97,6 +99,15 @@ const Header = () => {
         })
     }, [seasons]);
 
+    const divisionsItems = useMemo(() => {
+        return divisions.map(x => {
+            return {
+                value: x.id,
+                label: x.name,
+            }
+        })
+    }, [divisions]);
+
     return (
         <>
             <BrowserView>
@@ -104,12 +115,12 @@ const Header = () => {
                     <CardComponent edges={[EdgeType.LeftBottom, EdgeType.RightTop]}>
                         <Row style={{ height: "100%", padding: "0 16px" }}>
                             <Col sm={6} xs={12} className={styles.headerContainerLogo}>
-                                <span>
+                                <span onClick={() => navigate("/")}>
                                     <svg height="88" width="88">
                                         <image href="/icons/logo.svg" height="88" width="88" />
                                     </svg>
                                 </span>
-                                <div>
+                                <div onClick={() => navigate("/")}>
                                     HQM
                                     <br />
                                     RANKED
@@ -121,6 +132,11 @@ const Header = () => {
                                 </div>
                             </Col>
                             <Col sm={12} className={styles.headerContainerItems}>
+                                <Select
+                                    onChange={(value: string) => dispatch(setCurrentDivision(value))}
+                                    value={currentDivision}
+                                    options={divisionsItems}
+                                />
                                 <Select
                                     onChange={(value: string) => dispatch(setCurrentSeason(value))}
                                     value={currentSeason}

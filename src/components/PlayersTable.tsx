@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { selectCurrentSeasonStats } from "stores/season";
 import PlayersTableModal from "./PlayersTableModal";
 import { isMobile } from "react-device-detect";
+import PlayerItem from "shared/PlayerItem";
 
 interface IProps {
     full: boolean;
@@ -75,7 +76,10 @@ const PlayersTable = ({ full }: IProps) => {
                             width: 200,
                             dataIndex: "nickname",
                             ellipsis: true,
-                            fixed: "left"
+                            fixed: "left",
+                            render(value, record, index) {
+                                return <PlayerItem id={record.playerId} name={record.nickname} />
+                            },
                         },
                         {
                             title: "WIN",

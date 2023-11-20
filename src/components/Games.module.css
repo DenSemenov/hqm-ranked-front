@@ -9,6 +9,16 @@
     overflow-x: hidden;
 }
 
+.gamesItem {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.gamesItem:hover {
+    background: var(--layout-accent);
+}
+
 .gameContentName {
     display: flex;
     gap: 4px;

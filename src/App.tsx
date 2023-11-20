@@ -11,31 +11,52 @@ import Servers from 'components/Servers';
 import MobileHeader from 'components/MobileHeader';
 import { useEffect } from 'react';
 import { getCurrentUser } from 'stores/auth/async-actions';
-import { getSeasons, getSeasonsGames, getSeasonsStats } from 'stores/season/async-actions';
+import { getDivisions, getSeasons, getSeasonsGames, getSeasonsStats } from 'stores/season/async-actions';
 import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
-import { selectCurrentSeason } from 'stores/season';
+import { selectCurrentDivision, selectCurrentSeason, setCurrentDivision } from 'stores/season';
 import { selectTheme, setTheme } from 'stores/auth';
+import { IDivisionResponse } from 'models/IDivisionResponse';
+import Player from 'components/Player';
 
 function App() {
   const dispatch = useAppDispatch();
 
   const currentSeason = useSelector(selectCurrentSeason);
   const theme = useSelector(selectTheme);
+  const currentDivision = useSelector(selectCurrentDivision);
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
       dispatch(getCurrentUser());
     }
+    dispatch(getDivisions())
+      .unwrap()
+      .then((data: IDivisionResponse[]) => {
+        const division = localStorage.getItem("division");
+        if (division) {
+          dispatch(setCurrentDivision(division))
+        } else {
+          dispatch(setCurrentDivision(data[0].id))
+        }
 
-    dispatch(getSeasons());
+
+      });
+
     dispatch(getActiveServers());
   }, [])
 
   useEffect(() => {
+    if (currentDivision) {
+      dispatch(getSeasons({
+        divisionId: currentDivision
+      }));
+    }
+  }, [currentDivision]);
+
+  useEffect(() => {
     const theme = localStorage.getItem("theme") ?? "light";
-    console.log(theme);
     dispatch(setTheme(theme));
   }, []);
 
@@ -82,6 +103,7 @@ function App() {
             <div className='content'>
               <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/player" element={<Player />} />
               </Routes>
             </div>
           </BrowserRouter>
@@ -94,6 +116,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/players" element={<PlayersTable full={true} />} />
                 <Route path="/games" element={<Games />} />
+                <Route path="/player" element={<Player />} />
               </Routes>
             </div>
             <Header />

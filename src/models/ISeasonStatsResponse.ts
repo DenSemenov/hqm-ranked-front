@@ -1,5 +1,5 @@
 export interface ISeasonStatsResponse {
-    playerId: string;
+    playerId: number;
     nickname: string;
     win: number;
     lose: number;

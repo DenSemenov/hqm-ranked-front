@@ -10,7 +10,7 @@ export enum PlayerItemType {
 }
 
 interface IProps {
-    id: string;
+    id: number;
     name: string;
     type?: PlayerItemType,
 }

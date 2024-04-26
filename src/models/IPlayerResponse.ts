@@ -1,5 +1,5 @@
 export interface IPlayerResponse {
-    id: string;
+    id: number;
     name: string;
     games: number;
     goals: number;
@@ -32,8 +32,8 @@ export interface PlayerLastGamesViewModel {
     date: Date;
     goals: number;
     assists: number;
-    teamRedId: string;
-    teamBlueId: string;
+    teamRedId: number;
+    teamBlueId: number;
     teamRedName: string;
     teamBlueName: string;
     team: number;

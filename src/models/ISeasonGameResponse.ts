@@ -6,6 +6,6 @@ export interface ISeasonGameResponse {
     status: string;
     teamNameRed: string;
     teamNameBlue: string;
-    teamRedId: string;
-    teamBlueId: string;
+    teamRedId: number;
+    teamBlueId: number;
 }

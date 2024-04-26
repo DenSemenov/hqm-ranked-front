@@ -1,3 +1,3 @@
 export interface IPlayerRequest {
-    id: string;
+    id: number;
 }

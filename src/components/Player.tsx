@@ -18,7 +18,7 @@ const Player = () => {
         const id = searchParams.get("id");
         if (id) {
             dispatch(getPlayerData({
-                id: id
+                id: +id
             }));
         }
     }, []);

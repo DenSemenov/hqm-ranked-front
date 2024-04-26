@@ -2,7 +2,7 @@ import { App, notification } from 'antd';
 import axios, { AxiosRequestHeaders } from 'axios';
 import { stringify } from 'qs';
 
-export const API_URL = "https://api.hqmranked.com";
+export const API_URL = "https://localhost:44329";
 
 
 const $api = axios.create({

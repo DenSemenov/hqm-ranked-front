@@ -29,7 +29,7 @@
 .gameContent {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: right;
 }
 
 .gameContentTitle {
@@ -46,7 +46,6 @@
 
 .teamTitle {
     display: flex;
-    flex-direction: column;
     gap: 8px;
 }
 

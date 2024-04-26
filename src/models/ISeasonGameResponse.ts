@@ -4,8 +4,11 @@ export interface ISeasonGameResponse {
     redScore: number;
     blueScore: number;
     status: string;
-    teamNameRed: string;
-    teamNameBlue: string;
-    teamRedId: number;
-    teamBlueId: number;
+    players: IGamePlayerItem[];
+}
+
+export interface IGamePlayerItem {
+    id: number;
+    name: string;
+    team: number;
 }

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './PlayerItem.module.css'
-import { Avatar } from 'antd';
+import { Avatar, Tooltip } from 'antd';
 import { useMemo } from 'react';
 
 export enum PlayerItemType {
@@ -28,7 +28,9 @@ const PlayerItem = ({ id, name, type = PlayerItemType.Both }: IProps) => {
             onClick={() => navigate("/player?id=" + id)}
         >
             {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
-                <Avatar>{avatarName}</Avatar>
+                <Tooltip title={name}>
+                    <Avatar>{avatarName}</Avatar>
+                </Tooltip>
             }
             {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&
                 name

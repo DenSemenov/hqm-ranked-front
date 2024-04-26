@@ -1,11 +1,11 @@
 import styles from './Games.module.css'
 import { useSelector } from "react-redux";
 import { selectCurrentSeasonGames } from "stores/season";
-import { Card, Col, Row } from "antd";
+import { Avatar, Card, Col, Row, Tag } from "antd";
 import { convertDate } from "shared/DateConverter";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
-import PlayerItem from "shared/PlayerItem";
+import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
 import { useNavigate } from "react-router-dom";
 
 const Games = () => {
@@ -35,29 +35,29 @@ const Games = () => {
             {currentSeasonGames.map(game => (
                 <div className={styles.gamesItem} onClick={() => navigate("/game/" + game.gameId)}>
                     <Row gutter={[8, 8]} >
-                        <Col span={12}>
+                        <Col span={16}>
                             <span className="subtitle">{convertDate(game.date)}</span>
                         </Col>
-                        <Col span={6}>
-                            <span className={styles.gameContentTitle + " subtitle"}>SCORE</span>
+                        <Col span={8} className="right-align">
+                            <Tag style={{ marginRight: 0 }}>{game.status}</Tag>
                         </Col>
-                        <Col span={6}>
-                            <span className={styles.gameStatusTitle + " subtitle"}>STATUS</span>
-                        </Col>
-                    </Row>
-                    <Row gutter={[8, 8]} style={{ marginBottom: 16 }}>
-                        <Col span={12} className={styles.gameContentName}>
+                        <Col span={16} className={styles.gameContentName}>
                             <div className={styles.teamTitle}>
-                                <PlayerItem id={game.teamRedId} name={game.teamNameRed + " team"} />
+                                <Avatar.Group>
+                                    {game.players.filter(x => x.team == 0).map(x => {
+                                        return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                    })}
+                                </Avatar.Group>
                                 {"vs"}
-                                <PlayerItem id={game.teamBlueId} name={game.teamNameBlue + " team"} />
+                                <Avatar.Group>
+                                    {game.players.filter(x => x.team == 1).map(x => {
+                                        return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                    })}
+                                </Avatar.Group>
                             </div>
                         </Col>
-                        <Col span={6} className={styles.gameContent} >
+                        <Col span={8} className={styles.gameContent} >
                             {game.redScore + " - " + game.blueScore}
-                        </Col>
-                        <Col span={6} className={styles.gameStatus}>
-                            {game.status}
                         </Col>
                     </Row>
                 </div>

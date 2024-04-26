@@ -1,14 +1,14 @@
-import { Button, Col, Form, Input, Modal, Row } from "antd";
+import { Modal, Row, Col, Input, Button, Form } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
-import styles from './LoginModal.module.css'
-import { login } from "stores/auth/async-actions";
+import { login, register } from "stores/auth/async-actions";
+import styles from './RegisterModal.module.css'
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectIsAuth } from "stores/auth";
 
 
-const LoginModal = () => {
+const RegisterModal = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -20,9 +20,10 @@ const LoginModal = () => {
         }
     }, [isAuth])
 
-    const onLogin = (values: any) => {
-        dispatch(login({
+    const onRegister = (values: any) => {
+        dispatch(register({
             login: values.login,
+            email: values.email,
             password: values.password,
         }))
     }
@@ -39,25 +40,28 @@ const LoginModal = () => {
                     </span>
                 </div>
                 <div className={styles.loginModalCenter}>
-                    <h1>LOGIN</h1>
+                    <h1>REGISTRATION</h1>
                 </div>
                 <Form
-                    onFinish={onLogin}
+                    onFinish={onRegister}
                     layout="vertical"
                 >
-                    <Form.Item name="login" >
+                    <Form.Item name="login" rules={[{ required: true }]}>
                         <Input placeholder="Nickname" />
                     </Form.Item>
-                    <Form.Item name="password">
+                    <Form.Item name="email" rules={[{ required: true, type: 'email' }]}>
+                        <Input placeholder="Email" />
+                    </Form.Item>
+                    <Form.Item name="password" rules={[{ required: true }]}>
                         <Input type="password" placeholder="Password" />
                     </Form.Item>
                     <Row>
                         <Col span={12}>
-                            <Button type="dashed" onClick={() => navigate("/registration")}>Registration</Button>
+                            <Button type="dashed" onClick={() => navigate("/login")}>Sign in</Button>
                         </Col>
                         <Col span={12} className="right-align">
                             <Form.Item>
-                                <Button type="primary" htmlType="submit">Sign in</Button>
+                                <Button type="primary" htmlType="submit">Registration</Button>
                             </Form.Item>
                         </Col>
                     </Row>
@@ -67,4 +71,4 @@ const LoginModal = () => {
     )
 }
 
-export default LoginModal;
+export default RegisterModal;

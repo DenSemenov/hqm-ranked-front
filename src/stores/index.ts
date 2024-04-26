@@ -3,12 +3,14 @@ import auth from "./auth";
 import season from "./season";
 import { loadState } from "./save-load";
 import server from "./server";
+import admin from "./admin";
 
 export const store = configureStore({
     reducer: {
         auth,
         season,
-        server
+        server,
+        admin
     },
     preloadedState: loadState(),
 });

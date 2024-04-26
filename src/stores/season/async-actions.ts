@@ -1,27 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import SeasonService from "services/SeasonService"
-import { setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setDivisions, setSeasons } from "."
+import { setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setSeasons } from "."
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest"
-import { IDivisionRequest } from "models/IDivisionRequest"
 import { IPlayerRequest } from "models/IPlayerRequest"
 
-export const getSeasons = createAsyncThunk('season/getSeasons', async (payload: IDivisionRequest, thunkApi) => {
+export const getSeasons = createAsyncThunk('season/getSeasons', async (payload: void, thunkApi) => {
     try {
-        const response = await SeasonService.getSeasons(payload)
+        const response = await SeasonService.getSeasons()
 
         thunkApi.dispatch(setSeasons(response.data))
-
-        return response.data
-    } catch (e: any) {
-        return thunkApi.rejectWithValue(e)
-    }
-})
-
-export const getDivisions = createAsyncThunk('season/getDivisions', async (payload: void, thunkApi) => {
-    try {
-        const response = await SeasonService.getDivisions()
-
-        thunkApi.dispatch(setDivisions(response.data))
 
         return response.data
     } catch (e: any) {

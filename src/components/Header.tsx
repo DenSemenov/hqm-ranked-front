@@ -1,17 +1,15 @@
 
-import { Button, Col, Flex, Popover, Row, Select } from 'antd';
-import CardComponent, { EdgeType } from '../shared/CardComponent';
-import { UserOutlined, HomeOutlined, BorderlessTableOutlined, CloudServerOutlined } from '@ant-design/icons';
+import { App, Avatar, Button, Col, Popover, Row, Select } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import styles from './Header.module.css'
-import LoginModal from './LoginModal';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { selectCurrentUser, selectIsAuth, setCurrentUser, setIsAuth } from 'stores/auth';
+import { selectCurrentUser, selectIsAdmin, selectIsAuth, setCurrentUser, setIsAuth } from 'stores/auth';
 import { getCurrentUser } from 'stores/auth/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import ChangePasswordModal from './ChangePasswordModal';
-import { selectCurrentDivision, selectCurrentSeason, selectDivisions, selectSeasons, setCurrentDivision, setCurrentSeason } from 'stores/season';
-import { BrowserView, MobileView } from 'react-device-detect';
+import { selectCurrentSeason, selectSeasons, setCurrentSeason } from 'stores/season';
+import { BrowserView } from 'react-device-detect';
 import { useNavigate } from 'react-router-dom';
 import ThemeButton from './ThemeButton';
 
@@ -22,24 +20,16 @@ const Header = () => {
     const isAuth = useSelector(selectIsAuth);
     const currentUser = useSelector(selectCurrentUser);
     const seasons = useSelector(selectSeasons);
-    const divisions = useSelector(selectDivisions);
     const currentSeason = useSelector(selectCurrentSeason);
-    const currentDivision = useSelector(selectCurrentDivision);
+    const isAdmin = useSelector(selectIsAdmin);
 
-
-    const [loginModalOpen, setLoginModalOpen] = useState<boolean>(false);
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         if (isAuth) {
-            setLoginModalOpen(false);
             dispatch(getCurrentUser());
         }
     }, [isAuth])
-
-    const onCloseLoginModal = () => {
-        setLoginModalOpen(false);
-    }
 
     const onCloseChangePasswordModal = () => {
         setChangePasswordModalOpen(false);
@@ -63,32 +53,31 @@ const Header = () => {
 
     const getPlayerMenu = () => {
         return <div className={styles.headerContainerPlayerMenu}>
+            {isAdmin &&
+                <Button onClick={() => navigate("/admin")}>Admin</Button>
+            }
             <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
             <Button danger onClick={onLogout}>Log out</Button>
         </div>
     }
 
-    const getLoginButton = () => {
-        if (userName) {
-            return <Popover content={getPlayerMenu()} trigger="click" placement='bottomLeft'>
-                <Button type="link" icon={<UserOutlined />} >
-                    {userName}
-                </Button>
-            </Popover>
-        } else {
-            return <Button type="link" icon={<UserOutlined />} onClick={() => setLoginModalOpen(true)}>
-                LOGIN
-            </Button>
-        }
+    const loginPage = () => {
+        navigate("/login")
     }
 
-    const getLoginMobileButton = () => {
-        if (userName) {
-            return <Button type="link" icon={<UserOutlined />} />
+    const avatarName = useMemo(() => {
+        return (currentUser && currentUser.name) ? currentUser.name[0].toUpperCase() : "";
+    }, [currentUser])
+
+    const loginButton = useMemo(() => {
+        if (userName && currentUser) {
+            return <Popover content={getPlayerMenu()} trigger={"click"} placement='bottomLeft' >
+                <Avatar style={{ cursor: "pointer" }}>{avatarName}</Avatar>
+            </Popover>
         } else {
-            return <Button type="link" icon={<UserOutlined />} onClick={() => setLoginModalOpen(true)} />
+            return <Button icon={<UserOutlined />} onClick={loginPage} />
         }
-    }
+    }, [currentUser, userName, avatarName])
 
     const seasonItems = useMemo(() => {
         return seasons.map(x => {
@@ -99,110 +88,40 @@ const Header = () => {
         })
     }, [seasons]);
 
-    const divisionsItems = useMemo(() => {
-        return divisions.map(x => {
-            return {
-                value: x.id,
-                label: x.name,
-            }
-        })
-    }, [divisions]);
-
     return (
         <>
-            <BrowserView>
-                <div className={styles.headerContainer}>
-                    <CardComponent edges={[EdgeType.LeftBottom, EdgeType.RightTop]}>
-                        <Row style={{ height: "100%", padding: "0 16px" }}>
-                            <Col sm={6} xs={12} className={styles.headerContainerLogo}>
-                                <span onClick={() => navigate("/")}>
-                                    <svg height="88" width="88">
-                                        <image href="/icons/logo.svg" height="88" width="88" />
-                                    </svg>
-                                </span>
-                                <div onClick={() => navigate("/")}>
-                                    HQM
-                                    <br />
-                                    RANKED
-                                </div>
-                            </Col>
-                            <Col sm={0} xs={12} >
-                                <div className={styles.headerContainerLogin}>
-                                    {getLoginButton()}
-                                </div>
-                            </Col>
-                            <Col sm={12} className={styles.headerContainerItems}>
-                                <Select
-                                    onChange={(value: string) => dispatch(setCurrentDivision(value))}
-                                    value={currentDivision}
-                                    options={divisionsItems}
-                                />
-                                <Select
-                                    onChange={(value: string) => dispatch(setCurrentSeason(value))}
-                                    value={currentSeason}
-                                    options={seasonItems}
-                                />
-                                <Button type="link">
-                                    NEWS
-                                </Button>
-                                <Button type="link">
-                                    TEAMS
-                                </Button>
-                                <Button type="link">
-                                    TOURNAMENTS
-                                </Button>
-                            </Col>
-                            <Col sm={6} xs={0}>
-                                <div className={styles.headerContainerLogin}>
-                                    <div className={styles.headerContainerLinks}>
-                                        <Button
-                                            type="link"
-                                            icon={<svg height="24" width="24">
-                                                <image href="/icons/youtube.svg" height="24" width="24" />
-                                            </svg>}
-                                        />
-                                        <Button
-                                            type="link"
-                                            icon={<svg height="24" width="24">
-                                                <image href="/icons/tiktok.svg" height="24" width="24" />
-                                            </svg>}
-                                        />
-                                        <Button
-                                            type="link"
-                                            icon={<svg height="24" width="24">
-                                                <image href="/icons/discord.svg" height="24" width="24" />
-                                            </svg>}
-                                        />
-                                        <ThemeButton />
-                                    </div>
-                                    {getLoginButton()}
-                                </div>
-                            </Col>
-                        </Row>
-                    </CardComponent>
-                    <LoginModal open={loginModalOpen} onClose={onCloseLoginModal} />
-                    <ChangePasswordModal open={changePasswordModalOpen} onClose={onCloseChangePasswordModal} />
-                </div >
-            </BrowserView>
-            <MobileView>
-                <div className={styles.headerContainerMobile}>
-                    <Flex vertical={false} align='center' style={{ height: "100%" }}>
-                        <div className={styles.headerContainerMobileItem} onClick={() => navigate("/")}>
-                            <HomeOutlined />
-                        </div>
-                        <div className={styles.headerContainerMobileItem} onClick={() => navigate("/players")}>
-                            <BorderlessTableOutlined />
-                        </div>
-                        <div className={styles.headerContainerMobileItem} onClick={() => navigate("/games")}>
-                            <CloudServerOutlined />
-                        </div>
-                        <div className={styles.headerContainerMobileItem}>
-                            {getLoginMobileButton()}
-                        </div>
-                    </Flex>
-                </div>
-            </MobileView>
-        </>
+            <Row style={{ height: 42, borderBottom: "1px solid var(--border)", padding: "0 16px" }}>
+                <Col sm={8} xs={6} className={styles.headerContainerLogo}>
+                    <span onClick={() => navigate("/")}>
+                        <svg height="36" width="36">
+                            <image href="/icons/logo.svg" height="36" width="36" />
+                        </svg>
+                    </span>
+                </Col>
+                <Col sm={8} xs={12} className={styles.headerContainerItems}>
+                    <Select
+                        onChange={(value: string) => dispatch(setCurrentSeason(value))}
+                        value={currentSeason}
+                        options={seasonItems}
+                    />
+                </Col>
+                <Col sm={8} xs={6}>
+                    <div className={styles.headerContainerLogin}>
+                        {/* <BrowserView>
+                            <Button
+                                type="link"
+                                icon={<svg height="24" width="24">
+                                    <image href="/icons/discord.svg" height="24" width="24" />
+                                </svg>}
+                            />
+                        </BrowserView> */}
+                        <ThemeButton />
+                        {loginButton}
+                    </div>
+                </Col>
+            </Row>
+            <ChangePasswordModal open={changePasswordModalOpen} onClose={onCloseChangePasswordModal} />
+        </ >
     )
 }
 

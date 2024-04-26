@@ -1,8 +1,9 @@
-import { notification } from 'antd';
+import { App, notification } from 'antd';
 import axios, { AxiosRequestHeaders } from 'axios';
 import { stringify } from 'qs';
 
-export const API_URL = "https://api.hqmfun.space";
+export const API_URL = "https://api.hqmranked.com";
+
 
 const $api = axios.create({
     withCredentials: true,
@@ -26,18 +27,24 @@ $api.interceptors.response.use(
         return config
     },
     async (error) => {
-        const originalRequest = error.config
-        if (error.response.status === 401 && error.config && !error.config.isRetry) {
-            originalRequest.isRetry = true
+        if (error.response.status === 401) {
+            notification.error({
+                message: error.response.data.errorText,
+            })
         }
         if (error.response.data.error) {
             error.message = error.response.data.error
+            notification.error({
+                message: error.response.data.error,
+            })
         } else if (error.response.status === 500) {
             error.message = 'Internal Server Error'
+            notification.error({
+                message: 'Internal Server Error',
+            })
         } else if (error.response.status === 400) {
             notification.error({
-                message: "",
-                description: error.response.data.errorText
+                message: error.response.data.errorText,
             })
         }
         throw error

@@ -1,6 +1,0 @@
-.mobileHeader {
-    height: 48px;
-    border-bottom: 1px solid var(--border);
-    padding: 8px;
-    background-color: var(--layout-accent);
-}

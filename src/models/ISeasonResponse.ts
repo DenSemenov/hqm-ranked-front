@@ -3,5 +3,4 @@ export interface ISeasonResponse {
     name: string
     dateStart: Date
     dateEnd: Date;
-    divisionId: string;
 }

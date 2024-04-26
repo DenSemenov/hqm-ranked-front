@@ -11,7 +11,6 @@ const ChangePasswordModal = ({ open, onClose }: IProps) => {
     const dispatch = useAppDispatch();
 
     const onChange = (values: any) => {
-        console.log(values);
         dispatch(changePassword({
             password: values.password,
         })).unwrap().then(() => {
@@ -23,16 +22,21 @@ const ChangePasswordModal = ({ open, onClose }: IProps) => {
     }
 
     return (
-        <Modal open={open} onCancel={onClose} footer={[]}>
+        <Modal
+            title="Change password"
+            open={open}
+            onCancel={onClose}
+            footer={[]}
+        >
             <Form
                 onFinish={onChange}
                 layout="vertical"
             >
                 <Form.Item name="password" >
-                    <Input size="large" type="password" placeholder="NEW PASSWORD" />
+                    <Input type="password" placeholder="New password" />
                 </Form.Item>
                 <Form.Item>
-                    <Button type="primary" htmlType="submit">SAVE</Button>
+                    <Button type="primary" htmlType="submit">Save</Button>
                 </Form.Item>
             </Form>
         </Modal>

@@ -1,15 +1,14 @@
-import { Col, Row } from "antd";
+import { Col, Radio, Row } from "antd";
 import PlayersTable from "./PlayersTable";
-import Servers from "./Servers";
 import Games from "./Games";
-import Ads from "./Ads";
-import { useEffect, useState } from "react";
-import { BrowserView, MobileView } from "react-device-detect";
-import CardComponent, { EdgeType } from "shared/CardComponent";
+import { useEffect, useMemo, useState } from "react";
 import styles from './HomePage.module.css'
+import { MobileView } from "react-device-detect";
+import { isMobile } from "react-device-detect";
 
 const HomePage = () => {
     const [height, setHeight] = useState<number>(0);
+    const [selectedTab, setSelectedTab] = useState<string>("Players");
 
 
     useEffect(() => {
@@ -18,59 +17,52 @@ const HomePage = () => {
     }, []);
 
     const setTableHeightAction = () => {
-        let h = document.body.clientHeight - 142 - 32 - 100 - 32 * 2;
+        let h = document.body.clientHeight - 42 - 32 - 16 * 2;
         setHeight(h);
     }
 
+    const tabs = useMemo(() => {
+        return [
+            { label: 'Players', value: 'Players' },
+            { label: 'Games', value: 'Games' },
+            { label: 'Servers', value: 'Servers' },
+        ]
+    }, [])
+
+    const getContent = useMemo(() => {
+        if (isMobile) {
+            switch (selectedTab) {
+                case "Players":
+                    return <PlayersTable full={false} />
+                case "Games":
+                    return <Games />
+            }
+        } else {
+            return <><Col span={14} style={{ height: height }} >
+                <PlayersTable full={false} />
+            </Col>
+                <Col span={10} style={{ height: height }}>
+                    <Games />
+                </Col>
+            </>
+        }
+
+    }, [isMobile, height, selectedTab])
+
     return (
-        <>
-            <BrowserView>
-                <Row gutter={[32, 32]}>
-                    <Col sm={14} xs={24} style={{ height: height }} >
-                        <CardComponent edges={[EdgeType.LeftBottom, EdgeType.RightTop]} >
-                            <div className={styles.container}>
-                                <PlayersTable full={false} />
-                            </div>
-                        </CardComponent>
-                    </Col>
-                    <Col sm={10} xs={24} style={{ height: height }}>
-                        <CardComponent edges={[]}>
-                            <div className={styles.container}>
-                                <Games />
-                            </div>
-                        </CardComponent>
-                    </Col>
-                    <Col sm={14}>
-                        <CardComponent edges={[EdgeType.LeftBottom, EdgeType.RightTop]}>
-                            <Servers />
-                        </CardComponent>
-                    </Col>
-                    <Col sm={10}>
-                        <CardComponent edges={[]}>
-                            <Ads />
-                        </CardComponent>
-                    </Col>
-                </Row>
-            </BrowserView>
-            <MobileView>
-                <Row gutter={[16, 16]}>
-                    <Col span={24}>
-                        <PlayersTable full={false} />
-                    </Col>
-                    <Col span={24}>
-                        <div className={styles.mobileContainer}>
-                            <Games />
-                        </div>
-                    </Col>
-                    <Col span={24}>
-                        <Servers />
-                    </Col>
-                    <Col span={24}>
-                        <Ads />
-                    </Col>
-                </Row >
+        <Row gutter={[32, 32]}>
+            {getContent}
+            <MobileView renderWithFragment>
+                <div className={styles.tabs}>
+                    <Radio.Group
+                        optionType="button"
+                        options={tabs}
+                        onChange={(e) => setSelectedTab(e.target.value)}
+                        value={selectedTab}
+                    />
+                </div>
             </MobileView>
-        </>
+        </Row>
     )
 }
 

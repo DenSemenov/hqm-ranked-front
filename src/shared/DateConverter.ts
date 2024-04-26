@@ -1,3 +1,5 @@
+import { format } from "timeago.js"
+
 export const convertDate = (date: Date) => {
-    return new Date(date).toLocaleString();
+    return format(date)
 }

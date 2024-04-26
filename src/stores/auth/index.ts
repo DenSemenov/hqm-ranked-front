@@ -4,12 +4,14 @@ import { ICurrentUserResponse } from "models/ICurrentUserResponse";
 import { RootState } from "stores"
 
 export interface IAuthState {
+    loadingUser: boolean;
     isAuth: boolean,
     currentUser: ICurrentUserResponse | null;
     theme: string | null
 }
 
 const initialState: IAuthState = {
+    loadingUser: true,
     isAuth: false,
     currentUser: null,
     theme: null
@@ -30,9 +32,13 @@ export const authSlicer = createSlice({
         },
         setCurrentUser: (state: IAuthState, action: PayloadAction<ICurrentUserResponse | null>) => {
             state.currentUser = action.payload;
+            state.loadingUser = false;
         },
         setTheme: (state: IAuthState, action: PayloadAction<string>) => {
             state.theme = action.payload;
+        },
+        setLoadingUser: (state: IAuthState, action: PayloadAction<boolean>) => {
+            state.loadingUser = action.payload;
         },
     },
 })
@@ -40,12 +46,15 @@ export const authSlicer = createSlice({
 export const {
     setIsAuth,
     setCurrentUser,
-    setTheme
+    setTheme,
+    setLoadingUser
 } =
     authSlicer.actions
 
 export const selectIsAuth = (state: RootState) => state.auth.isAuth;
+export const selectLoadingUser = (state: RootState) => state.auth.loadingUser;
 export const selectCurrentUser = (state: RootState) => state.auth.currentUser;
 export const selectTheme = (state: RootState) => state.auth.theme;
+export const selectIsAdmin = (state: RootState) => state.auth.currentUser ? state.auth.currentUser.role === "admin" : false;
 
 export default authSlicer.reducer

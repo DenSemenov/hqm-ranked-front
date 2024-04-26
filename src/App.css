@@ -2,69 +2,28 @@
   overflow: hidden;
 }
 
-@font-face {
-  font-family: 'RF Dewi';
-  src: local('RF Dewi'), url(./fonts/RFExpanded.woff) format('woff');
-  font-weight: 900;
-  font-style: normal;
-}
-
 body {
-  font-family: 'RF Dewi' !important;
+  font-family: 'Roboto' !important;
   font-size: 14px;
   font-style: normal;
-  font-weight: 900;
   line-height: normal;
-  text-transform: uppercase;
 }
 
 .app {
   height: 100vh;
 }
 
-.content {
-  height: calc(-142px + 100vh);
+.content-mobile {
   overflow: auto;
-  padding: 0 4% 0 4%;
+  height: calc(-42px + 100vh);
 }
 
-.ant-table-wrapper .ant-table-thead>tr>th,
-.ant-table-wrapper .ant-table-thead>tr>td {
-  background-color: transparent;
-}
-
-.btn-with-edges-primary {
-  background-color: var(--primary);
-  box-shadow: none;
-}
-
-.btn-with-edges-primary:after {
-  width: 25px;
-  height: 15px;
-  content: '';
-  position: absolute;
-  transform: rotate(50deg);
-  left: -11px;
-  bottom: -4px;
-  z-index: 1;
-  background: var(--layout);
-}
-
-.btn-with-edges-primary:before {
-  width: 25px;
-  height: 15px;
-  content: '';
-  position: absolute;
-  transform: rotate(50deg);
-  right: -11px;
-  top: -4px;
-  z-index: 1;
-  background: var(--layout);
-}
-
-.ant-table-wrapper .ant-table-thead>tr>th,
-.ant-table-wrapper .ant-table-thead>tr>td {
-  color: var(--text-secondary);
+.content {
+  height: calc(-106px + 100vh);
+  overflow: auto;
+  overflow-x: hidden;
+  width: calc(-64px + 100%);
+  padding: 32px;
 }
 
 .right-align {
@@ -75,49 +34,9 @@ body {
   text-align: center;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--layout);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--layout-accent);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--layout-accent);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:active {
-  background: var(--layout-accent);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-.ant-table-body {
-  overflow-y: auto !important;
-}
-
 .subtitle {
-  color: var(--text-secondary);
+  color: var(--textSecondary);
   font-size: 12px;
-}
-
-.mobile-content {
-  height: calc(-96px + 100vh);
-  overflow: auto;
-  width: 100vw;
-  overflow-x: hidden;
 }
 
 .app {
@@ -125,54 +44,51 @@ body {
   color: var(--text);
 }
 
-.ant-table-wrapper .ant-table {
-  background-color: var(--layout);
+.ant-card-body {
+  height: calc(-56px + 100%);
 }
 
-.ant-btn-link {
+.ant-table-wrapper,
+.ant-spin-nested-loading,
+.ant-spin-container,
+.ant-table,
+.ant-table-container {
+  height: 100%;
+}
+
+.ant-table-body {
+  height: calc(-56px + 100%);
+}
+
+.ant-table-body table {
+  height: 100%;
+}
+
+.ant-table-content {
+  overflow: auto;
+}
+
+.ant-row {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
+.content-loading {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-notification .ant-notification-notice-wrapper {
+  background-color: var(--layoutAccent);
+}
+
+.ant-notification .ant-notification-notice-wrapper .ant-notification-notice-message {
   color: var(--text);
 }
 
-.ant-select:not(.ant-select-customize-input) .ant-select-selector {
-  background-color: var(--layout-accent);
-  border-color: var(--border);
-}
-
-.ant-select-dropdown {
-  background-color: var(--layout-accent);
-  color: var(--text);
-}
-
-.ant-select-dropdown .ant-select-item {
-  color: var(--text);
-}
-
-.ant-modal .ant-modal-content {
-  background-color: var(--layout);
-}
-
-.ant-table-wrapper .ant-table-cell-fix-left,
-.ant-table-wrapper .ant-table-cell-fix-right {
-  background-color: var(--layout);
-}
-
-.ant-table-wrapper .ant-table-ping-left .ant-table-cell-fix-left-first::after,
-.ant-table-wrapper .ant-table-ping-left .ant-table-cell-fix-left-last::after {
+.ant-btn-dashed {
   box-shadow: none;
-}
-
-.ant-table-wrapper .ant-table-ping-left:not(.ant-table-has-fix-left) .ant-table-container::before {
-  box-shadow: none;
-}
-
-.ant-table-wrapper .ant-table-ping-right:not(.ant-table-has-fix-right) .ant-table-container::after {
-  box-shadow: none;
-}
-
-.ant-table-wrapper .ant-table-cell-scrollbar:not([rowspan]) {
-  box-shadow: none;
-}
-
-.ant-table-wrapper .ant-table-tbody .ant-table-row>.ant-table-cell-row-hover {
-  background-color: var(--layout-accent);
 }

@@ -1,5 +1,4 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { IDivisionResponse } from "models/IDivisionResponse";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { ISeasonGameResponse } from "models/ISeasonGameResponse";
 import { ISeasonResponse } from "models/ISeasonResponse";
@@ -8,9 +7,7 @@ import { RootState } from "stores"
 
 export interface ISeasonState {
     seasons: ISeasonResponse[];
-    divisions: IDivisionResponse[];
     currentSeason: string | null;
-    currentDivision: string | null;
     currentSeasonStats: ISeasonStatsResponse[];
     currentSeasonGames: ISeasonGameResponse[];
 
@@ -19,9 +16,7 @@ export interface ISeasonState {
 
 const initialState: ISeasonState = {
     seasons: [],
-    divisions: [],
     currentSeason: null,
-    currentDivision: null,
     currentSeasonStats: [],
     currentSeasonGames: [],
 
@@ -36,15 +31,8 @@ export const seasonSlicer = createSlice({
             state.seasons = action.payload;
             state.currentSeason = state.seasons[0].id
         },
-        setDivisions: (state: ISeasonState, action: PayloadAction<IDivisionResponse[]>) => {
-            state.divisions = action.payload;
-        },
         setCurrentSeason: (state: ISeasonState, action: PayloadAction<string>) => {
             state.currentSeason = action.payload;
-        },
-        setCurrentDivision: (state: ISeasonState, action: PayloadAction<string>) => {
-            state.currentDivision = action.payload;
-            localStorage.setItem("division", action.payload);
         },
         setCurrentSeasonStats: (state: ISeasonState, action: PayloadAction<ISeasonStatsResponse[]>) => {
             state.currentSeasonStats = action.payload;
@@ -60,9 +48,7 @@ export const seasonSlicer = createSlice({
 
 export const {
     setSeasons,
-    setDivisions,
     setCurrentSeason,
-    setCurrentDivision,
     setCurrentSeasonStats,
     setCurrentSeasonGames,
     setCurrentPlayerData
@@ -70,10 +56,8 @@ export const {
     seasonSlicer.actions
 
 
-export const selectSeasons = (state: RootState) => state.season.seasons.filter(x => x.divisionId === state.season.currentDivision);
-export const selectDivisions = (state: RootState) => state.season.divisions;
+export const selectSeasons = (state: RootState) => state.season.seasons;
 export const selectCurrentSeason = (state: RootState) => state.season.currentSeason;
-export const selectCurrentDivision = (state: RootState) => state.season.currentDivision;
 export const selectCurrentSeasonStats = (state: RootState) => state.season.currentSeasonStats;
 export const selectCurrentSeasonGames = (state: RootState) => state.season.currentSeasonGames;
 export const selectCurrentPlayerData = (state: RootState) => state.season.currentPlayerData;

@@ -3,20 +3,20 @@
 }
 
 .gamesItems {
-    margin-top: 16px;
     height: calc(-36px + 100%);
     overflow-y: auto;
     overflow-x: hidden;
 }
 
 .gamesItem {
-    padding: 8px;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 0;
+    padding: 8px 16px;
+
 }
 
 .gamesItem:hover {
-    background: var(--layout-accent);
+    background: var(--layoutAccent);
 }
 
 .gameContentName {
@@ -36,4 +36,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.gameStatusTitle {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+.teamTitle {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gameStatus {
+    display: flex;
+    align-items: center;
+    justify-content: right;
 }

@@ -20,6 +20,7 @@ import LoginModal from 'components/LoginModal';
 import RegisterModal from 'components/RegisterModal';
 import Admin from 'components/Admin';
 import { LoadingOutlined } from "@ant-design/icons";
+import ProfilePage from 'components/ProfilePage';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -73,6 +74,7 @@ function App() {
       <Route path="/login" element={<LoginModal />} />
       <Route path="/registration" element={<RegisterModal />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/profile" element={<ProfilePage />} />
     </Routes>
   }, [])
 

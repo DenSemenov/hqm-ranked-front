@@ -9,7 +9,6 @@ import { getCurrentUser } from 'stores/auth/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import ChangePasswordModal from './ChangePasswordModal';
 import { selectCurrentSeason, selectSeasons, setCurrentSeason } from 'stores/season';
-import { BrowserView } from 'react-device-detect';
 import { useNavigate } from 'react-router-dom';
 import ThemeButton from './ThemeButton';
 
@@ -21,7 +20,6 @@ const Header = () => {
     const currentUser = useSelector(selectCurrentUser);
     const seasons = useSelector(selectSeasons);
     const currentSeason = useSelector(selectCurrentSeason);
-    const isAdmin = useSelector(selectIsAdmin);
 
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
 
@@ -51,16 +49,6 @@ const Header = () => {
         }));
     }
 
-    const getPlayerMenu = () => {
-        return <div className={styles.headerContainerPlayerMenu}>
-            {isAdmin &&
-                <Button onClick={() => navigate("/admin")}>Admin</Button>
-            }
-            <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
-            <Button danger onClick={onLogout}>Log out</Button>
-        </div>
-    }
-
     const loginPage = () => {
         navigate("/login")
     }
@@ -71,9 +59,7 @@ const Header = () => {
 
     const loginButton = useMemo(() => {
         if (userName && currentUser) {
-            return <Popover content={getPlayerMenu()} trigger={"click"} placement='bottomLeft' >
-                <Avatar style={{ cursor: "pointer" }}>{avatarName}</Avatar>
-            </Popover>
+            return <Avatar style={{ cursor: "pointer" }} src={process.env.REACT_APP_API_URL + "/avatars/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
         } else {
             return <Button icon={<UserOutlined />} onClick={loginPage} />
         }

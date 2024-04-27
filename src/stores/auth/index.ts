@@ -33,6 +33,9 @@ export const authSlicer = createSlice({
         setCurrentUser: (state: IAuthState, action: PayloadAction<ICurrentUserResponse | null>) => {
             state.currentUser = action.payload;
             state.loadingUser = false;
+            if (state.currentUser) {
+                state.isAuth = true;
+            }
         },
         setTheme: (state: IAuthState, action: PayloadAction<string>) => {
             state.theme = action.payload;

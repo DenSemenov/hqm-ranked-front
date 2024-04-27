@@ -28,8 +28,8 @@ const PlayerItem = ({ id, name, type = PlayerItemType.Both }: IProps) => {
             onClick={() => navigate("/player?id=" + id)}
         >
             {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
-                <Tooltip title={name}>
-                    <Avatar>{avatarName}</Avatar>
+                <Tooltip title={type === PlayerItemType.Avatar ? name : undefined}>
+                    <Avatar src={process.env.REACT_APP_API_URL + "/avatars/" + id + ".png"}>{avatarName}</Avatar>
                 </Tooltip>
             }
             {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&

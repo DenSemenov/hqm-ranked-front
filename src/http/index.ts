@@ -2,7 +2,7 @@ import { App, notification } from 'antd';
 import axios, { AxiosRequestHeaders } from 'axios';
 import { stringify } from 'qs';
 
-export const API_URL = "https://api.hqmfun.space";
+export const API_URL = process.env.REACT_APP_API_URL;
 
 const $api = axios.create({
     withCredentials: true,

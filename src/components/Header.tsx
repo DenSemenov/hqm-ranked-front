@@ -59,7 +59,7 @@ const Header = () => {
 
     const loginButton = useMemo(() => {
         if (userName && currentUser) {
-            return <Avatar style={{ cursor: "pointer" }} src={process.env.REACT_APP_API_URL + "/avatars/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
+            return <Avatar shape='square' style={{ cursor: "pointer" }} src={process.env.REACT_APP_API_URL + "/avatars/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
         } else {
             return <Button icon={<UserOutlined />} onClick={loginPage} />
         }

@@ -1,16 +1,18 @@
-import { Avatar, Col, Row } from "antd";
+import { Avatar, Col, Row, Tag } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { selectCurrentPlayerData } from "stores/season";
 import { getPlayerData } from "stores/season/async-actions";
 import styles from './Player.module.css'
 import { convertDate } from "shared/DateConverter";
-import PlayerItem from "shared/PlayerItem";
+import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
 
 const Player = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
     const [searchParams, setSearchParams] = useSearchParams();
     const currentPlayerData = useSelector(selectCurrentPlayerData);
 
@@ -21,7 +23,7 @@ const Player = () => {
                 id: +id
             }));
         }
-    }, []);
+    }, [searchParams]);
 
 
     return currentPlayerData ? (
@@ -99,26 +101,31 @@ const Player = () => {
                     </div>
                     <div className={styles.playerCenterGames}>
                         {currentPlayerData.lastGames.map(game => {
-                            return <div className={styles.playerCenterGamesItem}>
+                            return <div className={styles.playerCenterGamesItem} onClick={() => navigate("/game?id=" + game.gameId)}>
                                 <Row gutter={[0, 16]}>
-                                    <Col span={16} className="subtitle">
-                                        {convertDate(game.date)}
+                                    <Col span={16}>
+                                        <span className="subtitle">{convertDate(game.date)}</span>
                                     </Col>
-                                    <Col span={9}>
-                                        <div>{"TEAM "}<PlayerItem id={game.teamRedId} name={game.teamRedName} /></div>
+                                    <Col span={8} className="right-align">
+                                        <Tag color={game.score >= 0 ? "success" : "error"}>{game.score}</Tag>
                                     </Col>
-                                    <Col span={6} className={styles.playerCenterGamesItemScore}>
+                                    <Col span={16} className={styles.gameContentName}>
+                                        <div className={styles.teamTitle}>
+                                            <Avatar.Group>
+                                                {game.players.filter(x => x.team == 0).map(x => {
+                                                    return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                                })}
+                                            </Avatar.Group>
+                                            {"vs"}
+                                            <Avatar.Group>
+                                                {game.players.filter(x => x.team == 1).map(x => {
+                                                    return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                                })}
+                                            </Avatar.Group>
+                                        </div>
+                                    </Col>
+                                    <Col span={8} className={styles.gameContent} >
                                         {game.redScore + " - " + game.blueScore}
-                                    </Col>
-                                    <Col span={9} className="right-align">
-                                        <div>{"TEAM "}<PlayerItem id={game.teamBlueId} name={game.teamBlueName} /></div>
-                                    </Col>
-                                    <Col span={9}>
-                                        {game.team === 0 && <div className="subtitle">{"G:" + game.goals + " A:" + game.assists}</div>}
-                                    </Col>
-                                    <Col span={6} />
-                                    <Col span={9} className="right-align">
-                                        {game.team === 1 && <div className="subtitle">{"G:" + game.goals + " A:" + game.assists}</div>}
                                     </Col>
                                 </Row>
                             </div>

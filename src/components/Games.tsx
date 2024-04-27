@@ -33,7 +33,7 @@ const Games = () => {
     return (
         <Card title={!isMobile ? "Games" : undefined} bodyStyle={{ padding: 0 }} bordered={false} style={{ height: !isMobile ? height : undefined, width: "100%" }}>
             {currentSeasonGames.map(game => (
-                <div className={styles.gamesItem} onClick={() => navigate("/game/" + game.gameId)}>
+                <div className={styles.gamesItem} onClick={() => navigate("/game?id=" + game.gameId)}>
                     <Row gutter={[8, 8]} >
                         <Col span={16}>
                             <span className="subtitle">{convertDate(game.date)}</span>

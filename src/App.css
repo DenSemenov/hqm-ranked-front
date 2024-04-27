@@ -92,3 +92,7 @@ body {
 .ant-btn-dashed {
   box-shadow: none;
 }
+
+.ant-tag {
+  margin-inline-end: 0
+}

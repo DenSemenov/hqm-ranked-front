@@ -25,7 +25,6 @@ const HomePage = () => {
         return [
             { label: 'Players', value: 'Players' },
             { label: 'Games', value: 'Games' },
-            { label: 'Servers', value: 'Servers' },
         ]
     }, [])
 

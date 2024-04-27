@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
+import { IGameResponse } from "models/IGameResponse";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { ISeasonGameResponse } from "models/ISeasonGameResponse";
 import { ISeasonResponse } from "models/ISeasonResponse";
@@ -12,6 +13,7 @@ export interface ISeasonState {
     currentSeasonGames: ISeasonGameResponse[];
 
     currentPlayerData: IPlayerResponse | null;
+    currentGameData: IGameResponse | null;
 }
 
 const initialState: ISeasonState = {
@@ -20,7 +22,8 @@ const initialState: ISeasonState = {
     currentSeasonStats: [],
     currentSeasonGames: [],
 
-    currentPlayerData: null
+    currentPlayerData: null,
+    currentGameData: null
 }
 
 export const seasonSlicer = createSlice({
@@ -43,6 +46,9 @@ export const seasonSlicer = createSlice({
         setCurrentPlayerData: (state: ISeasonState, action: PayloadAction<IPlayerResponse | null>) => {
             state.currentPlayerData = action.payload;
         },
+        setCurrentGameData: (state: ISeasonState, action: PayloadAction<IGameResponse | null>) => {
+            state.currentGameData = action.payload;
+        },
     },
 })
 
@@ -51,7 +57,8 @@ export const {
     setCurrentSeason,
     setCurrentSeasonStats,
     setCurrentSeasonGames,
-    setCurrentPlayerData
+    setCurrentPlayerData,
+    setCurrentGameData
 } =
     seasonSlicer.actions
 
@@ -61,5 +68,6 @@ export const selectCurrentSeason = (state: RootState) => state.season.currentSea
 export const selectCurrentSeasonStats = (state: RootState) => state.season.currentSeasonStats;
 export const selectCurrentSeasonGames = (state: RootState) => state.season.currentSeasonGames;
 export const selectCurrentPlayerData = (state: RootState) => state.season.currentPlayerData;
+export const selectCurrentGameData = (state: RootState) => state.season.currentGameData;
 
 export default seasonSlicer.reducer

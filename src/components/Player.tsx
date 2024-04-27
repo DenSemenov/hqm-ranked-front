@@ -28,7 +28,7 @@ const Player = () => {
         <Row gutter={[32, 32]}>
             <Col sm={8} xs={24}>
                 <div className={styles.playerLeft}>
-                    <Avatar size={190} shape="square">{currentPlayerData.name}</Avatar>
+                    <Avatar size={190} shape="square" src={process.env.REACT_APP_API_URL + "/avatars/" + currentPlayerData.id + ".png"}>{currentPlayerData.name}</Avatar>
                     <h3 className={styles.playerLeftTitle}>{currentPlayerData.name}</h3>
                     <div className={styles.playerLeftStats}>
                         <Row>

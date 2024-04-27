@@ -21,6 +21,7 @@ import RegisterModal from 'components/RegisterModal';
 import Admin from 'components/Admin';
 import { LoadingOutlined } from "@ant-design/icons";
 import ProfilePage from 'components/ProfilePage';
+import Game from 'components/Game';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -71,6 +72,7 @@ function App() {
       <Route path="/players" element={<PlayersTable full={true} />} />
       <Route path="/games" element={<Games />} />
       <Route path="/player" element={<Player />} />
+      <Route path="/game" element={<Game />} />
       <Route path="/login" element={<LoginModal />} />
       <Route path="/registration" element={<RegisterModal />} />
       <Route path="/admin" element={<Admin />} />

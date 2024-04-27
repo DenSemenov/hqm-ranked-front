@@ -7,6 +7,7 @@ import ChangePasswordModal from "./ChangePasswordModal";
 import ImgCrop from "antd-img-crop";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import ChangeNicknameModal from "./ChangeNicknameModal";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -16,6 +17,7 @@ const ProfilePage = () => {
     const isAdmin = useSelector(selectIsAdmin);
 
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
+    const [changeNicknameModalOpen, setChangeNicknameModalOpen] = useState<boolean>(false);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     useEffect(() => {
@@ -51,6 +53,10 @@ const ProfilePage = () => {
         setChangePasswordModalOpen(false);
     }
 
+    const onCloseChangeNicknameModal = () => {
+        setChangeNicknameModalOpen(false);
+    }
+
     const onChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
         setFileList(newFileList);
     };
@@ -76,6 +82,7 @@ const ProfilePage = () => {
                                 {fileList.length < 1 && '+ Upload'}
                             </Upload>
                         </ImgCrop>
+                        <Button onClick={() => setChangeNicknameModalOpen(true)}>Change nickname</Button>
                         <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
                         <Button danger onClick={onLogout}>Log out</Button>
 
@@ -86,6 +93,7 @@ const ProfilePage = () => {
                 </Card>
             </Col>
             <ChangePasswordModal open={changePasswordModalOpen} onClose={onCloseChangePasswordModal} />
+            <ChangeNicknameModal open={changeNicknameModalOpen} onClose={onCloseChangeNicknameModal} />
         </Row>
     )
 }

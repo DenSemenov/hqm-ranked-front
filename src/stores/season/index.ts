@@ -41,7 +41,8 @@ export const seasonSlicer = createSlice({
             state.currentSeasonStats = action.payload;
         },
         setCurrentSeasonGames: (state: ISeasonState, action: PayloadAction<ISeasonGameResponse[]>) => {
-            state.currentSeasonGames = action.payload;
+            const notIncluded = action.payload.filter(x => state.currentSeasonGames.findIndex(y => y.gameId === x.gameId) === -1);
+            state.currentSeasonGames.push(...notIncluded);
         },
         setCurrentPlayerData: (state: ISeasonState, action: PayloadAction<IPlayerResponse | null>) => {
             state.currentPlayerData = action.payload;

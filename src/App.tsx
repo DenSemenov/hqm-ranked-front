@@ -57,10 +57,12 @@ function App() {
   useEffect(() => {
     if (currentSeason) {
       dispatch(getSeasonsStats({
-        seasonId: currentSeason
+        seasonId: currentSeason,
+        offset: 0
       }));
       dispatch(getSeasonsGames({
-        seasonId: currentSeason
+        seasonId: currentSeason,
+        offset: 0,
       }));
 
     }

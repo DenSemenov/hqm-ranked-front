@@ -1,3 +1,4 @@
 export interface ICurrentSeasonStatsRequest {
-    seasonId: string
+    seasonId: string;
+    offset: number;
 }

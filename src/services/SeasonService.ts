@@ -17,7 +17,7 @@ export default class SeasonService {
         return $api.post<ISeasonStatsResponse[]>('api/seasons/GetSeasonStats', data);
     }
     static async getSeasonsGames(data: ICurrentSeasonStatsRequest): Promise<AxiosResponse<ISeasonGameResponse[]>> {
-        return $api.post<ISeasonGameResponse[]>('api/seasons/GetSeasonLastGames', data);
+        return $api.post<ISeasonGameResponse[]>('api/seasons/GetSeasonGames', data);
     }
     static async getPlayerData(data: IPlayerRequest): Promise<AxiosResponse<IPlayerResponse>> {
         return $api.post<IPlayerResponse>('api/seasons/GetPlayerData', data);

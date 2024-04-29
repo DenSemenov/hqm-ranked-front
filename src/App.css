@@ -96,3 +96,11 @@ body {
 .ant-tag {
   margin-inline-end: 0
 }
+
+div {
+  scrollbar-color: rgba(255, 255, 255, 0.25) rgba(253, 253, 253, 0.12)
+}
+
+.ant-typography {
+  margin: 0
+}

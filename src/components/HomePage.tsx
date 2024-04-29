@@ -5,11 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 import styles from './HomePage.module.css'
 import { MobileView } from "react-device-detect";
 import { isMobile } from "react-device-detect";
+import Events from "./Events";
 
 const HomePage = () => {
     const [height, setHeight] = useState<number>(0);
     const [selectedTab, setSelectedTab] = useState<string>("Players");
-
 
     useEffect(() => {
         setTableHeightAction();
@@ -25,6 +25,7 @@ const HomePage = () => {
         return [
             { label: 'Players', value: 'Players' },
             { label: 'Games', value: 'Games' },
+            { label: 'Events', value: 'Events' },
         ]
     }, [])
 
@@ -35,13 +36,16 @@ const HomePage = () => {
                     return <PlayersTable full={false} />
                 case "Games":
                     return <Games />
+                case "Events":
+                    return <Events />
             }
         } else {
             return <><Col span={14} style={{ height: height }} >
                 <PlayersTable full={false} />
             </Col>
-                <Col span={10} style={{ height: height }}>
+                <Col span={10} style={{ height: height }} >
                     <Games />
+                    <Events />
                 </Col>
             </>
         }

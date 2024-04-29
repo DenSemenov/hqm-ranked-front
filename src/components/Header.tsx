@@ -41,14 +41,6 @@ const Header = () => {
         }
     }, [currentUser]);
 
-    const onLogout = () => {
-        dispatch(setCurrentUser(null));
-        dispatch(setIsAuth({
-            success: false,
-            token: ''
-        }));
-    }
-
     const loginPage = () => {
         navigate("/login")
     }

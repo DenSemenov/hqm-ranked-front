@@ -14,6 +14,7 @@ export interface ISeasonState {
 
     currentPlayerData: IPlayerResponse | null;
     currentGameData: IGameResponse | null;
+    rules: string;
 }
 
 const initialState: ISeasonState = {
@@ -23,7 +24,8 @@ const initialState: ISeasonState = {
     currentSeasonGames: [],
 
     currentPlayerData: null,
-    currentGameData: null
+    currentGameData: null,
+    rules: ""
 }
 
 export const seasonSlicer = createSlice({
@@ -50,6 +52,9 @@ export const seasonSlicer = createSlice({
         setCurrentGameData: (state: ISeasonState, action: PayloadAction<IGameResponse | null>) => {
             state.currentGameData = action.payload;
         },
+        setRules: (state: ISeasonState, action: PayloadAction<string>) => {
+            state.rules = action.payload;
+        },
     },
 })
 
@@ -59,7 +64,8 @@ export const {
     setCurrentSeasonStats,
     setCurrentSeasonGames,
     setCurrentPlayerData,
-    setCurrentGameData
+    setCurrentGameData,
+    setRules
 } =
     seasonSlicer.actions
 
@@ -70,5 +76,6 @@ export const selectCurrentSeasonStats = (state: RootState) => state.season.curre
 export const selectCurrentSeasonGames = (state: RootState) => state.season.currentSeasonGames;
 export const selectCurrentPlayerData = (state: RootState) => state.season.currentPlayerData;
 export const selectCurrentGameData = (state: RootState) => state.season.currentGameData;
+export const selectRules = (state: RootState) => state.season.rules;
 
 export default seasonSlicer.reducer

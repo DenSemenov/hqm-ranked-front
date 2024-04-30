@@ -6,6 +6,7 @@ import styles from './HomePage.module.css'
 import { MobileView } from "react-device-detect";
 import { isMobile } from "react-device-detect";
 import Events from "./Events";
+import Actions from "./Actions";
 
 const HomePage = () => {
     const [height, setHeight] = useState<number>(0);
@@ -26,6 +27,7 @@ const HomePage = () => {
             { label: 'Players', value: 'Players' },
             { label: 'Games', value: 'Games' },
             { label: 'Events', value: 'Events' },
+            { label: 'Actions', value: 'Actions' },
         ]
     }, [])
 
@@ -38,6 +40,8 @@ const HomePage = () => {
                     return <Games />
                 case "Events":
                     return <Events />
+                case "Actions":
+                    return <Actions />
             }
         } else {
             return <><Col span={14} style={{ height: height }} >
@@ -46,6 +50,7 @@ const HomePage = () => {
                 <Col span={10} style={{ height: height }} >
                     <Games />
                     <Events />
+                    <Actions />
                 </Col>
             </>
         }

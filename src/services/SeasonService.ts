@@ -25,4 +25,7 @@ export default class SeasonService {
     static async getGameData(data: IGameRequest): Promise<AxiosResponse<IGameResponse>> {
         return $api.post<IGameResponse>('api/seasons/GetGameData', data);
     }
+    static async getRules(): Promise<AxiosResponse<string>> {
+        return $api.post<string>('api/seasons/GetRules');
+    }
 }

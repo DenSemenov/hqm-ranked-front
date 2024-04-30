@@ -20,7 +20,7 @@ const Events = () => {
     }, [])
 
     return (
-        <Card title={!isMobile ? "Events" : undefined} bordered={false} style={{ height: !isMobile ? 268 : undefined, width: "100%" }}>
+        <Card title={!isMobile ? "Events" : undefined} bordered={false} style={{ height: !isMobile ? 268 : undefined, width: "100%", marginBottom: !isMobile ? 32 : undefined }}>
             {currentEvent &&
                 <>
                     <Row>

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import SeasonService from "services/SeasonService"
-import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setSeasons } from "."
+import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setRules, setSeasons } from "."
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest"
 import { IPlayerRequest } from "models/IPlayerRequest"
 import { IGameRequest } from "models/IGameRequest"
@@ -60,6 +60,17 @@ export const getGameData = createAsyncThunk('season/getGameData', async (payload
         const response = await SeasonService.getGameData(payload)
 
         thunkApi.dispatch(setCurrentGameData(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+export const getRules = createAsyncThunk('season/getRules', async (payload: void, thunkApi) => {
+    try {
+        const response = await SeasonService.getRules()
+
+        thunkApi.dispatch(setRules(response.data))
 
         return response.data
     } catch (e: any) {

@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, InputNumber, Popconfirm, Popover, Select, Table, Tabs, notification } from "antd";
+import { Button, Checkbox, Form, Input, InputNumber, Popconfirm, Popover, Select, Table, Tabs, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
@@ -7,6 +7,8 @@ import PlayerItem from "shared/PlayerItem";
 import { selectAdmins, selectPlayers, selectServers, selectSettings, selectUnapprovedUsers } from "stores/admin";
 import { addRemoveAdmin, addServer, approveUser, banUnban, deleteServer, getAdmins, getPlayers, getServers, getSettings, getUnApprovedUsers, saveSettings } from "stores/admin/async-actions";
 import { selectIsAdmin } from "stores/auth";
+
+const { TextArea } = Input;
 
 const Admin = () => {
     const dispatch = useAppDispatch();
@@ -241,7 +243,8 @@ const Admin = () => {
             return <Form
                 initialValues={{
                     nicknameChangeDaysLimit: settings.nicknameChangeDaysLimit,
-                    newPlayerApproveRequired: settings.newPlayerApproveRequired
+                    newPlayerApproveRequired: settings.newPlayerApproveRequired,
+                    rules: settings.rules
                 }}
                 onFinish={onSaveSettings}
             >
@@ -258,7 +261,12 @@ const Admin = () => {
                 >
                     <Checkbox />
                 </Form.Item>
-
+                <Form.Item
+                    label="Rules"
+                    name="rules"
+                >
+                    <TextArea rows={4} />
+                </Form.Item>
                 <Form.Item >
                     <Button type="primary" htmlType="submit">
                         Save

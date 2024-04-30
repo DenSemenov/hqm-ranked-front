@@ -30,7 +30,7 @@ const Games = () => {
     }, [isMobile]);
 
     const setTableHeightAction = () => {
-        let h = document.body.clientHeight - 42 - 32 - 16 * 2 - 300;
+        let h = document.body.clientHeight - 42 - 32 - 16 * 2 - 425;
         setHeight(h);
     }
 

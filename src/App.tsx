@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import HomePage from './components/HomePage';
 import Header from './components/Header';
 import "./css/colors.css";
-import { App as AppComponent, ConfigProvider, theme as AntdTheme } from 'antd';
+import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag } from 'antd';
 import { BrowserView, MobileView, isMobile } from 'react-device-detect';
 import PlayersTable from 'components/PlayersTable';
 import Games from 'components/Games';
@@ -14,7 +14,7 @@ import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { selectCurrentSeason } from 'stores/season';
-import { selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
+import { selectCurrentUser, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
 import Player from 'components/Player';
 import LoginModal from 'components/LoginModal';
 import RegisterModal from 'components/RegisterModal';
@@ -29,6 +29,7 @@ function App() {
   const currentSeason = useSelector(selectCurrentSeason);
   const theme = useSelector(selectTheme);
   const loadingUser = useSelector(selectLoadingUser);
+  const currentUser = useSelector(selectCurrentUser);
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
@@ -119,19 +120,21 @@ function App() {
     >
       <div className="app">
         {!loadingUser &&
-          <BrowserRouter>
-            <Header />
-            <BrowserView>
-              <div className='content'>
-                {routes}
-              </div>
-            </BrowserView>
-            <MobileView>
-              <div className='content-mobile'>
-                {routes}
-              </div>
-            </MobileView>
-          </BrowserRouter>
+          <>
+            <BrowserRouter>
+              <Header />
+              <BrowserView>
+                <div className='content'>
+                  {routes}
+                </div>
+              </BrowserView>
+              <MobileView>
+                <div className='content-mobile'>
+                  {routes}
+                </div>
+              </MobileView>
+            </BrowserRouter>
+          </>
         }
         {loadingUser &&
           <div className='content-loading'>

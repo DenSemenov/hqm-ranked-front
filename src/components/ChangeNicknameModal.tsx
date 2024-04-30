@@ -13,9 +13,9 @@ const ChangeNicknameModal = ({ open, onClose }: IProps) => {
     const onChange = (values: any) => {
         dispatch(changeNickname({
             name: values.login,
-        })).unwrap().then(() => {
-            notification.success({
-                message: "Nickname successfully changed"
+        })).unwrap().then((data: string) => {
+            notification.info({
+                message: data
             })
             onClose();
         })

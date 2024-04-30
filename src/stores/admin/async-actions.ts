@@ -1,10 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import AdminService from "services/AdminService"
-import { setAdmins, setPlayers, setServers } from "."
+import { setAdmins, setPlayers, setServers, setSettings, setUnapprovedUsers } from "."
 import { IDeleteServerRequest } from "models/IDeleteServerRequest"
 import { IAddServerRequest } from "models/IAddServerRequest"
 import { IBanUnbanRequest } from "models/IBanUnbanRequest"
 import { IAddRemoveAdminRequest } from "models/IAddRemoveAdminRequest"
+import { ISettingsResponse } from "models/ISettingsResponse"
+import { IApproveRequest } from "models/IApproveRequest"
 
 export const getServers = createAsyncThunk('admin/getServers', async (payload: void, thunkApi) => {
     try {
@@ -76,6 +78,50 @@ export const getAdmins = createAsyncThunk('admin/getAdmins', async (payload: voi
 export const addRemoveAdmin = createAsyncThunk('admin/addRemoveAdmin', async (payload: IAddRemoveAdminRequest, thunkApi) => {
     try {
         const response = await AdminService.addRemoveAdmin(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getSettings = createAsyncThunk('admin/getSettings', async (payload: void, thunkApi) => {
+    try {
+        const response = await AdminService.getSettings()
+
+        thunkApi.dispatch(setSettings(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const saveSettings = createAsyncThunk('admin/saveSettings', async (payload: ISettingsResponse, thunkApi) => {
+    try {
+        const response = await AdminService.saveSettings(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getUnApprovedUsers = createAsyncThunk('admin/getUnApprovedUsers', async (payload: void, thunkApi) => {
+    try {
+        const response = await AdminService.getUnApprovedUsers()
+
+        thunkApi.dispatch(setUnapprovedUsers(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const approveUser = createAsyncThunk('admin/approveUser', async (payload: IApproveRequest, thunkApi) => {
+    try {
+        const response = await AdminService.approveUser(payload)
 
         return response.data
     } catch (e: any) {

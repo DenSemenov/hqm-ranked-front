@@ -3,4 +3,6 @@ export interface ICurrentUserResponse {
     name: string;
     email: string;
     role: string;
+    isApproved: boolean;
+    isBanned: boolean;
 }

@@ -104,3 +104,12 @@ div {
 .ant-typography {
   margin: 0
 }
+
+.warning-tags {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: var(--layoutAccent);
+}

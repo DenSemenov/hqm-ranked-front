@@ -5,6 +5,9 @@ import { IDeleteServerRequest } from "models/IDeleteServerRequest";
 import { IAddServerRequest } from "models/IAddServerRequest";
 import { IBanUnbanRequest } from "models/IBanUnbanRequest";
 import { IAddRemoveAdminRequest } from "models/IAddRemoveAdminRequest";
+import { ISettingsResponse } from "models/ISettingsResponse";
+import { IAdminPlayerResponse } from "models/IAdminPlayerResponse";
+import { IApproveRequest } from "models/IApproveRequest";
 
 export default class AdminService {
     static async getServers(): Promise<AxiosResponse<IAdminServer[]>> {
@@ -27,5 +30,17 @@ export default class AdminService {
     }
     static async addRemoveAdmin(data: IAddRemoveAdminRequest): Promise<AxiosResponse> {
         return $api.post('api/admin/AddRemoveAdmin', data);
+    }
+    static async getSettings(): Promise<AxiosResponse<ISettingsResponse>> {
+        return $api.post<ISettingsResponse>('api/admin/GetSettings');
+    }
+    static async saveSettings(data: ISettingsResponse): Promise<AxiosResponse> {
+        return $api.post('api/admin/SaveSettings', data);
+    }
+    static async getUnApprovedUsers(): Promise<AxiosResponse<IAdminPlayerResponse[]>> {
+        return $api.post<IAdminPlayerResponse[]>('api/admin/GetUnApprovedUsers');
+    }
+    static async approveUser(data: IApproveRequest): Promise<AxiosResponse> {
+        return $api.post('api/admin/ApproveUser', data);
     }
 }

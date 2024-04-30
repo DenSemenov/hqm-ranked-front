@@ -1,5 +1,5 @@
 
-import { App, Avatar, Button, Col, Popover, Row, Select } from 'antd';
+import { App, Avatar, Badge, Button, Col, Popover, Row, Select } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import styles from './Header.module.css'
 import { useEffect, useMemo, useState } from 'react';
@@ -51,7 +51,9 @@ const Header = () => {
 
     const loginButton = useMemo(() => {
         if (userName && currentUser) {
-            return <Avatar shape='square' style={{ cursor: "pointer" }} src={process.env.REACT_APP_API_URL + "/avatars/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
+            return <Badge count={currentUser.isBanned ? "BAN" : undefined} offset={[-16, 16]}>
+                <Avatar shape='square' style={{ cursor: "pointer" }} src={process.env.REACT_APP_API_URL + "/avatars/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
+            </Badge>
         } else {
             return <Button icon={<UserOutlined />} onClick={loginPage} />
         }

@@ -1,11 +1,11 @@
-import { Button, Form, InputNumber, Popconfirm, Popover, Select, Table, Tabs } from "antd";
+import { Button, Checkbox, Form, InputNumber, Popconfirm, Popover, Select, Table, Tabs, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PlayerItem from "shared/PlayerItem";
-import { selectAdmins, selectPlayers, selectServers } from "stores/admin";
-import { addRemoveAdmin, addServer, banUnban, deleteServer, getAdmins, getPlayers, getServers } from "stores/admin/async-actions";
+import { selectAdmins, selectPlayers, selectServers, selectSettings, selectUnapprovedUsers } from "stores/admin";
+import { addRemoveAdmin, addServer, approveUser, banUnban, deleteServer, getAdmins, getPlayers, getServers, getSettings, getUnApprovedUsers, saveSettings } from "stores/admin/async-actions";
 import { selectIsAdmin } from "stores/auth";
 
 const Admin = () => {
@@ -16,6 +16,8 @@ const Admin = () => {
     const servers = useSelector(selectServers);
     const players = useSelector(selectPlayers);
     const admins = useSelector(selectAdmins);
+    const settings = useSelector(selectSettings);
+    const unapprovedUsers = useSelector(selectUnapprovedUsers);
 
     useEffect(() => {
         if (!isAdmin) {
@@ -24,6 +26,8 @@ const Admin = () => {
             dispatch(getServers())
             dispatch(getPlayers())
             dispatch(getAdmins())
+            dispatch(getSettings())
+            dispatch(getUnApprovedUsers())
         }
     }, [isAdmin])
 
@@ -34,7 +38,6 @@ const Admin = () => {
             dispatch(getServers())
         })
     }
-
 
     const onAddServer = () => {
         dispatch(addServer({
@@ -224,6 +227,85 @@ const Admin = () => {
         />
     }, [admins, players])
 
+    const onSaveSettings = (values: any) => {
+        dispatch(saveSettings(values)).unwrap().then(() => {
+            dispatch(getSettings())
+            notification.info({
+                message: "Settings successfully saved"
+            })
+        })
+    }
+
+    const settingsTab = useMemo(() => {
+        if (settings) {
+            return <Form
+                initialValues={{
+                    nicknameChangeDaysLimit: settings.nicknameChangeDaysLimit,
+                    newPlayerApproveRequired: settings.newPlayerApproveRequired
+                }}
+                onFinish={onSaveSettings}
+            >
+                <Form.Item
+                    label="Nickname change days limit"
+                    name="nicknameChangeDaysLimit"
+                >
+                    <InputNumber />
+                </Form.Item>
+                <Form.Item
+                    label="New players approve required"
+                    name="newPlayerApproveRequired"
+                    valuePropName="checked"
+                >
+                    <Checkbox />
+                </Form.Item>
+
+                <Form.Item >
+                    <Button type="primary" htmlType="submit">
+                        Save
+                    </Button>
+                </Form.Item>
+            </Form>
+        }
+    }, [settings])
+
+    const onApprovePlayer = (id: number) => {
+        dispatch(approveUser({
+            id: id
+        })).unwrap().then(() => {
+            dispatch(getUnApprovedUsers())
+        })
+    }
+
+    const unapprovedUsersTab = useMemo(() => {
+        return <Table
+            dataSource={unapprovedUsers}
+            bordered={false}
+            pagination={false}
+            rowKey={"id"}
+            columns={[
+                {
+                    title: "Id",
+                    dataIndex: "id"
+                },
+                {
+                    title: "Name",
+                    dataIndex: "name",
+                    render(value, record, index) {
+                        return <PlayerItem id={record.id} name={record.name} />
+                    }
+                },
+                {
+                    title: "",
+                    align: "right",
+                    dataIndex: "action",
+                    render(value, record, index) {
+                        return <Button onClick={() => onApprovePlayer(record.id)}>Approve player</Button>
+                    },
+                },
+            ]}
+        />
+    }, [unapprovedUsers])
+
     return (
         <Tabs
             type="card"
@@ -242,7 +324,17 @@ const Admin = () => {
                     label: "Admins",
                     key: "Admins",
                     children: adminsTab
-                }
+                },
+                {
+                    label: "Unapproved users",
+                    key: "UnapprovedUsers",
+                    children: unapprovedUsersTab
+                },
+                {
+                    label: "Settings",
+                    key: "Settings",
+                    children: settingsTab
+                },
             ]}
         />
     )

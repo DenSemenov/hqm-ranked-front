@@ -244,7 +244,8 @@ const Admin = () => {
                 initialValues={{
                     nicknameChangeDaysLimit: settings.nicknameChangeDaysLimit,
                     newPlayerApproveRequired: settings.newPlayerApproveRequired,
-                    rules: settings.rules
+                    rules: settings.rules,
+                    replayStoreDays: settings.replayStoreDays
                 }}
                 onFinish={onSaveSettings}
             >
@@ -260,6 +261,12 @@ const Admin = () => {
                     valuePropName="checked"
                 >
                     <Checkbox />
+                </Form.Item>
+                <Form.Item
+                    label="Replay store days"
+                    name="replayStoreDays"
+                >
+                    <InputNumber />
                 </Form.Item>
                 <Form.Item
                     label="Rules"

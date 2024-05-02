@@ -4,6 +4,7 @@ export interface IGameResponse {
     date: Date;
     redScore: number;
     blueScore: number;
+    replayId: string | null;
     players: IGamePlayerResponse[]
 }
 

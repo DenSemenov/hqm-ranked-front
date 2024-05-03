@@ -1,4 +1,4 @@
-export interface IActiveServerResponse {
+export interface IHeartbeatResponse {
     id: string;
     name: string;
     loggedIn: number;

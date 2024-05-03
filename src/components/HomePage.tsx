@@ -7,6 +7,7 @@ import { MobileView } from "react-device-detect";
 import { isMobile } from "react-device-detect";
 import Events from "./Events";
 import Actions from "./Actions";
+import Other from "./Other";
 
 const HomePage = () => {
     const [height, setHeight] = useState<number>(0);
@@ -26,8 +27,7 @@ const HomePage = () => {
         return [
             { label: 'Players', value: 'Players' },
             { label: 'Games', value: 'Games' },
-            { label: 'Events', value: 'Events' },
-            { label: 'Actions', value: 'Actions' },
+            { label: 'Other', value: 'Other' },
         ]
     }, [])
 
@@ -38,10 +38,8 @@ const HomePage = () => {
                     return <PlayersTable full={false} />
                 case "Games":
                     return <Games />
-                case "Events":
-                    return <Events />
-                case "Actions":
-                    return <Actions />
+                case "Other":
+                    return <Other />
             }
         } else {
             return <><Col span={14} style={{ height: height }} >
@@ -49,8 +47,7 @@ const HomePage = () => {
             </Col>
                 <Col span={10} style={{ height: height }} >
                     <Games />
-                    <Events />
-                    <Actions />
+                    <Other />
                 </Col>
             </>
         }

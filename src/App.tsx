@@ -23,6 +23,8 @@ import { LoadingOutlined } from "@ant-design/icons";
 import ProfilePage from 'components/ProfilePage';
 import Game from 'components/Game';
 import SignalrService from 'services/SignalrService';
+import { IHeartbeatResponse } from 'models/IHeartbeatResponse';
+import { setUpdatedServer } from 'stores/server';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -77,8 +79,8 @@ function App() {
     }
   }, [currentSeason])
 
-  const onHeartbeat = (data: any) => {
-    console.log(data);
+  const onHeartbeat = (data: IHeartbeatResponse) => {
+    dispatch(setUpdatedServer(data));
   }
 
   const routes = useMemo(() => {

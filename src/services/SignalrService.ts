@@ -1,9 +1,10 @@
 import * as signalR from '@microsoft/signalr';
+import { IHeartbeatResponse } from 'models/IHeartbeatResponse';
 
 export default class SignalrService {
     connection: signalR.HubConnection | null = null;
 
-    onHeartbeat: ((data: any) => void) | undefined;
+    onHeartbeat: ((data: IHeartbeatResponse) => void) | undefined;
 
     async invoke(methodName: string, ...params: any[]) {
         if (this.connection && this.connection.state === signalR.HubConnectionState.Connected) {
@@ -49,7 +50,7 @@ export default class SignalrService {
         }).catch(reason => console.log(reason.message, reason.stack));
     }
 
-    onHeartbeatEvent = (data: any) => {
+    onHeartbeatEvent = (data: IHeartbeatResponse) => {
         if (this.onHeartbeat) {
             this.onHeartbeat(data);
         }

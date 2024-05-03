@@ -1,4 +1,4 @@
-import { Card, Tag, Typography } from "antd";
+import { Card, Col, Row, Tag, Typography } from "antd";
 import { IActiveServerResponse } from "models/IActiveServerResponse";
 import { isMobile } from "react-device-detect";
 import { useSelector } from "react-redux";
@@ -61,11 +61,15 @@ const Servers = () => {
 
     return (
         <Card bordered={false} style={{ height: !isMobile ? 336 : undefined, width: "100%" }}>
-            {servers.map(server => {
-                return <Card title={server.name} style={{ width: "50%" }} extra={getStateById(server.state)}>
-                    {getBodyByStateId(server)}
-                </Card>
-            })}
+            <Row gutter={[16, 16]}>
+                {servers.map(server => {
+                    return <Col sm={12} xs={24}>
+                        <Card title={server.name} style={{ width: "100%" }} extra={getStateById(server.state)}>
+                            {getBodyByStateId(server)}
+                        </Card>
+                    </Col>
+                })}
+            </Row>
         </Card>
     )
 }

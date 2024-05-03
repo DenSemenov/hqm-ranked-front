@@ -21,9 +21,7 @@ const Rules = ({ open, onClose }: IProps) => {
 
     return (
         <Modal title={"Rules"} open={open} onCancel={onClose} footer={[]} width={1000}>
-            {rules.split("\n").map(x => {
-                return <Typography>{x}</Typography>
-            })}
+            <div dangerouslySetInnerHTML={{ __html: rules }} />
         </Modal>
     )
 }

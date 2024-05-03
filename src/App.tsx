@@ -22,6 +22,7 @@ import Admin from 'components/Admin';
 import { LoadingOutlined } from "@ant-design/icons";
 import ProfilePage from 'components/ProfilePage';
 import Game from 'components/Game';
+import SignalrService from 'services/SignalrService';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -29,7 +30,9 @@ function App() {
   const currentSeason = useSelector(selectCurrentSeason);
   const theme = useSelector(selectTheme);
   const loadingUser = useSelector(selectLoadingUser);
-  const currentUser = useSelector(selectCurrentUser);
+
+  const singnalR = new SignalrService();
+
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
@@ -44,6 +47,11 @@ function App() {
   useEffect(() => {
     const theme = localStorage.getItem("theme") ?? "light";
     dispatch(setTheme(theme));
+  }, []);
+
+  useEffect(() => {
+    singnalR.connect();
+    singnalR.onHeartbeat = onHeartbeat;
   }, []);
 
   useEffect(() => {
@@ -68,6 +76,10 @@ function App() {
 
     }
   }, [currentSeason])
+
+  const onHeartbeat = (data: any) => {
+    console.log(data);
+  }
 
   const routes = useMemo(() => {
     return <Routes>

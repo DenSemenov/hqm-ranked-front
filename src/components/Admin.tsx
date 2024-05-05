@@ -271,7 +271,7 @@ const Admin = () => {
                     <Input />
                 </Form.Item>
                 <Form.Item
-                    label="Logged in notification it more or equal count"
+                    label="Logged in notification if more or equal count"
                     name="webhookCount"
                 >
                     <InputNumber />
@@ -279,6 +279,12 @@ const Admin = () => {
                 <Form.Item
                     label="Next game check games count"
                     name="nextGameCheckGames"
+                >
+                    <InputNumber />
+                </Form.Item>
+                <Form.Item
+                    label="Required shadow ban reports count"
+                    name="shadowBanReportsCount"
                 >
                     <InputNumber />
                 </Form.Item>

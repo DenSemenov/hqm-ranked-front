@@ -34,10 +34,16 @@ const Servers = () => {
             p = "OT";
         }
 
-        let m = Math.floor(time / 100 / 60);
-        let s = time / 100 - m * 60;
+        const m = Math.floor(time / 100 / 60);
+        const s = time / 100 - m * 60;
 
-        return p + " " + m + ":" + s;
+        let secString = Math.round(s).toString();
+
+        if (secString.length === 1) {
+            secString = "0" + secString;
+        }
+
+        return p + " " + m + ":" + secString;
     }
 
     const getBodyByStateId = (server: IActiveServerResponse) => {

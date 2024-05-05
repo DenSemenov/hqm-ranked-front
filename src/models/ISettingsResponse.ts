@@ -6,4 +6,5 @@ export interface ISettingsResponse {
     discordNotificationWebhook: string;
     webhookCount: number;
     nextGameCheckGames: number;
+    shadowBanReportsCount: number;
 }

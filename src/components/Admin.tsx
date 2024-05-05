@@ -241,13 +241,9 @@ const Admin = () => {
     const settingsTab = useMemo(() => {
         if (settings) {
             return <Form
-                initialValues={{
-                    nicknameChangeDaysLimit: settings.nicknameChangeDaysLimit,
-                    newPlayerApproveRequired: settings.newPlayerApproveRequired,
-                    rules: settings.rules,
-                    replayStoreDays: settings.replayStoreDays
-                }}
+                initialValues={settings}
                 onFinish={onSaveSettings}
+                layout="vertical"
             >
                 <Form.Item
                     label="Nickname change days limit"
@@ -265,6 +261,24 @@ const Admin = () => {
                 <Form.Item
                     label="Replay store days"
                     name="replayStoreDays"
+                >
+                    <InputNumber />
+                </Form.Item>
+                <Form.Item
+                    label="Discord webhook"
+                    name="discordNotificationWebhook"
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    label="Logged in notification it more or equal count"
+                    name="webhookCount"
+                >
+                    <InputNumber />
+                </Form.Item>
+                <Form.Item
+                    label="Next game check games count"
+                    name="nextGameCheckGames"
                 >
                     <InputNumber />
                 </Form.Item>

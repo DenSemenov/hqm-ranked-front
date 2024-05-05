@@ -3,4 +3,7 @@ export interface ISettingsResponse {
     newPlayerApproveRequired: boolean;
     rules: string;
     replayStoreDays: boolean;
+    discordNotificationWebhook: string;
+    webhookCount: number;
+    nextGameCheckGames: number;
 }

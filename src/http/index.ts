@@ -1,4 +1,4 @@
-import { App, notification } from 'antd';
+import { notification } from 'antd';
 import axios, { AxiosRequestHeaders } from 'axios';
 import { stringify } from 'qs';
 
@@ -26,6 +26,10 @@ $api.interceptors.response.use(
         return config
     },
     async (error) => {
+        if (error.config.url === "api/player/GetCurrentUser") {
+            localStorage.removeItem("token");
+            window.location.reload();
+        }
         if (error.response.status === 401) {
             notification.error({
                 message: error.response.data.errorText,

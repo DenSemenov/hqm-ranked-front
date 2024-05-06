@@ -14,7 +14,7 @@
     "@types/react-dom": "^18.2.14",
     "antd": "^5.16.4",
     "antd-img-crop": "^4.21.0",
-    "axios": "^1.6.0",
+    "axios": "^1.6.8",
     "buffer": "^6.0.3",
     "react": "^18.2.0",
     "react-device-detect": "^2.2.3",

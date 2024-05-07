@@ -7,4 +7,5 @@ export interface ISettingsResponse {
     webhookCount: number;
     nextGameCheckGames: number;
     shadowBanReportsCount: number;
+    startingElo: number;
 }

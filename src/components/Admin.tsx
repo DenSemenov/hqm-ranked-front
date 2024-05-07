@@ -289,6 +289,12 @@ const Admin = () => {
                     <InputNumber />
                 </Form.Item>
                 <Form.Item
+                    label="Starting elo"
+                    name="startingElo"
+                >
+                    <InputNumber />
+                </Form.Item>
+                <Form.Item
                     label="Rules"
                     name="rules"
                 >

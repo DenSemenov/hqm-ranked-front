@@ -1,0 +1,94 @@
+.slider {
+    position: absolute;
+    display: flex;
+    width: calc(-64px + 100%);
+    gap: 16px;
+    bottom: 16px;
+    left: 16px;
+    background-color: #141414;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.sliderItem {
+    width: calc(-48px + 100%);
+}
+
+.viewerContainer {
+    width: 100%;
+    height: 100%;
+}
+
+.replayViewer {
+    width: 100%;
+    height: 100%;
+    border-radius: 32px;
+}
+
+.replayCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.playerList {
+    position: absolute;
+    top: 58px;
+    left: 16px;
+}
+
+.chatMessages {
+    position: absolute;
+    bottom: 82px;
+    left: 16px;
+}
+
+.map {
+    position: absolute;
+    top: 58px;
+    right: 16px;
+}
+
+.score {
+    position: absolute;
+    top: 58px;
+    left: calc(-75px + 50%);
+    display: flex;
+    width: 150px;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    background-color: #141414;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.mapContent {
+    height: 305px;
+    width: 150px;
+    border-radius: 38px;
+    background-color: rgba(128, 128, 128, 0.247);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.skater {
+    position: absolute;
+    background-color: red;
+    border-radius: 100%;
+    width: 8px;
+    height: 8px;
+}
+
+.puck {
+    position: absolute;
+    background-color: black;
+    border-radius: 100%;
+    width: 6px;
+    height: 6px;
+}
+
+.overlayWithout>div>div {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}

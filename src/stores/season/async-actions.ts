@@ -5,6 +5,7 @@ import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest"
 import { IPlayerRequest } from "models/IPlayerRequest"
 import { IGameRequest } from "models/IGameRequest"
 import { IReplayRequest } from "models/IReplayRequest"
+import { IReplayViewerRequest } from "models/IReplayViewerRequest"
 
 export const getSeasons = createAsyncThunk('season/getSeasons', async (payload: void, thunkApi) => {
     try {
@@ -78,9 +79,21 @@ export const getRules = createAsyncThunk('season/getRules', async (payload: void
         return thunkApi.rejectWithValue(e)
     }
 })
+
 export const getReplay = createAsyncThunk('replay/getReplay', async (payload: IReplayRequest, thunkApi) => {
     try {
         const response = await SeasonService.getReplay(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+
+export const getReplayViewer = createAsyncThunk('replay/getReplayViewer', async (payload: IReplayViewerRequest, thunkApi) => {
+    try {
+        const response = await SeasonService.getReplayViewer(payload)
 
         return response.data
     } catch (e: any) {

@@ -26,6 +26,12 @@ body {
   padding: 32px;
 }
 
+.content:has(.content-without-padding) {
+  width: 100%;
+  padding: 0;
+  height: calc(-42px + 100vh);
+}
+
 .right-align {
   text-align: right;
 }

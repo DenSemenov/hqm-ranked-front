@@ -5,6 +5,7 @@ export interface IGameResponse {
     redScore: number;
     blueScore: number;
     replayId: string | null;
+    hasReplayFragments: boolean;
     players: IGamePlayerResponse[]
 }
 

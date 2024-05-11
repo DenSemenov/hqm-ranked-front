@@ -6,6 +6,8 @@ import { IGameResponse } from "models/IGameResponse";
 import { IPlayerRequest } from "models/IPlayerRequest";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { IReplayRequest } from "models/IReplayRequest";
+import { IReplayViewerRequest } from "models/IReplayViewerRequest";
+import { IReplayViewerResponse } from "models/IReplayViewerResponse";
 import { ISeasonGameResponse } from "models/ISeasonGameResponse";
 import { ISeasonResponse } from "models/ISeasonResponse";
 import { ISeasonStatsResponse } from "models/ISeasonStatsResponse";
@@ -31,5 +33,8 @@ export default class SeasonService {
     }
     static async getReplay(data: IReplayRequest): Promise<AxiosResponse<any>> {
         return $api.post<any>('api/replay/GetReplayData', data);
+    }
+    static async getReplayViewer(data: IReplayViewerRequest): Promise<AxiosResponse<any>> {
+        return $api.post<IReplayViewerResponse>('api/replay/GetReplayViewer', data);
     }
 }

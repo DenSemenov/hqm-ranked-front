@@ -1,8 +1,8 @@
 import { Button, Card, Col, Row, Table, Tag, Typography } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { convertDate } from "shared/DateConverter";
 import { selectCurrentGameData } from "stores/season";
 import { getGameData, getReplay } from "stores/season/async-actions";
@@ -13,6 +13,8 @@ const { Text, Title } = Typography;
 
 const Game = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
     const [searchParams, setSearchParams] = useSearchParams();
     const currentGameData = useSelector(selectCurrentGameData);
 
@@ -82,6 +84,9 @@ const Game = () => {
                 <Tag>{currentGameData.state}</Tag>
                 {currentGameData.replayId &&
                     <Button type="primary" onClick={() => onGetReplay(currentGameData.replayId as string)}>Download replay</Button>
+                }
+                {currentGameData.hasReplayFragments &&
+                    <Button type="primary" onClick={() => navigate("/replay?id=" + currentGameData.replayId)}>Watch replay</Button>
                 }
             </Col>
             <Col xs={24} sm={8} className="right-align">

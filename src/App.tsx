@@ -25,6 +25,7 @@ import Game from 'components/Game';
 import SignalrService from 'services/SignalrService';
 import { IHeartbeatResponse } from 'models/IHeartbeatResponse';
 import { setUpdatedServer } from 'stores/server';
+import ReplayViewer from 'components/ReplayViewer';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -94,6 +95,7 @@ function App() {
       <Route path="/registration" element={<RegisterModal />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/replay" element={<ReplayViewer />} />
     </Routes>
   }, [])
 

@@ -1,7 +1,7 @@
 import styles from './Games.module.css'
 import { useSelector } from "react-redux";
 import { selectCurrentSeason, selectCurrentSeasonGames } from "stores/season";
-import { Avatar, Card, Col, Row, Tag } from "antd";
+import { Avatar, Button, Card, Col, Row, Tag } from "antd";
 import { convertDate } from "shared/DateConverter";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
@@ -9,6 +9,7 @@ import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
 import { useNavigate } from "react-router-dom";
 import { getSeasonsGames } from 'stores/season/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
+import { CaretRightOutlined } from "@ant-design/icons";
 
 const Games = () => {
     const dispatch = useAppDispatch();
@@ -55,7 +56,13 @@ const Games = () => {
                             <Col span={16}>
                                 <span className="subtitle">{convertDate(game.date)}</span>
                             </Col>
-                            <Col span={8} className="right-align">
+                            <Col span={8} className={styles.gameStatus}>
+                                {game.hasReplayFragments &&
+                                    <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate("/replay?id=" + game.replayId)
+                                    }} />
+                                }
                                 <Tag style={{ marginRight: 0 }}>{game.status}</Tag>
                             </Col>
                             <Col span={16} className={styles.gameContentName}>

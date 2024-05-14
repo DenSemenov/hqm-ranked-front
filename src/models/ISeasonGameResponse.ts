@@ -4,6 +4,8 @@ export interface ISeasonGameResponse {
     redScore: number;
     blueScore: number;
     status: string;
+    hasReplayFragments: boolean;
+    replayId: string;
     players: IGamePlayerItem[];
 }
 

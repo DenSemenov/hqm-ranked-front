@@ -7,6 +7,8 @@ export interface IGameResponse {
     replayId: string | null;
     hasReplayFragments: boolean;
     players: IGamePlayerResponse[]
+    chatMessages: IGameChatResponse[]
+    goals: IGameGoalResponse[]
 }
 
 export interface IGamePlayerResponse {
@@ -16,4 +18,18 @@ export interface IGamePlayerResponse {
     assists: number;
     score: number;
     team: number;
+}
+
+export interface IGameChatResponse {
+    id: string;
+    packet: number;
+    text: string;
+}
+
+export interface IGameGoalResponse {
+    id: string;
+    packet: number;
+    goalBy: string;
+    period: number;
+    time: number;
 }

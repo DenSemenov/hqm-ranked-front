@@ -1,20 +1,27 @@
 import { Button, Popover, Select, Slider } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getReplayViewer } from "stores/season/async-actions";
+import { getReplayChatMessages, getReplayGoals, getReplayViewer } from "stores/season/async-actions";
 import styles from './ReplayViewer.module.css'
 import { CaretRightOutlined, PauseOutlined, UnorderedListOutlined, WechatWorkOutlined, BorderOutlined, LoadingOutlined } from "@ant-design/icons";
 import { IFragment, IReplayViewerResponse, PlayerInList, ReplayPlayer, ReplayPuck, ReplayTeam, ReplayTick } from "models/IReplayViewerResponse";
-import { useSearchParams } from "react-router-dom";
+import { createSearchParams, useSearchParams } from "react-router-dom";
 import * as THREE from "three";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { selectCurrentGameData } from "stores/season";
+import { useSelector } from "react-redux";
+import { IReplayGoalResponse } from "models/IReplayGoalResponse";
+import { IReplayChatMessage } from "models/IReplayChatMessage";
+import { isMobile } from "react-device-detect";
 
 const ReplayViewer = () => {
     const dispatch = useAppDispatch();
+
+    const currentGameData = useSelector(selectCurrentGameData);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const [currentTick, setCurrentTick] = useState<number>(0);
@@ -32,6 +39,8 @@ const ReplayViewer = () => {
     const [loadedObjects, setLoadedObjects] = useState<string[]>([]);
     const [speed, setSpeed] = useState<number>(1);
     const [font, setFont] = useState<Font | null>(null);
+    const [goals, setGoals] = useState<IReplayGoalResponse[]>([]);
+    const [messages, setMessages] = useState<IReplayChatMessage[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const rendererRef = useRef<any>();
     const cameraRef = useRef<any>();
@@ -46,8 +55,10 @@ const ReplayViewer = () => {
 
     useEffect(() => {
         const id = searchParams.get("id");
+        const t = searchParams.get("t");
         if (id) {
             setCurrentId(id);
+
             dispatch(getReplayViewer({
                 id: id,
                 index: 0
@@ -61,6 +72,29 @@ const ReplayViewer = () => {
                 setCurrentTick(data.fragments[0].min);
                 setIndexes(data.fragments);
                 setLoading(false);
+
+                if (t) {
+                    let tick = +t;
+
+                    if (tick - 300 > 0) {
+                        tick -= 300;
+                    }
+
+                    setCurrentTick(tick);
+                }
+
+                dispatch(getReplayGoals({
+                    id: id
+                })).unwrap().then((goals: IReplayGoalResponse[]) => [
+                    setGoals(goals)
+                ])
+
+                dispatch(getReplayChatMessages({
+                    id: id
+                })).unwrap().then((msgs: IReplayChatMessage[]) => [
+                    setMessages(msgs)
+                ])
+
                 initRenderer();
             });
         }
@@ -110,10 +144,17 @@ const ReplayViewer = () => {
         let interval: any = null;
         if (!paused && !loading) {
             interval = setInterval(() => {
+                let newTick = currentTick;
                 if (currentTick + 2 <= max) {
-                    setCurrentTick(currentTick => currentTick + 2);
+                    newTick = currentTick + 2;
                 } else {
-                    setCurrentTick(min);
+                    newTick = min;
+                }
+                setCurrentTick(newTick);
+                if (newTick % 10 === 0) {
+                    setSearchParams(
+                        createSearchParams({ id: searchParams.get("id") as string, t: newTick.toString() })
+                    )
                 }
             }, 40 * speed);
         } else if (paused && currentTick !== 0 && interval) {
@@ -348,7 +389,6 @@ const ReplayViewer = () => {
                     }
                 } else {
                     if (puckObject) {
-                        console.log(puckObject);
                         puckObject.position.set(puck.posX, puck.posY, puck.posZ)
                         puckObject.rotation.set(puck.rotX, puck.rotY, puck.rotZ)
                         if (first) {
@@ -485,7 +525,6 @@ const ReplayViewer = () => {
                     }
                 }
             })
-
         }
     }
 
@@ -522,6 +561,30 @@ const ReplayViewer = () => {
         </>
     }, [currentTick])
 
+    const toObject = (arr: IReplayGoalResponse[]) => {
+        var rv: any = {};
+
+        arr.forEach(goal => {
+            rv[goal.packet] = {
+                label: goal.goalBy,
+                style: {
+                    fontSize: !isMobile ? 10 : 0,
+                },
+            };
+        })
+
+        return rv;
+    }
+
+    const chatContent = useMemo(() => {
+        const currentMessages = messages.filter(x => x.packet <= currentTick && x.packet > currentTick - 500);
+        return <>
+            {currentMessages.map(msg => {
+                return <div>{msg.text}</div>
+            })}
+        </>
+    }, [currentTick, messages])
+
     return (
         <div className={styles.viewerContainer + " content-without-padding"}>
             <div id="replay-viewer" className={styles.replayViewer} >
@@ -536,11 +599,11 @@ const ReplayViewer = () => {
                     <Button icon={<UnorderedListOutlined />} onClick={() => setShowPlayers(!showPlayers)} />
                 </Popover>
             </div>
-            {/* <div className={styles.chatMessages}>
-                <Popover content={playersContent} trigger="click" placement="topLeft" open={showChat}>
+            <div className={styles.chatMessages}>
+                <Popover content={chatContent} trigger="click" placement="topLeft" open={showChat}>
                     <Button icon={<WechatWorkOutlined />} onClick={() => setShowChat(!showChat)} />
                 </Popover>
-            </div> */}
+            </div>
             <div className={styles.map}>
                 <Popover content={mapContent} overlayClassName={styles.overlayWithout} trigger="click" placement="bottomRight" open={showMap}>
                     <Button icon={<BorderOutlined />} onClick={() => setShowMap(!showMap)} />
@@ -556,6 +619,7 @@ const ReplayViewer = () => {
                     min={min}
                     max={max}
                     value={currentTick}
+                    marks={toObject(goals)}
                     onChange={onChange}
                 />
                 <Select

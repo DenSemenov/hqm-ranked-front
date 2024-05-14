@@ -1,4 +1,4 @@
-import { Button, Card, Col, Row, Table, Tag, Typography } from "antd";
+import { Button, Card, Col, List, Row, Table, Tag, Typography } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -8,6 +8,7 @@ import { selectCurrentGameData } from "stores/season";
 import { getGameData, getReplay } from "stores/season/async-actions";
 import styles from './Game.module.css'
 import PlayerItem from "shared/PlayerItem";
+import { CaretRightOutlined } from "@ant-design/icons";
 
 const { Text, Title } = Typography;
 
@@ -41,6 +42,25 @@ const Game = () => {
             downloadLink.click();
         });
     }
+
+    const getPeriodWithTime = (period: number, time: number) => {
+        let p = period + " period";
+        if (period > 3) {
+            p = "OT";
+        }
+
+        const m = Math.floor(time / 100 / 60);
+        const s = time / 100 - m * 60;
+
+        let secString = Math.round(s).toString();
+
+        if (secString.length === 1) {
+            secString = "0" + secString;
+        }
+
+        return p + " " + m + ":" + secString;
+    }
+
 
     return currentGameData ? (
         <Row gutter={[0, 16]}>
@@ -123,6 +143,30 @@ const Game = () => {
                     />
                 </Card>
             </Col>
+            {currentGameData.hasReplayFragments &&
+                <>
+                    <Title level={5}>Goals</Title>
+                    <Row gutter={[16, 16]} style={{ width: "calc(16px + 100%)" }}>
+                        {currentGameData.goals.map(goal => {
+                            return <Col sm={4} xs={8} >
+                                <Card size="small" title={"Goal"} extra={<Text type="secondary">{getPeriodWithTime(goal.period, goal.time)}</Text>}>
+                                    <Row>
+                                        <Col span={18}>
+                                            <Title level={5}>{goal.goalBy}</Title>
+                                        </Col>
+                                        <Col span={6} className="right-align">
+                                            <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate("/replay?id=" + currentGameData.replayId + "&t=" + goal.packet)
+                                            }} />
+                                        </Col>
+                                    </Row>
+                                </Card>
+                            </Col>
+                        })}
+                    </Row>
+                </>
+            }
         </Row>
     ) : <div />
 }

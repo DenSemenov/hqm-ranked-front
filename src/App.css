@@ -119,3 +119,7 @@ div {
   border-radius: 8px;
   background-color: var(--layoutAccent);
 }
+
+.ant-slider-horizontal.ant-slider-with-marks {
+  margin-bottom: 0;
+}

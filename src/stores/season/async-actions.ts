@@ -90,10 +90,29 @@ export const getReplay = createAsyncThunk('replay/getReplay', async (payload: IR
     }
 })
 
-
 export const getReplayViewer = createAsyncThunk('replay/getReplayViewer', async (payload: IReplayViewerRequest, thunkApi) => {
     try {
         const response = await SeasonService.getReplayViewer(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getReplayGoals = createAsyncThunk('replay/getReplayGoals', async (payload: IReplayRequest, thunkApi) => {
+    try {
+        const response = await SeasonService.getReplayGoals(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getReplayChatMessages = createAsyncThunk('replay/getReplayChatMessages', async (payload: IReplayRequest, thunkApi) => {
+    try {
+        const response = await SeasonService.getReplayChatMessages(payload)
 
         return response.data
     } catch (e: any) {

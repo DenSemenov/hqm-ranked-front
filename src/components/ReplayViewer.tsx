@@ -7,27 +7,19 @@ import { CaretRightOutlined, PauseOutlined, UnorderedListOutlined, WechatWorkOut
 import { IFragment, IReplayViewerResponse, PlayerInList, ReplayPlayer, ReplayPuck, ReplayTeam, ReplayTick } from "models/IReplayViewerResponse";
 import { useSearchParams } from "react-router-dom";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
-import { useHotkeys } from "react-hotkeys-hook";
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 
 const ReplayViewer = () => {
     const dispatch = useAppDispatch();
 
-    useHotkeys('w', () => moveCamera("w"))
-    useHotkeys('s', () => moveCamera("s"))
-    useHotkeys('a', () => moveCamera("a"))
-    useHotkeys('d', () => moveCamera("d"))
-    useHotkeys('q', () => moveCamera("q"))
-    useHotkeys('z', () => moveCamera("z"))
-
     const [searchParams, setSearchParams] = useSearchParams();
     const [currentTick, setCurrentTick] = useState<number>(0);
     const [paused, setPaused] = useState<boolean>(true);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [fragments, setFragments] = useState<ReplayTick[]>([]);
     const [loadedIndexes, setLoadedIndexes] = useState<number[]>([]);
     const [indexes, setIndexes] = useState<IFragment[]>([]);
@@ -68,7 +60,7 @@ const ReplayViewer = () => {
                 setMax(data.fragments[data.fragments.length - 1].max)
                 setCurrentTick(data.fragments[0].min);
                 setIndexes(data.fragments);
-
+                setLoading(false);
                 initRenderer();
             });
         }
@@ -123,7 +115,7 @@ const ReplayViewer = () => {
                 } else {
                     setCurrentTick(min);
                 }
-            }, 20 * speed);
+            }, 40 * speed);
         } else if (paused && currentTick !== 0 && interval) {
             clearInterval(interval);
         }
@@ -137,33 +129,6 @@ const ReplayViewer = () => {
         }
 
     }, [rendererRef.current, currentTick])
-
-    const moveCamera = (key: string) => {
-        if (cameraRef.current) {
-            const camera = cameraRef.current;
-            const momentum = 0.5;
-            switch (key) {
-                case 'q':
-                    camera.translateY(momentum);
-                    break;
-                case 'z':
-                    camera.translateY(-momentum);
-                    break;
-                case 'w':
-                    camera.translateZ(-momentum);
-                    break;
-                case 's':
-                    camera.translateZ(momentum);
-                    break;
-                case 'd':
-                    camera.translateX(momentum);
-                    break;
-                case 'a':
-                    camera.translateX(-momentum);
-                    break;
-            }
-        }
-    }
 
     const renderLoop = useCallback(() => {
         if (rendererRef.current && cameraRef.current && sceneRef.current) {
@@ -197,21 +162,21 @@ const ReplayViewer = () => {
             60,
             w / h,
             0.1,
-            100
+            1000
         )
-
-        camera.position.set(30, 8, 30.5);
+        camera.rotateY(90);
+        camera.position.set(30, 6, 30.5);
 
         cameraRef.current = camera;
 
         const scene = new THREE.Scene();
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 1)
-        ambientLight.position.set(15, 0, 30.5)
+        ambientLight.position.set(15, 5, 30.5)
         scene.add(ambientLight)
 
         const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(0, 100, 0);
+        light.position.set(0, 5, 0);
         light.castShadow = true;
         scene.add(light);
 
@@ -225,7 +190,6 @@ const ReplayViewer = () => {
 
         loader.load('/assets/arena.glb', function (gltf) {
             scene.add(gltf.scene);
-            gltf.scene.position.set(0, 0, 60.5)
         }, undefined, function (error) {
             console.error(error);
         });
@@ -233,6 +197,14 @@ const ReplayViewer = () => {
         loader.load('/assets/puck.glb', function (gltf) {
             gltf.scene.position.set(999, 999, 999);
             gltf.scene.name = "puck";
+            scene.add(gltf.scene);
+        }, undefined, function (error) {
+            console.error(error);
+        });
+
+        loader.load('/assets/stick.glb', function (gltf) {
+            gltf.scene.position.set(999, 999, 999);
+            gltf.scene.name = "stick";
             scene.add(gltf.scene);
         }, undefined, function (error) {
             console.error(error);
@@ -266,20 +238,6 @@ const ReplayViewer = () => {
             console.error(error);
         });
 
-        fbxLoader.load('/assets/stick.fbx', function (object) {
-            object.position.set(999, 999, 999);
-            object.scale.set(0.009, 0.009, 0.009);
-            object.traverse(function (child) {
-                if (child instanceof THREE.Mesh)
-                    child.material.color.setRGB(0, 0, 0);
-            });
-            object.name = "stick";
-
-            scene.add(object);
-        }, undefined, function (error) {
-            console.error(error);
-        });
-
         const fontLoader = new FontLoader()
 
         fontLoader.load('/fonts/helvetiker_bold.typeface.json', function (font) {
@@ -287,8 +245,6 @@ const ReplayViewer = () => {
         })
 
         renderer.setSize(w, h)
-
-        new OrbitControls(camera, renderer.domElement)
     }, [currentTick])
 
     const onPlayPause = () => {
@@ -360,7 +316,7 @@ const ReplayViewer = () => {
             const toRemove: string[] = [];
             scene.traverse(object => {
                 if (object.isObject3D) {
-                    if (object.name !== "" && !excludedNames.includes(object.name) && !existsPlayerLowerNames.includes(object.name) && !existsPlayerUpperNames.includes(object.name) && !existsPucksNames.includes(object.name) && !existsPlayerStickNames.includes(object.name) && !existsPlayerTextNames.includes(object.name)) {
+                    if (object.name !== "" && !object.name.startsWith("base") && !excludedNames.includes(object.name) && !existsPlayerLowerNames.includes(object.name) && !existsPlayerUpperNames.includes(object.name) && !existsPucksNames.includes(object.name) && !existsPlayerStickNames.includes(object.name) && !existsPlayerTextNames.includes(object.name)) {
                         toRemove.push(object.name);
                     }
                 }
@@ -372,6 +328,36 @@ const ReplayViewer = () => {
                     toRemoveObject.removeFromParent();
                     loadedObjects.filter(x => x.toString() !== x);
                     setLoadedObjects(loadedObjects);
+                }
+            })
+
+            let first = true;
+            tickData.pucks.forEach(puck => {
+                const name = "puck" + puck.index.toString();
+                let puckObject = scene.getObjectByName(name);
+                if (!loadedObjects.includes(name) || !puckObject) {
+                    const puckTemp = scene.getObjectByName("puck");
+                    if (puckTemp) {
+                        loadedObjects.push(name)
+                        setLoadedObjects(loadedObjects);
+                        const newPuck = puckTemp.clone();
+                        newPuck.position.set(puck.posX, puck.posY, puck.posZ)
+                        newPuck.rotation.set(puck.rotX, puck.rotY, puck.rotZ)
+                        newPuck.name = name;
+                        scene.add(newPuck);
+                    }
+                } else {
+                    if (puckObject) {
+                        console.log(puckObject);
+                        puckObject.position.set(puck.posX, puck.posY, puck.posZ)
+                        puckObject.rotation.set(puck.rotX, puck.rotY, puck.rotZ)
+                        if (first) {
+                            camera.position.setZ(puck.posZ);
+                            camera.lookAt(puckObject.position)
+                        }
+
+                        first = false;
+                    }
                 }
             })
 
@@ -392,7 +378,7 @@ const ReplayViewer = () => {
                         loadedObjects.push(lowerName)
                         setLoadedObjects(loadedObjects);
                         const newPlayerLower = playerLowerTemp.clone();
-                        newPlayerLower.position.set(30 - player.posX, player.posY, player.posZ)
+                        newPlayerLower.position.set(player.posX, player.posY, player.posZ)
                         newPlayerLower.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotX)
                         newPlayerLower.name = lowerName;
                         scene.add(newPlayerLower);
@@ -410,7 +396,7 @@ const ReplayViewer = () => {
                                 }
                             });
                         }
-                        playerLower.position.set(30 - player.posX, player.posY, player.posZ)
+                        playerLower.position.set(player.posX, player.posY, player.posZ)
                         playerLower.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ)
                     }
                 }
@@ -423,7 +409,7 @@ const ReplayViewer = () => {
                         loadedObjects.push(upperName)
                         setLoadedObjects(loadedObjects);
                         const newPlayerUpper = playerUpperTemp.clone();
-                        newPlayerUpper.position.set(30 - player.posX, player.posY, player.posZ)
+                        newPlayerUpper.position.set(player.posX, player.posY, player.posZ)
                         newPlayerUpper.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ)
                         newPlayerUpper.name = upperName;
 
@@ -444,8 +430,10 @@ const ReplayViewer = () => {
                             });
                         }
 
-                        playerUpper.position.set(30 - player.posX, player.posY, player.posZ)
-                        playerUpper.rotation.set(Math.PI * 2 - player.rotX, player.rotY - player.headTurn, player.rotZ)
+                        playerUpper.position.set(player.posX, player.posY, player.posZ)
+                        playerUpper.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ)
+                        playerUpper.rotateOnAxis(new THREE.Vector3(1, 0, 0), -player.bodyLean);
+                        playerUpper.rotateOnAxis(new THREE.Vector3(0, 1, 1), -player.headTurn);
                     }
                 }
 
@@ -457,8 +445,8 @@ const ReplayViewer = () => {
                         loadedObjects.push(stickName)
                         setLoadedObjects(loadedObjects);
                         const newPlayerStick = playerStickTemp.clone();
-                        newPlayerStick.position.set(30 - player.stickPosX, player.stickPosY, player.stickPosZ)
-                        newPlayerStick.rotation.set(player.stickRotX, player.stickRotY, player.stickRotZ)
+                        newPlayerStick.position.set(player.stickPosX, player.stickPosY, player.stickPosZ)
+                        newPlayerStick.rotation.set(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ)
                         newPlayerStick.name = stickName;
 
                         scene.add(newPlayerStick);
@@ -466,8 +454,9 @@ const ReplayViewer = () => {
                     }
                 } else {
                     if (playerStick) {
-                        playerStick.position.set(30 - player.stickPosX, player.stickPosY, player.stickPosZ)
-                        playerStick.rotation.set(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ)
+                        playerStick.position.set(player.stickPosX, player.stickPosY, player.stickPosZ)
+                        // playerStick.rotation.set(player.stickRotX, player.stickRotY, player.stickRotZ)
+                        playerStick.setRotationFromEuler(new THREE.Euler(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ));
                     }
                 }
 
@@ -478,51 +467,25 @@ const ReplayViewer = () => {
                     setLoadedObjects(loadedObjects);
                     const geometry = new TextGeometry(name, {
                         font: font,
-                        size: 0.2,
-                        depth: 0.1,
+                        size: 0.15,
+                        depth: 0.1
                     })
 
                     geometry.center();
 
-                    const mesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({ color: 0x000000 }), new THREE.MeshPhongMaterial({ color: 0xffffff })]);
+                    const mesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({ color: 0x000000 })]);
 
-                    mesh.position.set(30 - player.posX, player.posY + 1, player.posZ)
+                    mesh.position.set(player.posX, player.posY + 1, player.posZ)
                     mesh.name = playerTextName;
                     scene.add(mesh);
                 } else {
                     if (playerText) {
-                        playerText.position.set(30 - player.posX, player.posY + 1, player.posZ);
+                        playerText.position.set(player.posX, player.posY + 1, player.posZ);
                         playerText.lookAt(camera.position)
                     }
                 }
             })
-            let first = true;
-            tickData.pucks.forEach(puck => {
-                const name = "puck" + puck.index.toString();
-                let puckObject = scene.getObjectByName(name);
-                if (!loadedObjects.includes(name) || !puckObject) {
-                    const puckTemp = scene.getObjectByName("puck");
-                    if (puckTemp) {
-                        loadedObjects.push(name)
-                        setLoadedObjects(loadedObjects);
-                        const newPuck = puckTemp.clone();
-                        newPuck.position.set(puck.posX, puck.posY, puck.posZ)
-                        newPuck.rotation.set(Math.PI * 2 - puck.rotX, puck.rotY, puck.rotZ)
-                        newPuck.name = name;
-                        scene.add(newPuck);
-                    }
-                } else {
-                    if (puckObject) {
-                        puckObject.position.set(30 - puck.posX, puck.posY, puck.posZ)
-                        puckObject.rotation.set(Math.PI * 2 - puck.rotX, puck.rotY, puck.rotZ)
-                        if (first) {
-                            camera.lookAt(puckObject.position)
-                        }
 
-                        first = false;
-                    }
-                }
-            })
         }
     }
 

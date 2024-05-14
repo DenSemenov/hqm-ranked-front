@@ -1,7 +1,7 @@
 .slider {
     position: absolute;
     display: flex;
-    width: calc(-64px + 100%);
+    width: calc(-48px + 100%);
     gap: 16px;
     bottom: 16px;
     left: 16px;

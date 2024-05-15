@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import SeasonService from "services/SeasonService"
-import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setRules, setSeasons } from "."
+import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setRules, setSeasons, setStorageUrl } from "."
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest"
 import { IPlayerRequest } from "models/IPlayerRequest"
 import { IGameRequest } from "models/IGameRequest"
@@ -113,6 +113,18 @@ export const getReplayGoals = createAsyncThunk('replay/getReplayGoals', async (p
 export const getReplayChatMessages = createAsyncThunk('replay/getReplayChatMessages', async (payload: IReplayRequest, thunkApi) => {
     try {
         const response = await SeasonService.getReplayChatMessages(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getStorage = createAsyncThunk('season/getStorage', async (payload: void, thunkApi) => {
+    try {
+        const response = await SeasonService.getStorage()
+
+        thunkApi.dispatch(setStorageUrl(response.data))
 
         return response.data
     } catch (e: any) {

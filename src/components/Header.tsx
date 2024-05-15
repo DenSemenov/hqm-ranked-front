@@ -8,7 +8,7 @@ import { selectCurrentUser, selectIsAdmin, selectIsAuth, setCurrentUser, setIsAu
 import { getCurrentUser } from 'stores/auth/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import ChangePasswordModal from './ChangePasswordModal';
-import { selectCurrentSeason, selectSeasons, setCurrentSeason } from 'stores/season';
+import { selectCurrentSeason, selectSeasons, selectStorageUrl, setCurrentSeason } from 'stores/season';
 import { useNavigate } from 'react-router-dom';
 import ThemeButton from './ThemeButton';
 
@@ -20,6 +20,7 @@ const Header = () => {
     const currentUser = useSelector(selectCurrentUser);
     const seasons = useSelector(selectSeasons);
     const currentSeason = useSelector(selectCurrentSeason);
+    const storageUrl = useSelector(selectStorageUrl);
 
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
 
@@ -52,7 +53,7 @@ const Header = () => {
     const loginButton = useMemo(() => {
         if (userName && currentUser) {
             return <Badge count={currentUser.isBanned ? "BAN" : undefined} offset={[-16, 16]}>
-                <Avatar shape='square' style={{ cursor: "pointer" }} src={process.env.REACT_APP_API_URL + "/avatars/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
+                <Avatar shape='square' style={{ cursor: "pointer" }} src={storageUrl + "images/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
             </Badge>
         } else {
             return <Button icon={<UserOutlined />} onClick={loginPage} />

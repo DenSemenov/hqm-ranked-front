@@ -3,7 +3,7 @@ import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { selectCurrentPlayerData } from "stores/season";
+import { selectCurrentPlayerData, selectStorageUrl } from "stores/season";
 import { getPlayerData } from "stores/season/async-actions";
 import styles from './Player.module.css'
 import { convertDate } from "shared/DateConverter";
@@ -13,8 +13,10 @@ const Player = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const [searchParams, setSearchParams] = useSearchParams();
     const currentPlayerData = useSelector(selectCurrentPlayerData);
+    const storageUrl = useSelector(selectStorageUrl);
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
         const id = searchParams.get("id");
@@ -30,7 +32,7 @@ const Player = () => {
         <Row gutter={[32, 32]}>
             <Col sm={8} xs={24}>
                 <div className={styles.playerLeft}>
-                    <Avatar size={190} shape="square" src={process.env.REACT_APP_API_URL + "/avatars/" + currentPlayerData.id + ".png"}>{currentPlayerData.name}</Avatar>
+                    <Avatar size={190} shape="square" src={storageUrl + "images/" + currentPlayerData.id + ".png"}>{currentPlayerData.name}</Avatar>
                     <h3 className={styles.playerLeftTitle}>{currentPlayerData.name}</h3>
                     <div className={styles.playerLeftStats}>
                         <Row>

@@ -9,12 +9,12 @@ import PlayersTable from 'components/PlayersTable';
 import Games from 'components/Games';
 import { useEffect, useMemo } from 'react';
 import { getCurrentUser } from 'stores/auth/async-actions';
-import { getSeasons, getSeasonsGames, getSeasonsStats } from 'stores/season/async-actions';
+import { getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores/season/async-actions';
 import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { selectCurrentSeason } from 'stores/season';
-import { selectCurrentUser, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
+import { selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
 import Player from 'components/Player';
 import LoginModal from 'components/LoginModal';
 import RegisterModal from 'components/RegisterModal';
@@ -45,6 +45,7 @@ function App() {
     }
     dispatch(getSeasons());
     dispatch(getActiveServers());
+    dispatch(getStorage());
   }, [])
 
   useEffect(() => {

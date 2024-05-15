@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import styles from './PlayerItem.module.css'
 import { Avatar, Tooltip } from 'antd';
 import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { selectStorageUrl } from 'stores/season';
 
 export enum PlayerItemType {
     Both,
@@ -18,6 +20,8 @@ interface IProps {
 const PlayerItem = ({ id, name, type = PlayerItemType.Both }: IProps) => {
     const navigate = useNavigate();
 
+    const storageUrl = useSelector(selectStorageUrl);
+
     const avatarName = useMemo(() => {
         return name[0].toUpperCase()
     }, [name])
@@ -29,7 +33,7 @@ const PlayerItem = ({ id, name, type = PlayerItemType.Both }: IProps) => {
         >
             {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
                 <Tooltip title={type === PlayerItemType.Avatar ? name : undefined}>
-                    <Avatar shape='square' src={process.env.REACT_APP_API_URL + "/avatars/" + id + ".png"}>{avatarName}</Avatar>
+                    <Avatar shape='square' src={storageUrl + "images/" + id + ".png"}>{avatarName}</Avatar>
                 </Tooltip>
             }
             {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&

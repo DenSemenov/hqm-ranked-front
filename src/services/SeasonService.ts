@@ -45,4 +45,7 @@ export default class SeasonService {
     static async getReplayChatMessages(data: IReplayRequest): Promise<AxiosResponse<any>> {
         return $api.post<IReplayChatMessage[]>('api/replay/GetReplayChatMessages', data);
     }
+    static async getStorage(): Promise<AxiosResponse<any>> {
+        return $api.post<string>('api/seasons/GetStorage');
+    }
 }

@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { store } from './stores';
+import { register } from 'serviceWorkerRegistration';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
@@ -17,4 +18,5 @@ root.render(
   </React.StrictMode>
 );
 
+register();
 reportWebVitals();

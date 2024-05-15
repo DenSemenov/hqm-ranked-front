@@ -11,6 +11,7 @@ export interface IPlayerResponse {
     lastGames: PlayerLastGamesViewModel[];
     lastSeasons: PlayerSeasonsViewModel[];
     calcData: PlayerCalcDataViewModel;
+    oldNicknames: string[];
 }
 
 export interface PlayerLastSeasonViewModel {

@@ -1,4 +1,4 @@
-import { Avatar, Col, Row, Tag } from "antd";
+import { Avatar, Col, Dropdown, Row, Space, Tag, Typography } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -8,6 +8,9 @@ import { getPlayerData } from "stores/season/async-actions";
 import styles from './Player.module.css'
 import { convertDate } from "shared/DateConverter";
 import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
+import { DownOutlined } from '@ant-design/icons';
+
+const { Text, Title } = Typography;
 
 const Player = () => {
     const dispatch = useAppDispatch();
@@ -33,7 +36,27 @@ const Player = () => {
             <Col sm={8} xs={24}>
                 <div className={styles.playerLeft}>
                     <Avatar size={190} shape="square" src={storageUrl + "images/" + currentPlayerData.id + ".png"}>{currentPlayerData.name}</Avatar>
-                    <h3 className={styles.playerLeftTitle}>{currentPlayerData.name}</h3>
+                    <Dropdown
+                        menu={{
+                            items: currentPlayerData.oldNicknames.map(n => {
+                                return {
+                                    key: n,
+                                    label: n
+                                }
+                            })
+                        }}
+                        placement="bottom"
+                        arrow
+                    >
+                        <Title level={3}>
+                            <Space>
+                                {currentPlayerData.name}
+                                {currentPlayerData.oldNicknames.length !== 0 &&
+                                    <DownOutlined />
+                                }
+                            </Space>
+                        </Title>
+                    </Dropdown>
                     <div className={styles.playerLeftStats}>
                         <Row>
                             <Col span={8}>
@@ -151,7 +174,7 @@ const Player = () => {
                     })}
                 </div>
             </Col> */}
-        </Row>
+        </Row >
     ) : <div />
 }
 

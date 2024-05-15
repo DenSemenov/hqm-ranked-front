@@ -2,7 +2,7 @@ import { Button, Card, Col, List, Row, Table, Tag, Typography } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { convertDate } from "shared/DateConverter";
 import { selectCurrentGameData } from "stores/season";
 import { getGameData, getReplay } from "stores/season/async-actions";
@@ -27,21 +27,6 @@ const Game = () => {
             }));
         }
     }, []);
-
-    const onGetReplay = (id: string) => {
-        dispatch(getReplay({
-            id: id
-        })).unwrap().then((data: any) => {
-            const linkSource = `data:application/pdf;base64,${data}`;
-            const downloadLink = document.createElement('a');
-            document.body.appendChild(downloadLink);
-
-            downloadLink.href = linkSource;
-            downloadLink.target = '_self';
-            downloadLink.download = "replay" + id + ".hrp";
-            downloadLink.click();
-        });
-    }
 
     const getPeriodWithTime = (period: number, time: number) => {
         let p = period + " period";
@@ -103,7 +88,9 @@ const Game = () => {
                 <Text type="secondary">{convertDate(currentGameData.date)}</Text>
                 <Tag>{currentGameData.state}</Tag>
                 {currentGameData.replayId &&
-                    <Button type="primary" onClick={() => onGetReplay(currentGameData.replayId as string)}>Download replay</Button>
+                    <Link to={currentGameData.replayUrl}>
+                        <Button type="primary" >Download replay</Button>
+                    </Link>
                 }
                 {currentGameData.hasReplayFragments &&
                     <Button type="primary" onClick={() => navigate("/replay?id=" + currentGameData.replayId)}>Watch replay</Button>

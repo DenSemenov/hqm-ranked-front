@@ -9,6 +9,7 @@ export interface IGameResponse {
     players: IGamePlayerResponse[]
     chatMessages: IGameChatResponse[]
     goals: IGameGoalResponse[]
+    replayUrl: string;
 }
 
 export interface IGamePlayerResponse {

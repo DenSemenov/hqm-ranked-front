@@ -300,6 +300,30 @@ const Admin = () => {
                 >
                     <TextArea rows={4} />
                 </Form.Item>
+                <Form.Item
+                    label="S3 Domain"
+                    name="s3Domain"
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    label="S3 Bucket"
+                    name="s3Bucket"
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    label="S3 User"
+                    name="s3User"
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    label="S3 Key"
+                    name="s3Key"
+                >
+                    <Input />
+                </Form.Item>
                 <Form.Item >
                     <Button type="primary" htmlType="submit">
                         Save

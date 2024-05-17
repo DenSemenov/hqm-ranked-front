@@ -19,11 +19,3 @@ export const requestForToken = () => {
     return getToken(messaging, { vapidKey: "BJ7WPfdVj_6F7Qki3B6ghrUhDx5HSzbNnOtc90gtzmGHbmZ7rJtTQswU_SS_xS5GlE_yGtQ5dhedW-tVGE1b9X0" })
 };
 
-export const onMessageListener = () =>
-    new Promise((resolve) => {
-        onMessage(messaging, (payload) => {
-            console.log("payload", payload)
-            resolve(payload);
-        });
-    });
-

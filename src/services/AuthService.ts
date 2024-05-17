@@ -6,6 +6,7 @@ import { ICurrentUserResponse } from "models/ICurrentUserResponse";
 import { IChangePasswordRequest } from "models/IChangePasswordRequest";
 import { IRegisterRequest } from "models/IRegisterRequest";
 import { IChangeNicknameRequest } from "models/IChangeNicknameRequest";
+import { IPushTokenRequest } from "models/IPushTokenRequest";
 
 export default class AuthService {
     static async login(data: ILoginRequest): Promise<AxiosResponse<IAuthResponse>> {
@@ -26,5 +27,8 @@ export default class AuthService {
 
     static async changeNickname(data: IChangeNicknameRequest): Promise<AxiosResponse> {
         return $api.post('api/player/ChangeNickname', data);
+    }
+    static async addPushToken(data: IPushTokenRequest): Promise<AxiosResponse> {
+        return $api.post('api/player/AddPushToken', data);
     }
 }

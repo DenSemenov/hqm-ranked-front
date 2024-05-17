@@ -17,16 +17,6 @@ const messaging = getMessaging();
 
 export const requestForToken = () => {
     return getToken(messaging, { vapidKey: "BJ7WPfdVj_6F7Qki3B6ghrUhDx5HSzbNnOtc90gtzmGHbmZ7rJtTQswU_SS_xS5GlE_yGtQ5dhedW-tVGE1b9X0" })
-        .then((currentToken) => {
-            if (currentToken) {
-                console.log('current token for client: ', currentToken);
-            } else {
-                console.log('No registration token available. Request permission to generate one.');
-            }
-        })
-        .catch((err) => {
-            console.log('An error occurred while retrieving token. ', err);
-        });
 };
 
 export const onMessageListener = () =>

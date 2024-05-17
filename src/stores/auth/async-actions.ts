@@ -6,6 +6,7 @@ import { IChangePasswordRequest } from "models/IChangePasswordRequest"
 import { IRegisterRequest } from "models/IRegisterRequest"
 import { notification } from "antd"
 import { IChangeNicknameRequest } from "models/IChangeNicknameRequest"
+import { IPushTokenRequest } from "models/IPushTokenRequest"
 
 export const login = createAsyncThunk('auth/login', async (payload: ILoginRequest, thunkApi) => {
     try {
@@ -61,6 +62,16 @@ export const changePassword = createAsyncThunk('auth/changePassword', async (pay
 export const changeNickname = createAsyncThunk('auth/changeNickname', async (payload: IChangeNicknameRequest, thunkApi) => {
     try {
         const response = await AuthService.changeNickname(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const addPushToken = createAsyncThunk('auth/addPushToken', async (payload: IPushTokenRequest, thunkApi) => {
+    try {
+        const response = await AuthService.addPushToken(payload)
 
         return response.data
     } catch (e: any) {

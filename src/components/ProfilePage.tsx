@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ChangeNicknameModal from "./ChangeNicknameModal";
 import { requestForToken } from "../firebase";
+import { addPushToken } from "stores/auth/async-actions";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -62,8 +63,13 @@ const ProfilePage = () => {
         setFileList(newFileList);
     };
 
-    const onEnablePush = () => {
-        requestForToken();
+    const onEnablePush = async () => {
+        requestForToken().then((token: any) => {
+            localStorage.setItem("pushToken", token);
+            dispatch(addPushToken({
+                token: token
+            }));
+        });
     }
 
     return (

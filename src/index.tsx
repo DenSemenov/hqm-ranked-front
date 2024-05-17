@@ -10,8 +10,6 @@ import { onMessageListener, requestForToken } from './firebase';
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 
-requestForToken();
-
 onMessageListener()
   .then((payload) => {
     console.log(payload)

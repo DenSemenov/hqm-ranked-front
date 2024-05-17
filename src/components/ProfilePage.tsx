@@ -8,6 +8,7 @@ import ImgCrop from "antd-img-crop";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ChangeNicknameModal from "./ChangeNicknameModal";
+import { requestForToken } from "../firebase";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -61,6 +62,10 @@ const ProfilePage = () => {
         setFileList(newFileList);
     };
 
+    const onEnablePush = () => {
+        requestForToken();
+    }
+
     return (
         <Row>
             <Col sm={7} xs={0} />
@@ -84,6 +89,7 @@ const ProfilePage = () => {
                         </ImgCrop>
                         <Button onClick={() => setChangeNicknameModalOpen(true)}>Change nickname</Button>
                         <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
+                        <Button onClick={onEnablePush}>Enable push</Button>
                         <Button danger onClick={onLogout}>Log out</Button>
 
                         {isAdmin &&

@@ -61,6 +61,30 @@ const ProfilePage = () => {
         setFileList(newFileList);
     };
 
+    const onEnablePush = () => {
+        if (Notification.permission === 'denied') {
+            alert('User has blocked push notification.');
+            return;
+        }
+
+        //Checks if current browser supports Push notification
+        if (!('PushManager' in window)) {
+            alert('Sorry, Push notification isn\'t supported in your browser.');
+            return;
+        }
+
+        //Get `push notification` subscription id
+
+        //If `serviceWorker` is registered and ready
+        navigator.serviceWorker.ready
+            .then(function (registration) {
+                registration.pushManager.getSubscription()
+                    .catch(function (error) {
+                        console.error('Error occurred while enabling push ', error);
+                    });
+            });
+    }
+
     return (
         <Row>
             <Col sm={7} xs={0} />
@@ -84,6 +108,7 @@ const ProfilePage = () => {
                         </ImgCrop>
                         <Button onClick={() => setChangeNicknameModalOpen(true)}>Change nickname</Button>
                         <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
+                        <Button onClick={onEnablePush}>Enable push</Button>
                         <Button danger onClick={onLogout}>Log out</Button>
 
                         {isAdmin &&

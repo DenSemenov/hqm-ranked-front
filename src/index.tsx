@@ -5,10 +5,18 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { store } from './stores';
-import { register } from 'serviceWorkerRegistration';
+import { onMessageListener, requestForToken } from './firebase';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
+
+requestForToken();
+
+onMessageListener()
+  .then((payload) => {
+    console.log(payload)
+  })
+  .catch((err) => console.log('failed: ', err));
 
 root.render(
   <React.StrictMode>
@@ -18,5 +26,4 @@ root.render(
   </React.StrictMode>
 );
 
-register();
 reportWebVitals();

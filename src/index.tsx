@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { store } from './stores';
-import { onMessageListener, requestForToken } from './firebase';
+import { onMessageListener } from './firebase';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);

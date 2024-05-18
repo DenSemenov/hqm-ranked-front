@@ -78,3 +78,15 @@ export const addPushToken = createAsyncThunk('auth/addPushToken', async (payload
         return thunkApi.rejectWithValue(e)
     }
 })
+
+
+
+export const removePushToken = createAsyncThunk('auth/removePushToken', async (payload: IPushTokenRequest, thunkApi) => {
+    try {
+        const response = await AuthService.removePushToken(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})

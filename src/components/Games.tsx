@@ -48,10 +48,10 @@ const Games = () => {
     }
 
     return (
-        <Card title={!isMobile ? "Games" : undefined} bodyStyle={{ padding: 0 }} bordered={false} style={{ height: !isMobile ? height : undefined, width: "100%", marginBottom: !isMobile ? 32 : undefined }}>
+        <Card title={!isMobile ? "Games" : undefined} styles={{ body: { padding: 0 } }} bordered={false} style={{ height: !isMobile ? height : undefined, width: "100%", marginBottom: !isMobile ? 32 : undefined }}>
             <div style={!isMobile ? { height: "100%", overflow: "auto" } : undefined} onScroll={onScroll}>
                 {currentSeasonGames.map(game => (
-                    <div className={styles.gamesItem} onClick={() => navigate("/game?id=" + game.gameId)}>
+                    <div className={styles.gamesItem} key={game.gameId} onClick={() => navigate("/game?id=" + game.gameId)}>
                         <Row gutter={[8, 8]} >
                             <Col span={16}>
                                 <span className="subtitle">{convertDate(game.date)}</span>
@@ -69,13 +69,13 @@ const Games = () => {
                                 <div className={styles.teamTitle}>
                                     <Avatar.Group>
                                         {game.players.filter(x => x.team == 0).map(x => {
-                                            return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                            return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
                                         })}
                                     </Avatar.Group>
                                     {"vs"}
                                     <Avatar.Group>
                                         {game.players.filter(x => x.team == 1).map(x => {
-                                            return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                            return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
                                         })}
                                     </Avatar.Group>
                                 </div>

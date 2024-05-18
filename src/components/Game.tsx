@@ -50,7 +50,7 @@ const Game = () => {
     return currentGameData ? (
         <Row gutter={[0, 16]}>
             <Col xs={24} sm={8}>
-                <Card bodyStyle={{ padding: 0 }}>
+                <Card styles={{ body: { padding: 0 } }}>
                     <Table
                         dataSource={currentGameData.players.filter(x => x.team == 0)}
                         bordered={false}
@@ -97,7 +97,7 @@ const Game = () => {
                 }
             </Col>
             <Col xs={24} sm={8} className="right-align">
-                <Card bodyStyle={{ padding: 0 }}>
+                <Card styles={{ body: { padding: 0 } }}>
                     <Table
                         dataSource={currentGameData.players.filter(x => x.team == 1)}
                         bordered={false}

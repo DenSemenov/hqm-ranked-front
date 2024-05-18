@@ -32,13 +32,14 @@ const PlayersTable = ({ full }: IProps) => {
 
     return (
         <>
-            <Card title={!isMobile ? "Players" : undefined} bodyStyle={{ padding: 0 }} bordered={false} style={{ height: !isMobile ? height : undefined, width: "100%" }}>
+            <Card title={!isMobile ? "Players" : undefined} styles={{ body: { padding: 0 } }} bordered={false} style={{ height: !isMobile ? height : undefined, width: "100%" }}>
                 <Table
                     dataSource={currentSeasonStats}
                     bordered={false}
                     scroll={{
                         y: !isMobile ? height - 56 : undefined
                     }}
+                    rowKey={"nickname"}
                     pagination={false}
                     columns={[
                         {

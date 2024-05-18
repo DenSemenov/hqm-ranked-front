@@ -13,11 +13,12 @@ export enum PlayerItemType {
 
 interface IProps {
     id: number;
+    key?: number;
     name: string;
     type?: PlayerItemType,
 }
 
-const PlayerItem = ({ id, name, type = PlayerItemType.Both }: IProps) => {
+const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both }: IProps) => {
     const navigate = useNavigate();
 
     const storageUrl = useSelector(selectStorageUrl);
@@ -29,6 +30,7 @@ const PlayerItem = ({ id, name, type = PlayerItemType.Both }: IProps) => {
     return (
         <div
             className={styles.playerItem}
+            key={key}
             onClick={() => navigate("/player?id=" + id)}
         >
             {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&

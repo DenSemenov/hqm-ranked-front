@@ -31,4 +31,7 @@ export default class AuthService {
     static async addPushToken(data: IPushTokenRequest): Promise<AxiosResponse> {
         return $api.post('api/player/AddPushToken', data);
     }
+    static async removePushToken(data: IPushTokenRequest): Promise<AxiosResponse> {
+        return $api.post('api/player/RemovePushToken', data);
+    }
 }

@@ -26,6 +26,7 @@ import SignalrService from 'services/SignalrService';
 import { IHeartbeatResponse } from 'models/IHeartbeatResponse';
 import { setUpdatedServer } from 'stores/server';
 import ReplayViewer from 'components/ReplayViewer';
+import { initializeFirebase } from 'firebaseService';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -36,6 +37,9 @@ function App() {
 
   const singnalR = new SignalrService();
 
+  useEffect(() => {
+    initializeFirebase();
+  }, [])
 
   useEffect(() => {
     if (localStorage.getItem('token')) {

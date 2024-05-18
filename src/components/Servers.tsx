@@ -69,7 +69,7 @@ const Servers = () => {
         <Card bordered={false} style={{ height: !isMobile ? 336 : undefined, width: "100%" }}>
             <Row gutter={[16, 16]}>
                 {servers.map(server => {
-                    return <Col sm={12} xs={24}>
+                    return <Col sm={12} xs={24} key={server.id} >
                         <Card title={server.name} style={{ width: "100%" }} extra={getStateById(server.state)}>
                             {getBodyByStateId(server)}
                         </Card>

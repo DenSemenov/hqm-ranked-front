@@ -1,4 +1,4 @@
-import { Button, Card, Col, Row, Upload, UploadFile, UploadProps } from "antd";
+import { Button, Card, Col, Row, Upload, UploadFile, UploadProps, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useState } from "react";
 import { selectIsAdmin, selectIsAuth, setCurrentUser, setIsAuth } from "stores/auth";
@@ -8,8 +8,8 @@ import ImgCrop from "antd-img-crop";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ChangeNicknameModal from "./ChangeNicknameModal";
-import { requestForToken } from "../firebase";
-import { addPushToken } from "stores/auth/async-actions";
+import { addPushToken, removePushToken } from "stores/auth/async-actions";
+import { requestNotificationPermission } from "firebaseService";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -21,10 +21,16 @@ const ProfilePage = () => {
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
     const [changeNicknameModalOpen, setChangeNicknameModalOpen] = useState<boolean>(false);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [pushEnabled, setPushEnabled] = useState<boolean>(false);
 
     useEffect(() => {
         if (!isAuth) {
             navigate("/")
+        } else {
+            const pushToken = localStorage.getItem("pushToken");
+            if (pushToken) {
+                setPushEnabled(true)
+            }
         }
     }, [!isAuth])
 
@@ -64,12 +70,35 @@ const ProfilePage = () => {
     };
 
     const onEnablePush = async () => {
-        requestForToken().then((token: any) => {
-            localStorage.setItem("pushToken", token);
-            dispatch(addPushToken({
-                token: token
-            }));
-        });
+        if (pushEnabled) {
+            const t = localStorage.getItem("pushToken");
+            if (t) {
+                dispatch(removePushToken({
+                    token: t
+                }));
+                localStorage.removeItem("pushToken");
+            }
+
+            notification.success({
+                message: "Push notifications disabled"
+            })
+
+            setPushEnabled(false);
+        } else {
+            const token = await requestNotificationPermission()
+            if (token) {
+                localStorage.setItem("pushToken", token);
+                dispatch(addPushToken({
+                    token: token
+                }));
+
+                setPushEnabled(true);
+
+                notification.success({
+                    message: "Push notifications enabled"
+                })
+            }
+        }
     }
 
     return (
@@ -95,7 +124,7 @@ const ProfilePage = () => {
                         </ImgCrop>
                         <Button onClick={() => setChangeNicknameModalOpen(true)}>Change nickname</Button>
                         <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
-                        <Button onClick={onEnablePush}>Enable push</Button>
+                        <Button onClick={onEnablePush}>{pushEnabled ? "Disable push notifications" : "Enable push notifications"}</Button>
                         <Button danger onClick={onLogout}>Log out</Button>
 
                         {isAdmin &&

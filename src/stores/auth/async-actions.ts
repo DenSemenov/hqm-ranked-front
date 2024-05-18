@@ -7,6 +7,7 @@ import { IRegisterRequest } from "models/IRegisterRequest"
 import { notification } from "antd"
 import { IChangeNicknameRequest } from "models/IChangeNicknameRequest"
 import { IPushTokenRequest } from "models/IPushTokenRequest"
+import { IPlayerNotificationsResponse } from "models/IPlayerNotificationsResponse"
 
 export const login = createAsyncThunk('auth/login', async (payload: ILoginRequest, thunkApi) => {
     try {
@@ -84,6 +85,26 @@ export const addPushToken = createAsyncThunk('auth/addPushToken', async (payload
 export const removePushToken = createAsyncThunk('auth/removePushToken', async (payload: IPushTokenRequest, thunkApi) => {
     try {
         const response = await AuthService.removePushToken(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getPlayerNotifications = createAsyncThunk('auth/getPlayerNotifications', async (payload: void, thunkApi) => {
+    try {
+        const response = await AuthService.getPlayerNotifications()
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const savePlayerNotifications = createAsyncThunk('auth/savePlayerNotifications', async (payload: IPlayerNotificationsResponse, thunkApi) => {
+    try {
+        const response = await AuthService.savePlayerNotifications(payload)
 
         return response.data
     } catch (e: any) {

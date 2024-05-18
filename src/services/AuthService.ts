@@ -7,6 +7,7 @@ import { IChangePasswordRequest } from "models/IChangePasswordRequest";
 import { IRegisterRequest } from "models/IRegisterRequest";
 import { IChangeNicknameRequest } from "models/IChangeNicknameRequest";
 import { IPushTokenRequest } from "models/IPushTokenRequest";
+import { IPlayerNotificationsResponse } from "models/IPlayerNotificationsResponse";
 
 export default class AuthService {
     static async login(data: ILoginRequest): Promise<AxiosResponse<IAuthResponse>> {
@@ -33,5 +34,11 @@ export default class AuthService {
     }
     static async removePushToken(data: IPushTokenRequest): Promise<AxiosResponse> {
         return $api.post('api/player/RemovePushToken', data);
+    }
+    static async getPlayerNotifications(): Promise<AxiosResponse<IPlayerNotificationsResponse>> {
+        return $api.post<IPlayerNotificationsResponse>('api/player/GetPlayerNotifications');
+    }
+    static async savePlayerNotifications(data: IPlayerNotificationsResponse): Promise<AxiosResponse> {
+        return $api.post('api/player/SavePlayerNotifications', data);
     }
 }

@@ -124,7 +124,7 @@ const ProfilePage = () => {
                         </ImgCrop>
                         <Button onClick={() => setChangeNicknameModalOpen(true)}>Change nickname</Button>
                         <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
-                        <Button onClick={onEnablePush}>{pushEnabled ? "Disable push notifications" : "Enable push notifications"}</Button>
+                        <Button onClick={() => navigate("/notifications")}>Notifications settings</Button>
                         <Button danger onClick={onLogout}>Log out</Button>
 
                         {isAdmin &&

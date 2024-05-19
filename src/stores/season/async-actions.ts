@@ -1,11 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import SeasonService from "services/SeasonService"
-import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setRules, setSeasons, setStorageUrl } from "."
+import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setRules, setSeasons, setStorageUrl, setStories } from "."
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest"
 import { IPlayerRequest } from "models/IPlayerRequest"
 import { IGameRequest } from "models/IGameRequest"
 import { IReplayRequest } from "models/IReplayRequest"
 import { IReplayViewerRequest } from "models/IReplayViewerRequest"
+import { IStoryReplayViewerRequest } from "models/IStoryReplayViewerRequest"
 
 export const getSeasons = createAsyncThunk('season/getSeasons', async (payload: void, thunkApi) => {
     try {
@@ -125,6 +126,29 @@ export const getStorage = createAsyncThunk('season/getStorage', async (payload: 
         const response = await SeasonService.getStorage()
 
         thunkApi.dispatch(setStorageUrl(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getStories = createAsyncThunk('replay/getStories', async (payload: void, thunkApi) => {
+    try {
+        const response = await SeasonService.getStories()
+
+        thunkApi.dispatch(setStories(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+
+export const getStoryReplayViewer = createAsyncThunk('replay/getStoryReplayViewer', async (payload: IStoryReplayViewerRequest, thunkApi) => {
+    try {
+        const response = await SeasonService.getStoryReplayViewer(payload)
 
         return response.data
     } catch (e: any) {

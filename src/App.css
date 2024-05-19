@@ -170,3 +170,45 @@ ul.slick-dots.slick-dots-bottom {
 .ant-typography {
   margin-bottom: 0 !important;
 }
+
+.modal-without-background .ant-modal-content {
+  background-color: transparent;
+  padding: 0;
+  max-width: unset;
+  margin: unset;
+}
+
+.mobile-modal-without-background .ant-modal-content {
+  background-color: transparent;
+  padding: 0;
+  max-width: unset;
+  margin: unset;
+}
+
+.mobile-modal-without-background .ant-modal {
+  margin: 0 !important;
+}
+
+.mobile-modal-without-background {
+  overflow: hidden !important;
+}
+
+.ant-slider-mark {
+  top: 8px !important;
+}
+
+.mobile-modal-without-background .ant-modal .ant-modal-close,
+.modal-without-background .ant-modal .ant-modal-close {
+  top: 22px;
+  right: 8px;
+}
+
+.modal-without-background .ant-modal-body>div>div:first-child,
+.mobile-modal-without-background .ant-modal-body>div>div:first-child {
+  z-index: 20;
+}
+
+.modal-without-background .ant-modal-body>div,
+.mobile-modal-without-background .ant-modal-body>div {
+  background-color: transparent;
+}

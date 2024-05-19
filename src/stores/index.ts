@@ -12,7 +12,7 @@ export const store = configureStore({
         season,
         server,
         admin,
-        events,
+        events
     },
     preloadedState: loadState(),
 });

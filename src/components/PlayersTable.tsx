@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { selectCurrentSeasonStats } from "stores/season";
 import { isMobile } from "react-device-detect";
 import PlayerItem from "shared/PlayerItem";
+import StoriesComponent from "./Stories";
 
 
 const PlayersTable = () => {
@@ -26,72 +27,79 @@ const PlayersTable = () => {
     }
 
     return (
-        <Table
-            dataSource={currentSeasonStats}
-            bordered={false}
-            scroll={{
-                y: !isMobile ? height : undefined
-            }}
-            rowKey={"nickname"}
-            pagination={false}
-            columns={[
-                {
-                    title: "#",
-                    width: 70,
-                    dataIndex: "place",
-                    render(value, record, index) {
-                        return currentSeasonStats.indexOf(record) + 1
+        <>
+            {isMobile &&
+                <div style={{ padding: 8 }}>
+                    <StoriesComponent />
+                </div>
+            }
+            <Table
+                dataSource={currentSeasonStats}
+                bordered={false}
+                scroll={{
+                    y: !isMobile ? height : undefined
+                }}
+                rowKey={"nickname"}
+                pagination={false}
+                columns={[
+                    {
+                        title: "#",
+                        width: 70,
+                        dataIndex: "place",
+                        render(value, record, index) {
+                            return currentSeasonStats.indexOf(record) + 1
+                        },
                     },
-                },
-                {
-                    title: "NICKNAME",
-                    width: 160,
-                    dataIndex: "nickname",
-                    ellipsis: true,
-                    fixed: "left",
-                    render(value, record, index) {
-                        return <PlayerItem id={record.playerId} name={record.nickname} />
+                    {
+                        title: "NICKNAME",
+                        width: 160,
+                        dataIndex: "nickname",
+                        ellipsis: true,
+                        fixed: "left",
+                        render(value, record, index) {
+                            return <PlayerItem id={record.playerId} name={record.nickname} />
+                        },
                     },
-                },
-                {
-                    title: "WIN",
-                    width: 90,
-                    align: "right",
-                    dataIndex: "win"
-                },
-                {
-                    title: "LOSE",
-                    width: 90,
-                    align: "right",
-                    dataIndex: "lose"
-                },
-                {
-                    title: "G",
-                    width: 70,
-                    align: "right",
-                    dataIndex: "goals"
-                },
-                {
-                    title: "A",
-                    width: 70,
-                    align: "right",
-                    dataIndex: "assists"
-                },
-                {
-                    title: "MVP",
-                    width: 90,
-                    align: "right",
-                    dataIndex: "mvp"
-                },
-                {
-                    title: "RATING",
-                    width: 120,
-                    align: "right",
-                    dataIndex: "rating",
-                    fixed: "right",
-                },
-            ]}
-        />
+                    {
+                        title: "WIN",
+                        width: 90,
+                        align: "right",
+                        dataIndex: "win"
+                    },
+                    {
+                        title: "LOSE",
+                        width: 90,
+                        align: "right",
+                        dataIndex: "lose"
+                    },
+                    {
+                        title: "G",
+                        width: 70,
+                        align: "right",
+                        dataIndex: "goals"
+                    },
+                    {
+                        title: "A",
+                        width: 70,
+                        align: "right",
+                        dataIndex: "assists"
+                    },
+                    {
+                        title: "MVP",
+                        width: 90,
+                        align: "right",
+                        dataIndex: "mvp"
+                    },
+                    {
+                        title: "RATING",
+                        width: 120,
+                        align: "right",
+                        dataIndex: "rating",
+                        fixed: "right",
+                    },
+                ]}
+            />
+        </>
     )
 }
 

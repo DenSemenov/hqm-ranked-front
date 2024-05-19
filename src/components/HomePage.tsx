@@ -6,6 +6,7 @@ import { isMobile } from "react-device-detect";
 import Events from "./Events";
 import Servers from "./Servers";
 import Actions from "./Actions";
+import StoriesComponent from "./Stories";
 
 const HomePage = () => {
 
@@ -36,11 +37,12 @@ const HomePage = () => {
                 </Col>
                 <Col span={10} style={{ height: "100%" }}>
                     <Row gutter={[16, 16]} style={{ height: "100%" }}>
-                        {/* <Col span={24} style={{ height: 80 }}>
-                            <Card style={{ height: "100%" }}>
+                        <Col span={24} style={{ height: 80 }}>
+                            <Card style={{ height: "100%", padding: 16 }}>
+                                <StoriesComponent />
                             </Card>
-                        </Col> */}
-                        <Col span={24} style={{ height: "calc(-16px + 70%)" }} >
+                        </Col>
+                        <Col span={24} style={{ height: "calc(-118px + 70%)" }} >
                             <Card style={{ height: "100%" }}>
                                 <Games />
                             </Card>

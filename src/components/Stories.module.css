@@ -1,0 +1,19 @@
+.storyContainer {
+    display: flex;
+    gap: 8px;
+    overflow: auto;
+}
+
+.storyAvatarContainer {
+    background-image: linear-gradient(#ba6fcdba, #1f5687c4);
+    padding: 1px;
+    border-radius: 1000px;
+    cursor: pointer;
+}
+
+.storyAvatar {
+    position: absolute;
+    top: 20px;
+    left: 16px;
+    z-index: 20;
+}

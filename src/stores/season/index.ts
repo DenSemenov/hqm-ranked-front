@@ -4,6 +4,7 @@ import { IPlayerResponse } from "models/IPlayerResponse";
 import { ISeasonGameResponse } from "models/ISeasonGameResponse";
 import { ISeasonResponse } from "models/ISeasonResponse";
 import { ISeasonStatsResponse } from "models/ISeasonStatsResponse";
+import { IStoryResponse } from "models/IStoryResponse";
 import { RootState } from "stores"
 
 export interface ISeasonState {
@@ -17,6 +18,8 @@ export interface ISeasonState {
     rules: string;
 
     storageUrl: string;
+
+    stories: IStoryResponse[]
 }
 
 const initialState: ISeasonState = {
@@ -29,7 +32,9 @@ const initialState: ISeasonState = {
     currentGameData: null,
     rules: "",
 
-    storageUrl: ""
+    storageUrl: "",
+
+    stories: []
 }
 
 export const seasonSlicer = createSlice({
@@ -62,6 +67,9 @@ export const seasonSlicer = createSlice({
         setStorageUrl: (state: ISeasonState, action: PayloadAction<string>) => {
             state.storageUrl = action.payload;
         },
+        setStories: (state: ISeasonState, action: PayloadAction<IStoryResponse[]>) => {
+            state.stories = action.payload;
+        },
     },
 })
 
@@ -73,7 +81,8 @@ export const {
     setCurrentPlayerData,
     setCurrentGameData,
     setRules,
-    setStorageUrl
+    setStorageUrl,
+    setStories
 } =
     seasonSlicer.actions
 
@@ -86,5 +95,6 @@ export const selectCurrentPlayerData = (state: RootState) => state.season.curren
 export const selectCurrentGameData = (state: RootState) => state.season.currentGameData;
 export const selectRules = (state: RootState) => state.season.rules;
 export const selectStorageUrl = (state: RootState) => state.season.storageUrl;
+export const selectStories = (state: RootState) => state.season.stories;
 
 export default seasonSlicer.reducer

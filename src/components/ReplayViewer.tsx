@@ -1,7 +1,7 @@
 import { Button, Popover, Select, Slider } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getReplayChatMessages, getReplayGoals, getReplayViewer } from "stores/season/async-actions";
+import { getReplayChatMessages, getReplayGoals, getReplayViewer, getStoryReplayViewer } from "stores/season/async-actions";
 import styles from './ReplayViewer.module.css'
 import { CaretRightOutlined, PauseOutlined, UnorderedListOutlined, WechatWorkOutlined, BorderOutlined, LoadingOutlined } from "@ant-design/icons";
 import { IFragment, IReplayViewerResponse, PlayerInList, ReplayPlayer, ReplayPuck, ReplayTeam, ReplayTick } from "models/IReplayViewerResponse";
@@ -11,17 +11,23 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-import { selectCurrentGameData } from "stores/season";
-import { useSelector } from "react-redux";
 import { IReplayGoalResponse } from "models/IReplayGoalResponse";
 import { IReplayChatMessage } from "models/IReplayChatMessage";
 import { isMobile } from "react-device-detect";
+import ReplayService from "services/ReplayService";
 
-const ReplayViewer = () => {
+const excludedNames = ["Scene", "lower", "upper", "puck", "stick", "basebluegoal", "baseboardlower", "text", "Circle_Circle.002", "baseboards", "basestick", "baseice", "baseredgoal", "ROOT_UU3D", "Circle_Circle001", "Circle_Circle001_1", "Circle_Circle001_2", "Circle_Circle001_3", "Circle_Circle001_4", "Circle_Circle001_5"]
+
+interface IProps {
+    externalId?: string;
+    pause?: boolean;
+    externalScene?: THREE.Scene;
+    onReady?: () => void;
+    onStart?: () => void;
+}
+
+const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IProps) => {
     const dispatch = useAppDispatch();
-
-    const currentGameData = useSelector(selectCurrentGameData);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const [currentTick, setCurrentTick] = useState<number>(0);
@@ -41,6 +47,8 @@ const ReplayViewer = () => {
     const [font, setFont] = useState<Font | null>(null);
     const [goals, setGoals] = useState<IReplayGoalResponse[]>([]);
     const [messages, setMessages] = useState<IReplayChatMessage[]>([]);
+    const [sceneReady, setSceneReady] = useState<boolean>(false);
+    const [dataReady, setDataReady] = useState<boolean>(false);
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const rendererRef = useRef<any>();
     const cameraRef = useRef<any>();
@@ -54,14 +62,22 @@ const ReplayViewer = () => {
     });
 
     useEffect(() => {
-        const id = searchParams.get("id");
-        const t = searchParams.get("t");
-        if (id) {
-            setCurrentId(id);
+        if (pause === true) {
+            setPaused(true)
+        }
+        if (pause === false) {
+            setPaused(false)
+        }
+    }, [pause])
 
-            dispatch(getReplayViewer({
-                id: id,
-                index: 0
+    useEffect(() => {
+        if (externalId) {
+            if (onStart) {
+                onStart();
+            }
+            setCurrentId(externalId);
+            dispatch(getStoryReplayViewer({
+                id: externalId,
             })).unwrap().then((data: IReplayViewerResponse) => {
                 fragments.push(...data.data);
                 setFragments(fragments);
@@ -73,32 +89,68 @@ const ReplayViewer = () => {
                 setIndexes(data.fragments);
                 setLoading(false);
 
-                if (t) {
-                    let tick = +t;
-
-                    if (tick - 300 > 0) {
-                        tick -= 300;
-                    }
-
-                    setCurrentTick(tick);
-                }
-
-                dispatch(getReplayGoals({
-                    id: id
-                })).unwrap().then((goals: IReplayGoalResponse[]) => [
-                    setGoals(goals)
-                ])
-
-                dispatch(getReplayChatMessages({
-                    id: id
-                })).unwrap().then((msgs: IReplayChatMessage[]) => [
-                    setMessages(msgs)
-                ])
+                setCurrentTick(data.fragments[0].min);
 
                 initRenderer();
+
+                setDataReady(true);
             });
+        } else {
+            const id = searchParams.get("id");
+            const t = searchParams.get("t");
+
+            if (id) {
+                setCurrentId(id);
+
+                dispatch(getReplayViewer({
+                    id: id,
+                    index: 0
+                })).unwrap().then((data: IReplayViewerResponse) => {
+                    fragments.push(...data.data);
+                    setFragments(fragments);
+                    setLoadedIndexes([0])
+
+                    setMin(data.fragments[0].min)
+                    setMax(data.fragments[data.fragments.length - 1].max)
+                    setCurrentTick(data.fragments[0].min);
+                    setIndexes(data.fragments);
+                    setLoading(false);
+
+                    if (t) {
+                        let tick = +t;
+
+                        if (tick - 300 > 0) {
+                            tick -= 300;
+                        }
+
+                        setCurrentTick(tick);
+                    }
+
+                    dispatch(getReplayGoals({
+                        id: id
+                    })).unwrap().then((goals: IReplayGoalResponse[]) => [
+                        setGoals(goals)
+                    ])
+
+                    dispatch(getReplayChatMessages({
+                        id: id
+                    })).unwrap().then((msgs: IReplayChatMessage[]) => [
+                        setMessages(msgs)
+                    ])
+
+                    initRenderer();
+
+                    setDataReady(true);
+                });
+            }
         }
     }, []);
+
+    useEffect(() => {
+        if (dataReady && sceneReady && onReady) {
+            onReady();
+        }
+    }, [dataReady, sceneReady])
 
     useEffect(() => {
         const nextTickOffset = 100 / speed;
@@ -151,7 +203,7 @@ const ReplayViewer = () => {
                     newTick = min;
                 }
                 setCurrentTick(newTick);
-                if (newTick % 10 === 0) {
+                if (newTick % 10 === 0 && !externalId) {
                     setSearchParams(
                         createSearchParams({ id: searchParams.get("id") as string, t: newTick.toString() })
                     )
@@ -181,7 +233,7 @@ const ReplayViewer = () => {
         }
     }, [rendererRef, cameraRef, sceneRef, currentTick])
 
-    const initRenderer = useCallback(() => {
+    const initRenderer = useCallback(async () => {
         let w = 0;
         let h = 0;
 
@@ -210,82 +262,43 @@ const ReplayViewer = () => {
 
         cameraRef.current = camera;
 
-        const scene = new THREE.Scene();
-
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1)
-        ambientLight.position.set(15, 5, 30.5)
-        scene.add(ambientLight)
-
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(0, 5, 0);
-        light.castShadow = true;
-        scene.add(light);
-
-        sceneRef.current = scene;
-
-        const container = new THREE.Object3D()
-        container.position.set(0, 0, 0)
-
-        const loader = new GLTFLoader();
-        const fbxLoader = new FBXLoader();
-
-        loader.load('/assets/arena.glb', function (gltf) {
-            scene.add(gltf.scene);
-        }, undefined, function (error) {
-            console.error(error);
-        });
-
-        loader.load('/assets/puck.glb', function (gltf) {
-            gltf.scene.position.set(999, 999, 999);
-            gltf.scene.name = "puck";
-            scene.add(gltf.scene);
-        }, undefined, function (error) {
-            console.error(error);
-        });
-
-        loader.load('/assets/stick.glb', function (gltf) {
-            gltf.scene.position.set(999, 999, 999);
-            gltf.scene.name = "stick";
-            scene.add(gltf.scene);
-        }, undefined, function (error) {
-            console.error(error);
-        });
-
-        fbxLoader.load('/assets/lower.fbx', function (object) {
-            object.position.set(999, 999, 999);
-            object.scale.set(0.01, 0.01, 0.01);
-            object.traverse(function (child) {
-                if (child instanceof THREE.Mesh)
-                    child.material.color.setRGB(1, 0, 0);
-            });
-            object.name = "lower";
-
-            scene.add(object);
-        }, undefined, function (error) {
-            console.error(error);
-        });
-
-        fbxLoader.load('/assets/upper.fbx', function (object) {
-            object.position.set(999, 999, 999);
-            object.scale.set(0.01, 0.01, 0.01);
-            object.traverse(function (child) {
-                if (child instanceof THREE.Mesh)
-                    child.material.color.setRGB(1, 0, 0);
-            });
-            object.name = "upper";
-
-            scene.add(object);
-        }, undefined, function (error) {
-            console.error(error);
-        });
-
         const fontLoader = new FontLoader()
 
-        fontLoader.load('/fonts/helvetiker_bold.typeface.json', function (font) {
-            setFont(font);
-        })
+        if (!externalScene) {
+            const scene = await ReplayService.getDefaultScene();
+            sceneRef.current = scene;
 
+            const font = await fontLoader.loadAsync('/fonts/helvetiker_bold.typeface.json');
+            setFont(font);
+            setSceneReady(true);
+        } else {
+            const toRemove: string[] = [];
+            externalScene.traverse(object => {
+                if (object.isObject3D) {
+                    if (object.name !== "" && !object.name.startsWith("base") && !excludedNames.includes(object.name)) {
+                        toRemove.push(object.name);
+                    }
+                }
+            })
+
+            toRemove.forEach(x => {
+                const toRemoveObject = externalScene.getObjectByName(x);
+                if (toRemoveObject) {
+                    toRemoveObject.removeFromParent();
+                    loadedObjects.filter(x => x.toString() !== x);
+                    setLoadedObjects(loadedObjects);
+                }
+            })
+
+            const font = await fontLoader.loadAsync('/fonts/helvetiker_bold.typeface.json');
+            setFont(font);
+
+            sceneRef.current = externalScene;
+
+            setSceneReady(true);
+        }
         renderer.setSize(w, h)
+
     }, [currentTick])
 
     const onPlayPause = () => {
@@ -308,10 +321,10 @@ const ReplayViewer = () => {
             {players.filter(x => x).map(x => {
                 let color = "#EEF1E6";
                 if (x.team === 0) {
-                    color = "#799FCB"
+                    color = "#F9665E"
                 }
                 if (x.team === 1) {
-                    color = "#F9665E"
+                    color = "#799FCB"
                 }
                 return <div style={{ color: color }}>{x.name}</div>
             })}
@@ -348,7 +361,6 @@ const ReplayViewer = () => {
     const frameChange = (current: number, scene: THREE.Scene, camera: THREE.Camera) => {
         const tickData = fragments.find(x => x.packetNumber === current);
         if (tickData) {
-            const excludedNames = ["Scene", "lower", "upper", "puck", "stick", "basebluegoal", "baseboardlower", "text", "Circle_Circle.002", "baseboards", "basestick", "baseice", "baseredgoal", "ROOT_UU3D", "Circle_Circle001", "Circle_Circle001_1", "Circle_Circle001_2", "Circle_Circle001_3", "Circle_Circle001_4", "Circle_Circle001_5"]
             const existsPlayerLowerNames = tickData.players.map(x => "playerLower" + x.index.toString());
             const existsPlayerUpperNames = tickData.players.map(x => "playerUpper" + x.index.toString());
             const existsPlayerStickNames = tickData.players.map(x => "playerStick" + x.index.toString());
@@ -587,53 +599,58 @@ const ReplayViewer = () => {
 
     return (
         <div className={styles.viewerContainer + " content-without-padding"}>
-            <div id="replay-viewer" className={styles.replayViewer} >
+            <div id="replay-viewer" className={styles.replayViewer} style={{ borderRadius: externalId && !isMobile ? 8 : 0, top: externalId ? 0 : 48, height: externalId ? "100%" : (isMobile ? "calc(-92px + 100%)" : "calc(-48px + 100%)") }}>
                 <canvas
+                    style={{ borderRadius: externalId && !isMobile ? 8 : 0 }}
                     id="replay-viewer-canvas"
                     ref={canvasRef}
                     className={styles.replayCanvas}
                 />
             </div>
-            <div className={styles.playerList}>
-                <Popover content={playersContent} trigger="click" placement="bottomLeft" open={showPlayers}>
-                    <Button icon={<UnorderedListOutlined />} onClick={() => setShowPlayers(!showPlayers)} />
-                </Popover>
-            </div>
-            <div className={styles.chatMessages}>
-                <Popover content={chatContent} trigger="click" placement="topLeft" open={showChat}>
-                    <Button icon={<WechatWorkOutlined />} onClick={() => setShowChat(!showChat)} />
-                </Popover>
-            </div>
-            <div className={styles.map}>
-                <Popover content={mapContent} overlayClassName={styles.overlayWithout} trigger="click" placement="bottomRight" open={showMap}>
-                    <Button icon={<BorderOutlined />} onClick={() => setShowMap(!showMap)} />
-                </Popover>
-            </div>
-            <div className={styles.score}>
-                {scoreContent}
-            </div>
-            <div className={styles.slider}>
-                <Button type="text" icon={loading ? <LoadingOutlined /> : (paused ? <CaretRightOutlined /> : <PauseOutlined />)} onClick={onPlayPause} />
-                <Slider
-                    className={styles.sliderItem}
-                    min={min}
-                    max={max}
-                    value={currentTick}
-                    marks={toObject(goals)}
-                    onChange={onChange}
-                />
-                <Select
-                    style={{ width: 70 }}
-                    value={speed}
-                    options={[
-                        { value: 2, label: '0.5x' },
-                        { value: 1, label: '1x' },
-                        { value: 0.5, label: '2x' },
-                        { value: 0.2, label: '5x' },
-                    ]}
-                    onChange={setSpeed}
-                />
-            </div>
+            {!externalId &&
+                <>
+                    <div className={styles.playerList}>
+                        <Popover content={playersContent} trigger="click" placement="bottomLeft" open={showPlayers}>
+                            <Button icon={<UnorderedListOutlined />} onClick={() => setShowPlayers(!showPlayers)} />
+                        </Popover>
+                    </div>
+                    <div className={styles.chatMessages} style={{ bottom: isMobile ? 122 : 82 }}>
+                        <Popover content={chatContent} trigger="click" placement="topLeft" open={showChat}>
+                            <Button icon={<WechatWorkOutlined />} onClick={() => setShowChat(!showChat)} />
+                        </Popover>
+                    </div>
+                    <div className={styles.map}>
+                        <Popover content={mapContent} overlayClassName={styles.overlayWithout} trigger="click" placement="bottomRight" open={showMap}>
+                            <Button icon={<BorderOutlined />} onClick={() => setShowMap(!showMap)} />
+                        </Popover>
+                    </div>
+                    <div className={styles.score}>
+                        {scoreContent}
+                    </div>
+                    <div className={styles.slider} style={{ bottom: isMobile ? 56 : 16 }}>
+                        <Button type="text" icon={loading ? <LoadingOutlined /> : (paused ? <CaretRightOutlined /> : <PauseOutlined />)} onClick={onPlayPause} />
+                        <Slider
+                            className={styles.sliderItem}
+                            min={min}
+                            max={max}
+                            value={currentTick}
+                            marks={toObject(goals)}
+                            onChange={onChange}
+                        />
+                        <Select
+                            style={{ width: 70 }}
+                            value={speed}
+                            options={[
+                                { value: 2, label: '0.5x' },
+                                { value: 1, label: '1x' },
+                                { value: 0.5, label: '2x' },
+                                { value: 0.2, label: '5x' },
+                            ]}
+                            onChange={setSpeed}
+                        />
+                    </div>
+                </>
+            }
         </div>
     )
 }

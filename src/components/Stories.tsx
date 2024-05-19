@@ -66,7 +66,7 @@ const StoriesComponent = () => {
             return player.goalIds.map(goalId => {
                 return {
                     type: "component",
-                    duration: 12000,
+                    duration: 6000,
                     component: (props: any) => replayComponent(props)
                 }
             })

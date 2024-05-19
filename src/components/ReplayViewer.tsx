@@ -285,8 +285,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                 const toRemoveObject = externalScene.getObjectByName(x);
                 if (toRemoveObject) {
                     toRemoveObject.removeFromParent();
-                    loadedObjects.filter(x => x.toString() !== x);
-                    setLoadedObjects(loadedObjects);
                 }
             })
 

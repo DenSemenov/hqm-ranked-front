@@ -1,4 +1,4 @@
-import { Button, Card, Col, Row, Upload, UploadFile, UploadProps, notification } from "antd";
+import { Button, Card, Col, Divider, Row, Upload, UploadFile, UploadProps, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useState } from "react";
 import { selectIsAdmin, selectIsAuth, setCurrentUser, setIsAuth } from "stores/auth";
@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import ChangeNicknameModal from "./ChangeNicknameModal";
 import { addPushToken, removePushToken } from "stores/auth/async-actions";
 import { requestNotificationPermission } from "firebaseService";
+import { isMobile } from "react-device-detect";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -102,36 +103,37 @@ const ProfilePage = () => {
     }
 
     return (
-        <Row>
+        <Row style={{ padding: isMobile ? 16 : 0 }}>
             <Col sm={7} xs={0} />
             <Col sm={10} xs={24}>
-                <Card title={"Profile"} >
-                    <div className={styles.form}>
-                        <ImgCrop rotationSlider>
-                            <Upload
-                                action={process.env.REACT_APP_API_URL + "/api/Player/UploadAvatar"}
-                                method={"POST"}
-                                headers={{
-                                    Authorization: "Bearer " + localStorage.getItem("token")
-                                }}
-                                listType="picture-card"
-                                fileList={fileList}
-                                onChange={onChange}
-                                onPreview={onPreview}
-                            >
-                                {fileList.length < 1 && '+ Upload'}
-                            </Upload>
-                        </ImgCrop>
-                        <Button onClick={() => setChangeNicknameModalOpen(true)}>Change nickname</Button>
-                        <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
-                        <Button onClick={() => navigate("/notifications")}>Notifications settings</Button>
-                        <Button danger onClick={onLogout}>Log out</Button>
+                <div className={styles.form}>
+                    <ImgCrop rotationSlider>
+                        <Upload
+                            action={process.env.REACT_APP_API_URL + "/api/Player/UploadAvatar"}
+                            method={"POST"}
+                            headers={{
+                                Authorization: "Bearer " + localStorage.getItem("token")
+                            }}
+                            listType="picture-card"
+                            fileList={fileList}
+                            onChange={onChange}
+                            onPreview={onPreview}
+                        >
+                            {fileList.length < 1 && '+ Upload'}
+                        </Upload>
+                    </ImgCrop>
+                    <Button onClick={() => setChangeNicknameModalOpen(true)}>Change nickname</Button>
+                    <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
+                    <Button onClick={() => navigate("/notifications")}>Notifications settings</Button>
+                    <Button danger onClick={onLogout}>Log out</Button>
 
-                        {isAdmin &&
+                    {isAdmin &&
+                        <>
+                            <Divider />
                             <Button onClick={() => navigate("/admin")}>Admin</Button>
-                        }
-                    </div>
-                </Card>
+                        </>
+                    }
+                </div>
             </Col>
             <ChangePasswordModal open={changePasswordModalOpen} onClose={onCloseChangePasswordModal} />
             <ChangeNicknameModal open={changeNicknameModalOpen} onClose={onCloseChangeNicknameModal} />

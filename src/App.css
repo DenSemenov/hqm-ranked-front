@@ -63,7 +63,7 @@ body {
 }
 
 .ant-table-body {
-  height: calc(-56px + 100%);
+  height: calc(-37px + 100%);
 }
 
 .ant-table-body table {
@@ -122,4 +122,51 @@ div {
 
 .ant-slider-horizontal.ant-slider-with-marks {
   margin-bottom: 0;
+}
+
+.main-layout {
+  height: 100vh;
+}
+
+.ant-card-body {
+  height: 100%;
+  padding: 0 !important;
+}
+
+.ant-carousel,
+.slick-list {
+  height: 100%;
+}
+
+ul.slick-dots.slick-dots-bottom {
+  position: absolute;
+  bottom: 0
+}
+
+.slick-dots button {
+  background-color: hsla(0, 0%, 85%, 1) !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 100% !important;
+}
+
+.slick-dots li {
+  width: 8px !important;
+}
+
+.slick-dots .slick-active {
+  width: 8px !important;
+}
+
+.slick-track {
+  height: 100%;
+}
+
+.slick-slide,
+.slick-slide>div {
+  height: 100%;
+}
+
+.ant-typography {
+  margin-bottom: 0 !important;
 }

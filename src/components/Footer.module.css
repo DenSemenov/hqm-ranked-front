@@ -1,0 +1,10 @@
+.footerItems {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.icon,
+.icon>span>span {
+    font-size: 24px !important;
+}

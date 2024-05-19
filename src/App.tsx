@@ -2,8 +2,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import HomePage from './components/HomePage';
 import Header from './components/Header';
-import "./css/colors.css";
-import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag } from 'antd';
+import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag, Flex, Layout } from 'antd';
 import { BrowserView, MobileView, isMobile } from 'react-device-detect';
 import PlayersTable from 'components/PlayersTable';
 import Games from 'components/Games';
@@ -28,6 +27,10 @@ import { setUpdatedServer } from 'stores/server';
 import ReplayViewer from 'components/ReplayViewer';
 import { initializeFirebase } from 'firebaseService';
 import Notifications from 'components/Notifications';
+import { getTheme } from 'css/themeConfig';
+import Footer from 'components/Footer';
+import Servers from 'components/Servers';
+import Other from 'components/Other';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -37,6 +40,33 @@ function App() {
   const loadingUser = useSelector(selectLoadingUser);
 
   const singnalR = new SignalrService();
+
+  const contentStyle: React.CSSProperties = {
+    height: !isMobile ? "calc(-48px + 100vh)" : "calc(-92px + 100vh)",
+    padding: isMobile ? 0 : 16,
+    width: "100vw",
+    overflow: "auto"
+  };
+
+  const headerStyle: React.CSSProperties = {
+    height: 48,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100vw",
+    padding: "0 32px",
+    background: "#141414"
+  };
+
+  const footerStyle: React.CSSProperties = {
+    height: 48,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100vw",
+    padding: "0 16px",
+    background: "#141414"
+  };
 
   useEffect(() => {
     initializeFirebase();
@@ -93,7 +123,7 @@ function App() {
   const routes = useMemo(() => {
     return <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/players" element={<PlayersTable full={true} />} />
+      <Route path="/players" element={<PlayersTable />} />
       <Route path="/games" element={<Games />} />
       <Route path="/player" element={<Player />} />
       <Route path="/game" element={<Game />} />
@@ -103,68 +133,42 @@ function App() {
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/replay" element={<ReplayViewer />} />
       <Route path="/notifications" element={<Notifications />} />
+      <Route path="/servers" element={<Servers />} />
+      <Route path="/other" element={<Other />} />
     </Routes>
   }, [])
 
   return (
     <ConfigProvider
-      theme={{
-        token: {
-          sizeStep: 4,
-          fontSize: 14,
-          borderRadius: 8,
-          wireframe: false,
-        },
-        components: {
-          Table: {
-            borderRadius: 0,
-            headerBorderRadius: 0,
-          },
-          Card: {
-            borderRadius: isMobile ? 0 : 8,
-            borderRadiusOuter: isMobile ? 0 : 8,
-            borderRadiusSM: isMobile ? 0 : 8,
-            borderRadiusXS: isMobile ? 0 : 8,
-            borderRadiusLG: isMobile ? 0 : 8,
-          },
-          Button: {
-            colorBorder: "transparent",
-            boxShadow: "none"
-          },
-          Select: {
-            colorBorder: "transparent"
-          },
-          Input: {
-            colorBorder: "transparent"
-          },
-        },
-        algorithm: theme === "dark" ? AntdTheme.darkAlgorithm : AntdTheme.defaultAlgorithm,
-      }}
+      theme={getTheme(theme === "dark")}
     >
-      <div className="app">
-        {!loadingUser &&
-          <>
-            <BrowserRouter>
-              <Header />
-              <BrowserView>
-                <div className='content'>
+      <Flex gap="middle" className='main-layoutr'>
+        <Layout style={{ height: "100vh" }}>
+          {!loadingUser &&
+            <>
+              <BrowserRouter>
+                <Layout.Header style={headerStyle}>
+                  <Header />
+                </Layout.Header>
+                <Layout.Content style={contentStyle}>
                   {routes}
-                </div>
-              </BrowserView>
-              <MobileView>
-                <div className='content-mobile'>
-                  {routes}
-                </div>
-              </MobileView>
-            </BrowserRouter>
-          </>
-        }
-        {loadingUser &&
-          <div className='content-loading'>
-            <LoadingOutlined style={{ fontSize: 64 }} />
-          </div>
-        }
-      </div>
+                </Layout.Content>
+                {isMobile &&
+                  <Layout.Footer style={footerStyle}>
+                    <Footer />
+                  </Layout.Footer>
+                }
+              </BrowserRouter>
+            </>
+          }
+          {loadingUser &&
+            <div className='content-loading'>
+              <LoadingOutlined style={{ fontSize: 64 }} />
+            </div>
+          }
+
+        </Layout>
+      </Flex>
     </ConfigProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { Card, Col, Row, Tag, Typography } from "antd";
+import { Card, Carousel, Col, Row, Tag, Typography } from "antd";
 import { IActiveServerResponse } from "models/IActiveServerResponse";
 import { isMobile } from "react-device-detect";
 import { useSelector } from "react-redux";
@@ -49,34 +49,33 @@ const Servers = () => {
     const getBodyByStateId = (server: IActiveServerResponse) => {
         switch (server.state) {
             case 0:
-                return <div>
+                return <>
                     <Text type="secondary">Logged in</Text>
-                    <Title level={5}>{server.loggedIn + " / " + server.teamMax * 2}</Title>
-                </div>
+                    <Title level={3}>{server.loggedIn + " / " + server.teamMax * 2}</Title>
+                </>
             case 1:
-                return <div>
-                    <Title level={5}>Pick</Title>
-                </div>
+                return <Title level={3}>Pick</Title>
             case 2:
-                return <div>
+                return <>
                     <Text type="secondary">{getPeriodWithTime(server.period, server.time)}</Text>
-                    <Title level={5}>{server.redScore + " - " + server.blueScore}</Title>
-                </div>
+                    <Title level={3}>{server.redScore + " - " + server.blueScore}</Title>
+                </>
         }
     }
 
     return (
-        <Card bordered={false} style={{ height: !isMobile ? 336 : undefined, width: "100%" }}>
-            <Row gutter={[16, 16]}>
-                {servers.map(server => {
-                    return <Col sm={12} xs={24} key={server.id} >
-                        <Card title={server.name} style={{ width: "100%" }} extra={getStateById(server.state)}>
-                            {getBodyByStateId(server)}
-                        </Card>
-                    </Col>
-                })}
-            </Row>
-        </Card>
+        <Carousel style={{ height: "calc(-24px + 100%)", padding: isMobile ? 16 : 0 }} fade waitForAnimate >
+            {servers.map(server => {
+                return <><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Title level={3}>{server.name}</Title>
+                    {getStateById(server.state)}
+                </div>
+                    <div style={{ height: "calc(-68px + 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+                        {getBodyByStateId(server)}
+                    </div>
+                </>
+            })}
+        </Carousel>
     )
 }
 

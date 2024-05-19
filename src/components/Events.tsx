@@ -20,32 +20,29 @@ const Events = () => {
     }, [])
 
     return (
-        <Card bordered={false} style={{ height: !isMobile ? 336 : undefined, width: "100%", marginBottom: !isMobile ? 32 : undefined }}>
+        <>
             {currentEvent &&
-                <>
-                    <Row>
-                        <Col span={16}>
-                            <Title level={5}>{currentEvent.text}</Title>
-                        </Col>
-                        <Col span={8} className='right-align'>
-                            <Text type="secondary">{currentEvent.left}</Text>
-                        </Col>
-                        <Col span={24}>
-                            <List
-                                itemLayout="horizontal"
-                                dataSource={currentEvent.players}
-                                renderItem={(item, index) => (
-                                    <List.Item>
-                                        <PlayerItem id={item.id} name={item.name} />
-                                    </List.Item>
-                                )}
-                            />
-                        </Col>
-                    </Row>
-
-                </>
+                <Row>
+                    <Col span={16}>
+                        <Title level={5}>{currentEvent.text}</Title>
+                    </Col>
+                    <Col span={8} className='right-align'>
+                        <Text type="secondary">{currentEvent.left}</Text>
+                    </Col>
+                    <Col span={24}>
+                        <List
+                            itemLayout="horizontal"
+                            dataSource={currentEvent.players}
+                            renderItem={(item, index) => (
+                                <List.Item>
+                                    <PlayerItem id={item.id} name={item.name} />
+                                </List.Item>
+                            )}
+                        />
+                    </Col>
+                </Row>
             }
-        </Card>
+        </>
     )
 }
 

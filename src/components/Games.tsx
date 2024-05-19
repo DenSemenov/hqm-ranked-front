@@ -48,46 +48,44 @@ const Games = () => {
     }
 
     return (
-        <Card title={!isMobile ? "Games" : undefined} styles={{ body: { padding: 0 } }} bordered={false} style={{ height: !isMobile ? height : undefined, width: "100%", marginBottom: !isMobile ? 32 : undefined }}>
-            <div style={!isMobile ? { height: "100%", overflow: "auto" } : undefined} onScroll={onScroll}>
-                {currentSeasonGames.map(game => (
-                    <div className={styles.gamesItem} key={game.gameId} onClick={() => navigate("/game?id=" + game.gameId)}>
-                        <Row gutter={[8, 8]} >
-                            <Col span={16}>
-                                <span className="subtitle">{convertDate(game.date)}</span>
-                            </Col>
-                            <Col span={8} className={styles.gameStatus}>
-                                {game.hasReplayFragments &&
-                                    <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
-                                        e.stopPropagation();
-                                        navigate("/replay?id=" + game.replayId)
-                                    }} />
-                                }
-                                <Tag style={{ marginRight: 0 }}>{game.status}</Tag>
-                            </Col>
-                            <Col span={16} className={styles.gameContentName}>
-                                <div className={styles.teamTitle}>
-                                    <Avatar.Group>
-                                        {game.players.filter(x => x.team == 0).map(x => {
-                                            return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
-                                        })}
-                                    </Avatar.Group>
-                                    {"vs"}
-                                    <Avatar.Group>
-                                        {game.players.filter(x => x.team == 1).map(x => {
-                                            return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
-                                        })}
-                                    </Avatar.Group>
-                                </div>
-                            </Col>
-                            <Col span={8} className={styles.gameContent} >
-                                {game.redScore + " - " + game.blueScore}
-                            </Col>
-                        </Row>
-                    </div>
-                ))}
-            </div>
-        </Card>
+        <div style={{ height: "100%", overflow: "auto" }} onScroll={onScroll}>
+            {currentSeasonGames.map(game => (
+                <div className={styles.gamesItem} key={game.gameId} onClick={() => navigate("/game?id=" + game.gameId)}>
+                    <Row gutter={[8, 8]} >
+                        <Col span={16}>
+                            <span className="subtitle">{convertDate(game.date)}</span>
+                        </Col>
+                        <Col span={8} className={styles.gameStatus}>
+                            {game.hasReplayFragments &&
+                                <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate("/replay?id=" + game.replayId)
+                                }} />
+                            }
+                            <Tag style={{ marginRight: 0 }}>{game.status}</Tag>
+                        </Col>
+                        <Col span={16} className={styles.gameContentName}>
+                            <div className={styles.teamTitle}>
+                                <Avatar.Group>
+                                    {game.players.filter(x => x.team == 0).map(x => {
+                                        return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                    })}
+                                </Avatar.Group>
+                                {"vs"}
+                                <Avatar.Group>
+                                    {game.players.filter(x => x.team == 1).map(x => {
+                                        return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                    })}
+                                </Avatar.Group>
+                            </div>
+                        </Col>
+                        <Col span={8} className={styles.gameContent} >
+                            {game.redScore + " - " + game.blueScore}
+                        </Col>
+                    </Row>
+                </div>
+            ))}
+        </div>
     )
 }
 

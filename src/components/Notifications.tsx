@@ -1,8 +1,9 @@
-import { Button, Form, InputNumber, Radio, notification } from "antd";
+import { Button, Col, Form, InputNumber, Radio, Row, notification } from "antd";
 import { requestNotificationPermission } from "firebaseService";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { IPlayerNotificationsResponse, NotifyType } from "models/IPlayerNotificationsResponse";
 import { useEffect, useState } from "react";
+import { isMobile } from "react-device-detect";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { selectIsAuth } from "stores/auth";
@@ -81,51 +82,54 @@ const Notifications = () => {
     }
 
     return (
-        <>
-            {notificationsSettings &&
-                <Form
-                    onFinish={onSaveNotifications}
-                    initialValues={notificationsSettings}
-                    layout="vertical"
-                >
-                    <Form.Item>
-                        <Button type="primary" onClick={onEnablePush} >{currentToken === notificationsSettings.token ? "Disable" : "Enable"}</Button>
-                    </Form.Item>
-                    <Form.Item
-                        name="logsCount"
-                        label="Notify when equal or more then"
-                        rules={[{ required: true, message: 'Please input value' }]}
+        <Row style={{ padding: isMobile ? 16 : 0 }}>
+            <Col sm={7} xs={0} />
+            <Col sm={10} xs={24}>
+                {notificationsSettings &&
+                    <Form
+                        onFinish={onSaveNotifications}
+                        initialValues={notificationsSettings}
+                        layout="vertical"
                     >
-                        <InputNumber />
-                    </Form.Item>
-                    <Form.Item
-                        name="gameStarted"
-                        label="Game starts notification"
-                        rules={[{ required: true, message: 'Please pick an item' }]}
-                    >
-                        <Radio.Group>
-                            <Radio.Button value={NotifyType.None}>Disabled</Radio.Button>
-                            <Radio.Button value={NotifyType.On}>Enabled</Radio.Button>
-                            <Radio.Button value={NotifyType.OnWithMe}>Enabled if logged in</Radio.Button>
-                        </Radio.Group>
-                    </Form.Item>
-                    <Form.Item
-                        name="gameEnded"
-                        label="Game ends notification"
-                        rules={[{ required: true, message: 'Please pick an item' }]}
-                    >
-                        <Radio.Group>
-                            <Radio.Button value={NotifyType.None}>Disabled</Radio.Button>
-                            <Radio.Button value={NotifyType.On}>Enabled</Radio.Button>
-                            <Radio.Button value={NotifyType.OnWithMe}>Enabled if logged in</Radio.Button>
-                        </Radio.Group>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">Save</Button>
-                    </Form.Item>
-                </Form>
-            }
-        </>
+                        <Form.Item>
+                            <Button type="primary" onClick={onEnablePush} >{currentToken === notificationsSettings.token ? "Disable" : "Enable"}</Button>
+                        </Form.Item>
+                        <Form.Item
+                            name="logsCount"
+                            label="Notify when equal or more then"
+                            rules={[{ required: true, message: 'Please input value' }]}
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                        <Form.Item
+                            name="gameStarted"
+                            label="Game starts notification"
+                            rules={[{ required: true, message: 'Please pick an item' }]}
+                        >
+                            <Radio.Group>
+                                <Radio.Button value={NotifyType.None}>Disabled</Radio.Button>
+                                <Radio.Button value={NotifyType.On}>Enabled</Radio.Button>
+                                <Radio.Button value={NotifyType.OnWithMe}>Enabled if logged in</Radio.Button>
+                            </Radio.Group>
+                        </Form.Item>
+                        <Form.Item
+                            name="gameEnded"
+                            label="Game ends notification"
+                            rules={[{ required: true, message: 'Please pick an item' }]}
+                        >
+                            <Radio.Group>
+                                <Radio.Button value={NotifyType.None}>Disabled</Radio.Button>
+                                <Radio.Button value={NotifyType.On}>Enabled</Radio.Button>
+                                <Radio.Button value={NotifyType.OnWithMe}>Enabled if logged in</Radio.Button>
+                            </Radio.Group>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">Save</Button>
+                        </Form.Item>
+                    </Form>
+                }
+            </Col>
+        </Row>
     )
 }
 

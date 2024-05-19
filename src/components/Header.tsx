@@ -1,16 +1,17 @@
 
-import { App, Avatar, Badge, Button, Col, Popover, Row, Select } from 'antd';
+import { Avatar, Badge, Button } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import styles from './Header.module.css'
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { selectCurrentUser, selectIsAdmin, selectIsAuth, setCurrentUser, setIsAuth } from 'stores/auth';
+import { selectCurrentUser, selectIsAuth } from 'stores/auth';
 import { getCurrentUser } from 'stores/auth/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import ChangePasswordModal from './ChangePasswordModal';
-import { selectCurrentSeason, selectSeasons, selectStorageUrl, setCurrentSeason } from 'stores/season';
+import { selectStorageUrl } from 'stores/season';
 import { useNavigate } from 'react-router-dom';
 import ThemeButton from './ThemeButton';
+import { isMobile } from 'react-device-detect';
 
 const Header = () => {
     const dispatch = useAppDispatch();
@@ -18,8 +19,6 @@ const Header = () => {
 
     const isAuth = useSelector(selectIsAuth);
     const currentUser = useSelector(selectCurrentUser);
-    const seasons = useSelector(selectSeasons);
-    const currentSeason = useSelector(selectCurrentSeason);
     const storageUrl = useSelector(selectStorageUrl);
 
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
@@ -51,56 +50,28 @@ const Header = () => {
     }, [currentUser])
 
     const loginButton = useMemo(() => {
-        if (userName && currentUser) {
-            return <Badge count={currentUser.isBanned ? "BAN" : undefined} offset={[-16, 16]}>
-                <Avatar shape='square' style={{ cursor: "pointer" }} src={storageUrl + "images/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
-            </Badge>
-        } else {
-            return <Button icon={<UserOutlined />} onClick={loginPage} />
-        }
-    }, [currentUser, userName, avatarName])
-
-    const seasonItems = useMemo(() => {
-        return seasons.map(x => {
-            return {
-                value: x.id,
-                label: x.name,
+        if (!isMobile) {
+            if (userName && currentUser) {
+                return <Badge count={currentUser.isBanned ? "BAN" : undefined} offset={[-16, 16]}>
+                    <Avatar shape='square' style={{ cursor: "pointer" }} src={storageUrl + "images/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
+                </Badge>
+            } else {
+                return <Button icon={<UserOutlined />} onClick={loginPage} />
             }
-        })
-    }, [seasons]);
+        } else {
+            return <></>
+        }
+    }, [isMobile, currentUser, userName, avatarName])
 
     return (
         <>
-            <Row style={{ height: 42, borderBottom: "1px solid var(--border)", padding: "0 16px" }}>
-                <Col sm={8} xs={6} className={styles.headerContainerLogo}>
-                    <span onClick={() => navigate("/")}>
-                        <svg height="36" width="36">
-                            <image href="/icons/logo.svg" height="36" width="36" />
-                        </svg>
-                    </span>
-                </Col>
-                <Col sm={8} xs={12} className={styles.headerContainerItems}>
-                    <Select
-                        onChange={(value: string) => dispatch(setCurrentSeason(value))}
-                        value={currentSeason}
-                        options={seasonItems}
-                    />
-                </Col>
-                <Col sm={8} xs={6}>
-                    <div className={styles.headerContainerLogin}>
-                        {/* <BrowserView>
-                            <Button
-                                type="link"
-                                icon={<svg height="24" width="24">
-                                    <image href="/icons/discord.svg" height="24" width="24" />
-                                </svg>}
-                            />
-                        </BrowserView> */}
-                        <ThemeButton />
-                        {loginButton}
-                    </div>
-                </Col>
-            </Row>
+            <svg height="36" width="36" onClick={() => navigate("/")}>
+                <image href="/icons/logo.svg" height="36" width="36" />
+            </svg>
+            <div className={styles.headerContainerLogin}>
+                <ThemeButton />
+                {loginButton}
+            </div>
             <ChangePasswordModal open={changePasswordModalOpen} onClose={onCloseChangePasswordModal} />
         </ >
     )

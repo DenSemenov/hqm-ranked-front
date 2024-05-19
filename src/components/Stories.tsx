@@ -66,7 +66,7 @@ const StoriesComponent = () => {
             return player.goalIds.map(goalId => {
                 return {
                     type: "component",
-                    duration: 6000,
+                    duration: 6500,
                     component: (props: any) => replayComponent(props)
                 }
             })
@@ -121,7 +121,8 @@ const StoriesComponent = () => {
                 open={storiesOpen}
                 width={size.x}
                 onCancel={() => setStoriesOpen(false)}
-                footer={[]}>
+                footer={[]}
+            >
                 <Stories
                     width={size.x + "px"}
                     height={size.y + "px"}

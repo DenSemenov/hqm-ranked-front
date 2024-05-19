@@ -291,7 +291,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
             const font = await fontLoader.loadAsync('/fonts/helvetiker_bold.typeface.json');
             setFont(font);
 
-            sceneRef.current = externalScene;
+            sceneRef.current = externalScene.clone();
 
             setSceneReady(true);
         }

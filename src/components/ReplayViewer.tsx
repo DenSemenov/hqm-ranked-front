@@ -402,7 +402,11 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                         puckObject.position.set(puck.posX, puck.posY, puck.posZ)
                         puckObject.rotation.set(puck.rotX, puck.rotY, puck.rotZ)
                         if (first) {
-                            camera.position.setZ(puck.posZ);
+                            const howLongFromCenter = puck.posZ - 30.5;
+                            const x = puck.posX * 0.5;
+                            camera.position.setZ(30.5 + howLongFromCenter * 0.2);
+                            camera.position.setY(4 + (0.2 * puck.posX));
+                            camera.position.setX(x);
                             camera.lookAt(puckObject.position)
                         }
 

@@ -1,20 +1,19 @@
 import { Button, Popover, Select, Slider } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getReplayChatMessages, getReplayGoals, getReplayViewer, getStoryReplayViewer } from "stores/season/async-actions";
+import { getReplayChatMessages, getReplayGoals, getReplayHighlights, getReplayViewer, getStoryReplayViewer } from "stores/season/async-actions";
 import styles from './ReplayViewer.module.css'
-import { CaretRightOutlined, PauseOutlined, UnorderedListOutlined, WechatWorkOutlined, BorderOutlined, LoadingOutlined } from "@ant-design/icons";
+import { CaretRightOutlined, PauseOutlined, UnorderedListOutlined, WechatWorkOutlined, BorderOutlined, LoadingOutlined, OrderedListOutlined } from "@ant-design/icons";
 import { IFragment, IReplayViewerResponse, PlayerInList, ReplayPlayer, ReplayPuck, ReplayTeam, ReplayTick } from "models/IReplayViewerResponse";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import * as THREE from "three";
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { IReplayGoalResponse } from "models/IReplayGoalResponse";
 import { IReplayChatMessage } from "models/IReplayChatMessage";
 import { isMobile } from "react-device-detect";
 import ReplayService from "services/ReplayService";
+import { IReplayHighlight } from "models/IReplayHighlight";
 
 const excludedNames = ["Scene", "lower", "upper", "puck", "stick", "basebluegoal", "baseboardlower", "text", "Circle_Circle.002", "baseboards", "basestick", "baseice", "baseredgoal", "ROOT_UU3D", "Circle_Circle001", "Circle_Circle001_1", "Circle_Circle001_2", "Circle_Circle001_3", "Circle_Circle001_4", "Circle_Circle001_5"]
 
@@ -42,11 +41,13 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
     const [showPlayers, setShowPlayers] = useState<boolean>(false);
     const [showChat, setShowChat] = useState<boolean>(false);
     const [showMap, setShowMap] = useState<boolean>(false);
+    const [showHighlights, setShowHighlights] = useState<boolean>(false);
     const [loadedObjects, setLoadedObjects] = useState<string[]>([]);
     const [speed, setSpeed] = useState<number>(1);
     const [font, setFont] = useState<Font | null>(null);
     const [goals, setGoals] = useState<IReplayGoalResponse[]>([]);
     const [messages, setMessages] = useState<IReplayChatMessage[]>([]);
+    const [highlights, setHighlights] = useState<IReplayHighlight[]>([]);
     const [sceneReady, setSceneReady] = useState<boolean>(false);
     const [dataReady, setDataReady] = useState<boolean>(false);
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -136,6 +137,12 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                         id: id
                     })).unwrap().then((msgs: IReplayChatMessage[]) => [
                         setMessages(msgs)
+                    ])
+
+                    dispatch(getReplayHighlights({
+                        id: id
+                    })).unwrap().then((msgs: IReplayHighlight[]) => [
+                        setHighlights(msgs)
                     ])
 
                     initRenderer();
@@ -599,6 +606,15 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
         </>
     }, [currentTick, messages])
 
+    const highlightContent = useMemo(() => {
+        return <div className={styles.highlightList}>
+            {highlights.map(msg => {
+                const type = msg.type === 0 ? "Shot by" : "Save by";
+                return <Button size="small" onClick={() => setCurrentTick(msg.packet - 250)}>{type + " " + msg.name}</Button>
+            })}
+        </div>
+    }, [highlights])
+
     return (
         <div className={styles.viewerContainer + " content-without-padding"}>
             <div id="replay-viewer" className={styles.replayViewer} style={{ borderRadius: externalId && !isMobile ? 8 : 0, top: externalId ? 0 : 48, height: externalId ? "100%" : (isMobile ? "calc(-92px + 100%)" : "calc(-48px + 100%)") }}>
@@ -624,6 +640,11 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                     <div className={styles.map}>
                         <Popover content={mapContent} overlayClassName={styles.overlayWithout} trigger="click" placement="bottomRight" open={showMap}>
                             <Button icon={<BorderOutlined />} onClick={() => setShowMap(!showMap)} />
+                        </Popover>
+                    </div>
+                    <div className={styles.highlights}>
+                        <Popover content={highlightContent} trigger="click" placement="bottomLeft" open={showHighlights}>
+                            <Button icon={<OrderedListOutlined />} onClick={() => setShowHighlights(!showHighlights)} />
                         </Popover>
                     </div>
                     <div className={styles.score}>

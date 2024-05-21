@@ -136,8 +136,8 @@ const Game = () => {
                     <Row gutter={[16, 16]} style={{ width: "calc(16px + 100%)" }}>
                         {currentGameData.goals.map(goal => {
                             return <Col sm={4} xs={8} >
-                                <Card size="small" title={"Goal"} extra={<Text type="secondary">{getPeriodWithTime(goal.period, goal.time)}</Text>}>
-                                    <Row>
+                                <Card title={"Goal"} extra={<Text type="secondary">{getPeriodWithTime(goal.period, goal.time)}</Text>}>
+                                    <Row style={{ padding: "8px 16px" }}>
                                         <Col span={18}>
                                             <Title level={5}>{goal.goalBy}</Title>
                                         </Col>

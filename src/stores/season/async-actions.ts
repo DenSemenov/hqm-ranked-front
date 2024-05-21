@@ -121,6 +121,16 @@ export const getReplayChatMessages = createAsyncThunk('replay/getReplayChatMessa
     }
 })
 
+export const getReplayHighlights = createAsyncThunk('replay/getReplayHighlights', async (payload: IReplayRequest, thunkApi) => {
+    try {
+        const response = await SeasonService.getReplayHighlights(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
 export const getStorage = createAsyncThunk('season/getStorage', async (payload: void, thunkApi) => {
     try {
         const response = await SeasonService.getStorage()

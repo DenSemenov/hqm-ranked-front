@@ -1,7 +1,7 @@
 .slider {
     position: absolute;
     display: flex;
-    width: calc(-48px + 100%);
+    width: calc(-32px + 100%);
     gap: 16px;
     bottom: 16px;
     left: 16px;
@@ -52,6 +52,13 @@
     right: 16px;
 }
 
+.highlights {
+    position: absolute;
+    bottom: 82px;
+    right: 16px;
+}
+
+
 .score {
     position: absolute;
     top: 58px;
@@ -94,4 +101,10 @@
     background-color: transparent !important;
     box-shadow: none !important;
     padding: 0 !important;
+}
+
+.highlightList {
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
 }

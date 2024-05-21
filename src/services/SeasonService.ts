@@ -7,6 +7,7 @@ import { IPlayerRequest } from "models/IPlayerRequest";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { IReplayChatMessage } from "models/IReplayChatMessage";
 import { IReplayGoalResponse } from "models/IReplayGoalResponse";
+import { IReplayHighlight } from "models/IReplayHighlight";
 import { IReplayRequest } from "models/IReplayRequest";
 import { IReplayViewerRequest } from "models/IReplayViewerRequest";
 import { IReplayViewerResponse } from "models/IReplayViewerResponse";
@@ -46,6 +47,9 @@ export default class SeasonService {
     }
     static async getReplayChatMessages(data: IReplayRequest): Promise<AxiosResponse<any>> {
         return $api.post<IReplayChatMessage[]>('api/replay/GetReplayChatMessages', data);
+    }
+    static async getReplayHighlights(data: IReplayRequest): Promise<AxiosResponse<any>> {
+        return $api.post<IReplayHighlight[]>('api/replay/GetReplayHighlights', data);
     }
     static async getStorage(): Promise<AxiosResponse<any>> {
         return $api.post<string>('api/seasons/GetStorage');

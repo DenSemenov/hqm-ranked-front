@@ -150,9 +150,16 @@ const StoriesComponent = () => {
     }, [isMobile])
 
     const nextPlayerStory = () => {
-        setCurrentStoryIndex(0);
         const currentIndex = stories.findIndex(x => x.playerId === selectedPlayer);
         if (currentIndex !== stories.length - 1) {
+            let found = false;
+            stories[currentIndex + 1].goals.forEach((story, index) => {
+                if (!watchedStories.includes(story.id) && !found) {
+                    setCurrentStoryIndex(index);
+                    found = true;
+                }
+            })
+
             setSelectedPlayer(stories[currentIndex + 1].playerId)
         } else {
             setStoriesOpen(false)

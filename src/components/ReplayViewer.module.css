@@ -104,7 +104,16 @@
 }
 
 .highlightList {
+    max-height: 400px;
+    overflow: auto;
     gap: 8px;
     display: flex;
     flex-direction: column;
+}
+
+.highlightListItem {
+    display: flex;
+    gap: 8px;
+    cursor: pointer;
+    justify-content: space-between
 }

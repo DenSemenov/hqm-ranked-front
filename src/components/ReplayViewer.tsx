@@ -1,4 +1,4 @@
-import { Button, Popover, Select, Slider } from "antd";
+import { Button, Popover, Select, Slider, Tag } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getReplayChatMessages, getReplayGoals, getReplayHighlights, getReplayViewer, getStoryReplayViewer } from "stores/season/async-actions";
@@ -14,6 +14,7 @@ import { IReplayChatMessage } from "models/IReplayChatMessage";
 import { isMobile } from "react-device-detect";
 import ReplayService from "services/ReplayService";
 import { IReplayHighlight } from "models/IReplayHighlight";
+import { uniqBy } from "lodash";
 
 const excludedNames = ["Scene", "lower", "upper", "puck", "stick", "basebluegoal", "baseboardlower", "text", "Circle_Circle.002", "baseboards", "basestick", "baseice", "baseredgoal", "ROOT_UU3D", "Circle_Circle001", "Circle_Circle001_1", "Circle_Circle001_2", "Circle_Circle001_3", "Circle_Circle001_4", "Circle_Circle001_5"]
 
@@ -608,9 +609,9 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
 
     const highlightContent = useMemo(() => {
         return <div className={styles.highlightList}>
-            {highlights.map(msg => {
-                const type = msg.type === 0 ? "Shot by" : "Save by";
-                return <Button size="small" onClick={() => setCurrentTick(msg.packet - 250)}>{type + " " + msg.name}</Button>
+            {uniqBy(highlights, "packet").map(msg => {
+                const type = msg.type === 0 ? "Shot" : "Save";
+                return <div className={styles.highlightListItem} onClick={() => setCurrentTick(msg.packet - 250)}>{msg.name}<Tag color={type === "Shot" ? "blue" : "green"}>{type}</Tag></div>
             })}
         </div>
     }, [highlights])

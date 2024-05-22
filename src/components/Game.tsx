@@ -1,6 +1,6 @@
-import { Button, Card, Col, List, Row, Table, Tag, Typography } from "antd";
+import { Button, Card, Col, List, Progress, Row, Table, Tag, Typography } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { convertDate } from "shared/DateConverter";
@@ -9,6 +9,7 @@ import { getGameData, getReplay } from "stores/season/async-actions";
 import styles from './Game.module.css'
 import PlayerItem from "shared/PlayerItem";
 import { CaretRightOutlined } from "@ant-design/icons";
+import { orderBy, sum, uniqBy } from "lodash";
 
 const { Text, Title } = Typography;
 
@@ -46,6 +47,15 @@ const Game = () => {
         return p + " " + m + ":" + secString;
     }
 
+    const goals = useMemo(() => {
+        if (currentGameData) {
+            const ordered = orderBy(currentGameData.goals, "packet");
+            return uniqBy(ordered, "packet")
+        } else {
+            return []
+        }
+    }, [currentGameData])
+
 
     return currentGameData ? (
         <Row gutter={[0, 16]}>
@@ -75,9 +85,53 @@ const Game = () => {
                                 dataIndex: "assists"
                             },
                             {
+                                title: "Shots",
+                                align: "right",
+                                dataIndex: "shots",
+                                render(value, record, index) {
+                                    const total = record.shots > record.goals ? record.shots : record.goals;
+                                    let percent = Math.round(100 / total * record.goals);
+                                    if (isNaN(percent)) {
+                                        percent = 0;
+                                    }
+                                    return <div style={{ display: "flex", gap: 4, alignItems: "center", justifyContent: "right" }}>
+                                        <Tag>{record.goals + "/" + total}</Tag>
+                                        <Progress type="circle" size={32} percent={percent} format={() => percent} status={percent === 0 ? "exception" : undefined} />
+                                    </div>
+                                },
+                            },
+                            {
+                                title: "Saves",
+                                align: "right",
+                                dataIndex: "saves",
+                                render(value, record, index) {
+                                    const total = record.conceded + record.saves;
+                                    let percent = Math.round(100 / total * value)
+                                    if (isNaN(percent)) {
+                                        percent = 0;
+                                    }
+                                    return <div style={{ display: "flex", gap: 4, alignItems: "center", justifyContent: "right" }}>
+                                        <Tag>{value + "/" + total}</Tag>
+                                        <Progress type="circle" size={32} percent={percent} format={() => percent} />
+                                    </div>
+                                },
+                            },
+                            {
+                                title: "Possession",
+                                align: "right",
+                                dataIndex: "possession",
+                                render(value, record, index) {
+                                    const total = sum(currentGameData.players.filter(x => x.team == 0).map(x => x.possession))
+                                    return <Progress type="circle" size={32} percent={Math.round(100 / total * value)} />
+                                },
+                            },
+                            {
                                 title: "Score",
                                 align: "right",
-                                dataIndex: "score"
+                                dataIndex: "score",
+                                render(value, record, index) {
+                                    return <Tag style={{ fontSize: 12 }} color={value >= 0 ? "success" : "error"}>{value}</Tag>
+                                },
                             },
                         ]}
                     />
@@ -122,19 +176,66 @@ const Game = () => {
                                 dataIndex: "assists"
                             },
                             {
+                                title: "Shots",
+                                align: "right",
+                                dataIndex: "shots",
+                                render(value, record, index) {
+                                    const total = record.shots > record.goals ? record.shots : record.goals;
+                                    let percent = Math.round(100 / total * record.goals);
+                                    if (isNaN(percent)) {
+                                        percent = 0;
+                                    }
+                                    return <div style={{ display: "flex", gap: 4, alignItems: "center", justifyContent: "right" }}>
+                                        <Tag>{record.goals + "/" + total}</Tag>
+                                        <Progress type="circle" size={32} percent={percent} format={() => percent} status={percent === 0 ? "exception" : undefined} />
+                                    </div>
+                                },
+                            },
+                            {
+                                title: "Saves",
+                                align: "right",
+                                dataIndex: "saves",
+                                render(value, record, index) {
+                                    const total = record.conceded + record.saves;
+                                    let percent = Math.round(100 / total * value)
+                                    if (isNaN(percent)) {
+                                        percent = 0;
+                                    }
+                                    return <div style={{ display: "flex", gap: 4, alignItems: "center", justifyContent: "right" }}>
+                                        <Tag>{value + "/" + total}</Tag>
+                                        <Progress type="circle" size={32} percent={percent} format={() => percent} />
+                                    </div>
+                                },
+                            },
+                            {
+                                title: "Possession",
+                                align: "right",
+                                dataIndex: "possession",
+                                render(value, record, index) {
+                                    const total = sum(currentGameData.players.filter(x => x.team == 1).map(x => x.possession))
+                                    return <Progress type="circle" size={32} percent={Math.round(100 / total * value)} />
+                                },
+                            },
+                            {
                                 title: "Score",
                                 align: "right",
-                                dataIndex: "score"
+                                dataIndex: "score",
+                                render(value, record, index) {
+                                    return <Tag style={{ fontSize: 12 }} color={value >= 0 ? "success" : "error"}>{value}</Tag>
+                                },
                             },
                         ]}
                     />
                 </Card>
             </Col>
+            <Col span={24}>
+
+            </Col>
             {currentGameData.hasReplayFragments &&
                 <>
                     <Title level={5}>Goals</Title>
                     <Row gutter={[16, 16]} style={{ width: "calc(16px + 100%)" }}>
-                        {currentGameData.goals.map(goal => {
+                        {goals.map(goal => {
                             return <Col sm={4} xs={8} >
                                 <Card title={"Goal"} extra={<Text type="secondary">{getPeriodWithTime(goal.period, goal.time)}</Text>}>
                                     <Row style={{ padding: "8px 16px" }}>

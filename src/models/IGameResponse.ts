@@ -19,6 +19,10 @@ export interface IGamePlayerResponse {
     assists: number;
     score: number;
     team: number;
+    shots: number;
+    saves: number;
+    conceded: number;
+    possession: number;
 }
 
 export interface IGameChatResponse {

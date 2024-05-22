@@ -259,10 +259,10 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
         rendererRef.current = renderer;
 
         const camera = new THREE.PerspectiveCamera(
-            60,
+            75,
             w / h,
             0.1,
-            1000
+            100
         )
         camera.rotateY(90);
         camera.position.set(30, 6, 30.5);
@@ -412,7 +412,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                             const howLongFromCenter = puck.posZ - 30.5;
                             const x = puck.posX * 0.5;
                             camera.position.setZ(30.5 + howLongFromCenter * 0.2);
-                            camera.position.setY(4 + (0.2 * puck.posX));
+                            camera.position.setY(2 + (0.1 * puck.posX));
                             camera.position.setX(x);
                             camera.lookAt(puckObject.position)
                         }
@@ -507,7 +507,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                         setLoadedObjects(loadedObjects);
                         const newPlayerStick = playerStickTemp.clone();
                         newPlayerStick.position.set(player.stickPosX, player.stickPosY, player.stickPosZ)
-                        newPlayerStick.rotation.set(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ)
+                        newPlayerStick.setRotationFromEuler(new THREE.Euler(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ));
                         newPlayerStick.name = stickName;
 
                         scene.add(newPlayerStick);
@@ -515,9 +515,9 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                     }
                 } else {
                     if (playerStick) {
-                        playerStick.position.set(player.stickPosX, player.stickPosY, player.stickPosZ)
-                        // playerStick.rotation.set(player.stickRotX, player.stickRotY, player.stickRotZ)
+                        playerStick.position.set(player.stickPosX, player.stickPosY, player.stickPosZ);
                         playerStick.setRotationFromEuler(new THREE.Euler(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ));
+
                     }
                 }
 

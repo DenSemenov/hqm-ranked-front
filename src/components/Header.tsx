@@ -31,8 +31,9 @@ const Header = () => {
     }, [isAuth])
 
     useEffect(() => {
+        console.log("effect")
         if (currentUser) {
-            if (!currentUser.isAcceptedRules) {
+            if (!currentUser.isAcceptedRules && location.pathname !== "/rules") {
                 navigate("/rules")
             }
             if (currentUser.isAcceptedRules) {
@@ -41,7 +42,7 @@ const Header = () => {
                 }
             }
         }
-    }, [currentUser, location])
+    }, [currentUser, currentUser?.isAcceptedRules, location])
 
     const onCloseChangePasswordModal = () => {
         setChangePasswordModalOpen(false);

@@ -61,6 +61,15 @@ const PlayersTable = () => {
                         },
                     },
                     {
+                        title: "G",
+                        width: 90,
+                        align: "right",
+                        dataIndex: "g",
+                        render(value, record, index) {
+                            return record.win + record.lose
+                        },
+                    },
+                    {
                         title: "WIN",
                         width: 90,
                         align: "right",
@@ -73,10 +82,28 @@ const PlayersTable = () => {
                         dataIndex: "lose"
                     },
                     {
+                        title: "WINRATE",
+                        width: 90,
+                        align: "right",
+                        dataIndex: "winrate",
+                        render(value, record, index) {
+                            return Math.round(record.win / (record.win + record.lose) * 100 * 100) / 100 + "%"
+                        },
+                    },
+                    {
                         title: "G",
                         width: 70,
                         align: "right",
                         dataIndex: "goals"
+                    },
+                    {
+                        title: "GPG",
+                        width: 70,
+                        align: "right",
+                        dataIndex: "gpg",
+                        render(value, record, index) {
+                            return Math.floor(record.goals / (record.win + record.lose) * 100) / 100
+                        },
                     },
                     {
                         title: "A",
@@ -85,10 +112,29 @@ const PlayersTable = () => {
                         dataIndex: "assists"
                     },
                     {
+                        title: "APG",
+                        width: 70,
+                        align: "right",
+                        dataIndex: "gpg",
+                        render(value, record, index) {
+                            return Math.floor(record.assists / (record.win + record.lose) * 100) / 100
+                        },
+                    },
+                    {
                         title: "MVP",
                         width: 90,
                         align: "right",
                         dataIndex: "mvp"
+                    },
+
+                    {
+                        title: "MVP %",
+                        width: 70,
+                        align: "right",
+                        dataIndex: "gpg",
+                        render(value, record, index) {
+                            return Math.floor(record.mvp / (record.win + record.lose) * 100) / 100
+                        },
                     },
                     {
                         title: "RATING",

@@ -7,7 +7,7 @@ import { getRules } from "stores/season/async-actions";
 import styles from './RulesAcception.module.css'
 import { acceptRules, getCurrentUser } from "stores/auth/async-actions";
 import { useNavigate } from "react-router-dom";
-import { selectCurrentUser } from "stores/auth";
+import { selectCurrentUser, setCurrentUserAcceptedRules } from "stores/auth";
 
 const { Text, Title } = Typography;
 
@@ -28,7 +28,7 @@ const RulesAcception = () => {
 
     const onAcceptRules = () => {
         dispatch(acceptRules()).unwrap().then(() => {
-            dispatch(getCurrentUser())
+            dispatch(setCurrentUserAcceptedRules());
         });
     }
 

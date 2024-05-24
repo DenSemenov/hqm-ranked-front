@@ -42,6 +42,11 @@ export const authSlicer = createSlice({
                 state.loadingUser = false;
             }
         },
+        setCurrentUserAcceptedRules: (state: IAuthState, action: PayloadAction) => {
+            if (state.currentUser) {
+                state.currentUser.isAcceptedRules = true;
+            }
+        },
         setTheme: (state: IAuthState, action: PayloadAction<string>) => {
             state.theme = action.payload;
         },
@@ -55,7 +60,8 @@ export const {
     setIsAuth,
     setCurrentUser,
     setTheme,
-    setLoadingUser
+    setLoadingUser,
+    setCurrentUserAcceptedRules
 } =
     authSlicer.actions
 

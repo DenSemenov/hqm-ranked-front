@@ -5,4 +5,5 @@ export interface ICurrentUserResponse {
     role: string;
     isApproved: boolean;
     isBanned: boolean;
+    isAcceptedRules: boolean;
 }

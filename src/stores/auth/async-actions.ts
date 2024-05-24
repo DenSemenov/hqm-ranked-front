@@ -111,3 +111,14 @@ export const savePlayerNotifications = createAsyncThunk('auth/savePlayerNotifica
         return thunkApi.rejectWithValue(e)
     }
 })
+
+
+export const acceptRules = createAsyncThunk('auth/acceptRules', async (payload: void, thunkApi) => {
+    try {
+        const response = await AuthService.acceptRules()
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})

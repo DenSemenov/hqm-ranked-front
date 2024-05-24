@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { IGameResponse } from "models/IGameResponse";
 import { IPlayerResponse } from "models/IPlayerResponse";
+import { IRulesResponse } from "models/IRulesResponse";
 import { ISeasonGameResponse } from "models/ISeasonGameResponse";
 import { ISeasonResponse } from "models/ISeasonResponse";
 import { ISeasonStatsResponse } from "models/ISeasonStatsResponse";
@@ -15,7 +16,7 @@ export interface ISeasonState {
 
     currentPlayerData: IPlayerResponse | null;
     currentGameData: IGameResponse | null;
-    rules: string;
+    rules: IRulesResponse;
 
     storageUrl: string;
 
@@ -30,7 +31,10 @@ const initialState: ISeasonState = {
 
     currentPlayerData: null,
     currentGameData: null,
-    rules: "",
+    rules: {
+        text: "",
+        rules: []
+    },
 
     storageUrl: "",
 
@@ -61,7 +65,7 @@ export const seasonSlicer = createSlice({
         setCurrentGameData: (state: ISeasonState, action: PayloadAction<IGameResponse | null>) => {
             state.currentGameData = action.payload;
         },
-        setRules: (state: ISeasonState, action: PayloadAction<string>) => {
+        setRules: (state: ISeasonState, action: PayloadAction<IRulesResponse>) => {
             state.rules = action.payload;
         },
         setStorageUrl: (state: ISeasonState, action: PayloadAction<string>) => {

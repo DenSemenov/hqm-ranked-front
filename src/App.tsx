@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
 import HomePage from './components/HomePage';
 import Header from './components/Header';
 import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag, Flex, Layout } from 'antd';
@@ -13,7 +13,7 @@ import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { selectCurrentSeason } from 'stores/season';
-import { selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
+import { selectCurrentUser, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
 import Player from 'components/Player';
 import LoginModal from 'components/LoginModal';
 import RegisterModal from 'components/RegisterModal';
@@ -31,6 +31,7 @@ import { getTheme } from 'css/themeConfig';
 import Footer from 'components/Footer';
 import Servers from 'components/Servers';
 import Other from 'components/Other';
+import RulesAcception from 'components/RulesAcception';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -38,6 +39,7 @@ function App() {
   const currentSeason = useSelector(selectCurrentSeason);
   const theme = useSelector(selectTheme);
   const loadingUser = useSelector(selectLoadingUser);
+  const currentUser = useSelector(selectCurrentUser);
 
   const singnalR = new SignalrService();
 
@@ -135,6 +137,7 @@ function App() {
       <Route path="/notifications" element={<Notifications />} />
       <Route path="/servers" element={<Servers />} />
       <Route path="/other" element={<Other />} />
+      <Route path="/rules" element={<RulesAcception />} />
     </Routes>
   }, [])
 

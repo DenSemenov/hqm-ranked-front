@@ -9,13 +9,14 @@ import { getCurrentUser } from 'stores/auth/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import ChangePasswordModal from './ChangePasswordModal';
 import { selectStorageUrl } from 'stores/season';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ThemeButton from './ThemeButton';
 import { isMobile } from 'react-device-detect';
 
 const Header = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const isAuth = useSelector(selectIsAuth);
     const currentUser = useSelector(selectCurrentUser);
@@ -28,6 +29,19 @@ const Header = () => {
             dispatch(getCurrentUser());
         }
     }, [isAuth])
+
+    useEffect(() => {
+        if (currentUser) {
+            if (!currentUser.isAcceptedRules) {
+                navigate("/rules")
+            }
+            if (currentUser.isAcceptedRules) {
+                if (location.pathname === "/rules") {
+                    navigate("/")
+                }
+            }
+        }
+    }, [currentUser, location])
 
     const onCloseChangePasswordModal = () => {
         setChangePasswordModalOpen(false);

@@ -41,4 +41,7 @@ export default class AuthService {
     static async savePlayerNotifications(data: IPlayerNotificationsResponse): Promise<AxiosResponse> {
         return $api.post('api/player/SavePlayerNotifications', data);
     }
+    static async acceptRules(): Promise<AxiosResponse> {
+        return $api.post('api/player/AcceptRules');
+    }
 }

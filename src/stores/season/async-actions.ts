@@ -7,6 +7,7 @@ import { IGameRequest } from "models/IGameRequest"
 import { IReplayRequest } from "models/IReplayRequest"
 import { IReplayViewerRequest } from "models/IReplayViewerRequest"
 import { IStoryReplayViewerRequest } from "models/IStoryReplayViewerRequest"
+import { IStoryLikeRequest } from "models/IStoryLikeRequest"
 
 export const getSeasons = createAsyncThunk('season/getSeasons', async (payload: void, thunkApi) => {
     try {
@@ -159,6 +160,16 @@ export const getStories = createAsyncThunk('replay/getStories', async (payload: 
 export const getStoryReplayViewer = createAsyncThunk('replay/getStoryReplayViewer', async (payload: IStoryReplayViewerRequest, thunkApi) => {
     try {
         const response = await SeasonService.getStoryReplayViewer(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const likeStory = createAsyncThunk('replay/likeStory', async (payload: IStoryLikeRequest, thunkApi) => {
+    try {
+        const response = await SeasonService.likeStory(payload)
 
         return response.data
     } catch (e: any) {

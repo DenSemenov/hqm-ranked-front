@@ -16,17 +16,18 @@ import ReplayService from "services/ReplayService";
 import { IReplayHighlight } from "models/IReplayHighlight";
 import { uniqBy } from "lodash";
 
-const excludedNames = ["Scene", "lower", "upper", "puck", "stick", "basebluegoal", "baseboardlower", "text", "Circle_Circle.002", "baseboards", "basestick", "baseice", "baseredgoal", "ROOT_UU3D", "Circle_Circle001", "Circle_Circle001_1", "Circle_Circle001_2", "Circle_Circle001_3", "Circle_Circle001_4", "Circle_Circle001_5"]
+const excludedNames = ["Scene", "redupper", "blueupper", "redlower", "bluelower", "puck", "stick", "basebluegoal", "baseboardlower", "text", "baseboards", "basestick", "baseice", "baseredgoal"]
 
 interface IProps {
     externalId?: string;
+    externalPlayerName?: string;
     pause?: boolean;
     externalScene?: THREE.Scene;
-    onReady?: () => void;
-    onStart?: () => void;
+    onReady?: (startTick: number, currentId: string) => void;
+    onTickChanged?: (tick: number) => void;
 }
 
-const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IProps) => {
+const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, onReady, onTickChanged }: IProps) => {
     const dispatch = useAppDispatch();
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -45,7 +46,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
     const [showHighlights, setShowHighlights] = useState<boolean>(false);
     const [loadedObjects, setLoadedObjects] = useState<string[]>([]);
     const [speed, setSpeed] = useState<number>(1);
-    const [font, setFont] = useState<Font | null>(null);
     const [goals, setGoals] = useState<IReplayGoalResponse[]>([]);
     const [messages, setMessages] = useState<IReplayChatMessage[]>([]);
     const [highlights, setHighlights] = useState<IReplayHighlight[]>([]);
@@ -57,10 +57,10 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
     const sceneRef = useRef<any>();
 
     const redMaterial = new THREE.MeshPhongMaterial({
-        color: 0xF9665E,
+        color: 0x8c1010,
     });
     const blueMaterial = new THREE.MeshPhongMaterial({
-        color: 0x799FCB,
+        color: 0x10108c,
     });
 
     useEffect(() => {
@@ -73,10 +73,9 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
     }, [pause])
 
     useEffect(() => {
+        setDataReady(false);
+        setSceneReady(false);
         if (externalId) {
-            if (onStart) {
-                onStart();
-            }
             setCurrentId(externalId);
             dispatch(getStoryReplayViewer({
                 id: externalId,
@@ -92,7 +91,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                 setLoading(false);
 
                 setCurrentTick(data.fragments[0].min);
-
                 initRenderer();
 
                 setDataReady(true);
@@ -152,11 +150,11 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                 });
             }
         }
-    }, []);
+    }, [externalId]);
 
     useEffect(() => {
         if (dataReady && sceneReady && onReady) {
-            onReady();
+            onReady(currentTick, currentId);
         }
     }, [dataReady, sceneReady])
 
@@ -210,6 +208,10 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                 } else {
                     newTick = min;
                 }
+
+                if (onTickChanged) {
+                    onTickChanged(newTick)
+                }
                 setCurrentTick(newTick);
                 if (newTick % 10 === 0 && !externalId) {
                     setSearchParams(
@@ -223,23 +225,22 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
         return () => clearInterval(interval);
     }, [paused, currentTick, loading, speed]);
 
-    useEffect(() => {
-        if (rendererRef.current) {
-            const renderer = rendererRef.current;
-            renderer.setAnimationLoop(renderLoop)
-        }
+    const renderLoop = (f: Font) => {
+        const ls = document.getElementsByClassName("ant-slider-handle")[0];
+        if (ls) {
+            const t = ls.getAttribute("aria-valuenow");
+            if (rendererRef.current && cameraRef.current && sceneRef.current && t) {
+                let tick = t ? +t : 0;
 
-    }, [rendererRef.current, currentTick])
+                const renderer = rendererRef.current;
+                const scene = sceneRef.current;
+                const camera = cameraRef.current;
+                frameChange(tick, scene, camera, f);
 
-    const renderLoop = useCallback(() => {
-        if (rendererRef.current && cameraRef.current && sceneRef.current) {
-            const renderer = rendererRef.current;
-            const scene = sceneRef.current;
-            const camera = cameraRef.current;
-            frameChange(currentTick, scene, camera);
-            renderer.render(scene, camera)
+                renderer.render(scene, camera)
+            }
         }
-    }, [rendererRef, cameraRef, sceneRef, currentTick])
+    }
 
     const initRenderer = useCallback(async () => {
         let w = 0;
@@ -253,11 +254,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
 
         const renderer = new THREE.WebGLRenderer({
             canvas: canvasRef.current as HTMLCanvasElement,
-            antialias: true,
-            alpha: true,
         })
-
-        rendererRef.current = renderer;
 
         const camera = new THREE.PerspectiveCamera(
             75,
@@ -271,13 +268,12 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
         cameraRef.current = camera;
 
         const fontLoader = new FontLoader()
+        const font = await fontLoader.loadAsync('/fonts/helvetiker_bold.typeface.json');
 
         if (!externalScene) {
             const scene = await ReplayService.getDefaultScene();
             sceneRef.current = scene;
 
-            const font = await fontLoader.loadAsync('/fonts/helvetiker_bold.typeface.json');
-            setFont(font);
             setSceneReady(true);
         } else {
             const toRemove: string[] = [];
@@ -296,14 +292,15 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                 }
             })
 
-            const font = await fontLoader.loadAsync('/fonts/helvetiker_bold.typeface.json');
-            setFont(font);
-
             sceneRef.current = externalScene.clone();
-
             setSceneReady(true);
         }
         renderer.setSize(w, h)
+
+        rendererRef.current = renderer;
+
+        const r = rendererRef.current;
+        r.setAnimationLoop(() => renderLoop(font))
 
     }, [currentTick])
 
@@ -327,10 +324,10 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
             {players.filter(x => x).map(x => {
                 let color = "#EEF1E6";
                 if (x.team === 0) {
-                    color = "#F9665E"
+                    color = "#8c1010"
                 }
                 if (x.team === 1) {
-                    color = "#799FCB"
+                    color = "#10108c"
                 }
                 return <div style={{ color: color }}>{x.name}</div>
             })}
@@ -364,13 +361,92 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
         </div>
     }, [currentTick])
 
-    const frameChange = (current: number, scene: THREE.Scene, camera: THREE.Camera) => {
+    const handlePlayerObject = (objectType: string, player: ReplayPlayer, index: number, loadedObjects: string[], scene: THREE.Scene, team: ReplayTeam) => {
+        const objectName = `${objectType}${index}`;
+        let object = scene.getObjectByName(objectName);
+
+
+        if (!loadedObjects.includes(objectName) || !object) {
+            let objectToClone = objectType;
+
+            if (objectType === "upper") {
+                if (team === ReplayTeam.Red) {
+                    objectToClone = "redupper"
+                } else {
+                    objectToClone = "blueupper"
+                }
+            }
+
+            if (objectType === "lower") {
+                if (team === ReplayTeam.Red) {
+                    objectToClone = "redlower"
+                } else {
+                    objectToClone = "bluelower"
+                }
+            }
+
+            const objectTemp = scene.getObjectByName(objectToClone);
+            if (objectTemp) {
+                loadedObjects.push(objectName);
+                setLoadedObjects(loadedObjects);
+                const newObject = objectTemp.clone();
+
+                if (objectType === "stick") {
+                    newObject.position.set(player.stickPosX, player.stickPosY, player.stickPosZ);
+                    newObject.rotation.set(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ);
+                } else {
+                    newObject.position.set(player.posX, player.posY, player.posZ);
+                    newObject.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ);
+                }
+
+                if (objectType === "upper") {
+                    newObject.rotateOnAxis(new THREE.Vector3(1, 0, 0), -player.bodyLean);
+                    newObject.rotateOnAxis(new THREE.Vector3(0, 1, 0), -player.headTurn);
+                }
+
+
+                newObject.name = objectName;
+
+                if (objectType === "stick") {
+                    if (team !== ReplayTeam.Spectator) {
+                        newObject.traverse(function (child) {
+                            if (child instanceof THREE.Mesh) {
+
+                                child.material = (team === ReplayTeam.Red) ? redMaterial : blueMaterial;
+                            }
+                        });
+                    }
+                }
+
+                scene.add(newObject);
+            }
+        } else {
+            if (object) {
+                if (objectType === "stick") {
+                    object.position.set(player.stickPosX, player.stickPosY, player.stickPosZ);
+                    object.rotation.set(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ);
+                } else {
+                    object.position.set(player.posX, player.posY, player.posZ);
+                    object.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ);
+
+                    if (objectType === "upper") {
+                        object.rotateOnAxis(new THREE.Vector3(1, 0, 0), -player.bodyLean);
+                        object.rotateOnAxis(new THREE.Vector3(0, 1, 0), -player.headTurn);
+                    }
+                }
+            }
+        }
+
+        return object;
+    }
+
+    const frameChange = (current: number, scene: THREE.Scene, camera: THREE.Camera, font: Font) => {
         const tickData = fragments.find(x => x.packetNumber === current);
         if (tickData) {
-            const existsPlayerLowerNames = tickData.players.map(x => "playerLower" + x.index.toString());
-            const existsPlayerUpperNames = tickData.players.map(x => "playerUpper" + x.index.toString());
-            const existsPlayerStickNames = tickData.players.map(x => "playerStick" + x.index.toString());
-            const existsPlayerTextNames = tickData.players.map(x => "playerText" + x.index.toString());
+            const existsPlayerLowerNames = tickData.players.map(x => "lower" + x.index.toString());
+            const existsPlayerUpperNames = tickData.players.map(x => "upper" + x.index.toString());
+            const existsPlayerStickNames = tickData.players.map(x => "stick" + x.index.toString());
+            const existsPlayerTextNames = tickData.players.map(x => "text" + x.index.toString());
             const existsPucksNames = tickData.pucks.map(x => "puck" + x.index.toString());
             const toRemove: string[] = [];
             scene.traverse(object => {
@@ -390,153 +466,72 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                 }
             })
 
-            let first = true;
             tickData.pucks.forEach(puck => {
                 const name = "puck" + puck.index.toString();
                 let puckObject = scene.getObjectByName(name);
                 if (!loadedObjects.includes(name) || !puckObject) {
                     const puckTemp = scene.getObjectByName("puck");
                     if (puckTemp) {
-                        loadedObjects.push(name)
+                        loadedObjects.push(name);
                         setLoadedObjects(loadedObjects);
                         const newPuck = puckTemp.clone();
                         newPuck.position.set(puck.posX, puck.posY, puck.posZ)
-                        newPuck.rotation.set(puck.rotX, puck.rotY, puck.rotZ)
+                        newPuck.rotation.set(Math.PI * 2 - puck.rotX, puck.rotY, puck.rotZ)
                         newPuck.name = name;
                         scene.add(newPuck);
                     }
                 } else {
                     if (puckObject) {
                         puckObject.position.set(puck.posX, puck.posY, puck.posZ)
-                        puckObject.rotation.set(puck.rotX, puck.rotY, puck.rotZ)
-                        if (first) {
+                        puckObject.rotation.set(Math.PI * 2 - puck.rotX, puck.rotY, puck.rotZ)
+
+                        if (!externalPlayerName) {
                             const howLongFromCenter = puck.posZ - 30.5;
                             const x = puck.posX * 0.5;
                             camera.position.setZ(30.5 + howLongFromCenter * 0.2);
                             camera.position.setY(2 + (0.1 * puck.posX));
                             camera.position.setX(x);
                             camera.lookAt(puckObject.position)
+                        } else {
+                            const howLongFromCenter = puck.posZ - 30.5;
+                            const x = puck.posX * 1;
+                            camera.position.setZ(30.5 + howLongFromCenter * 0.4);
+                            camera.position.setY(3);
+                            camera.position.setX(x);
+                            camera.lookAt(puckObject.position)
                         }
-
-                        first = false;
                     }
                 }
-            })
+            });
 
             tickData.players.forEach(player => {
                 let team = ReplayTeam.Spectator;
                 let name = "";
+
                 const foundPlayerInList = tickData.playersInList.find(x => x.index === player.index);
                 if (foundPlayerInList) {
                     team = foundPlayerInList.team;
                     name = foundPlayerInList.name;
                 }
 
-                const lowerName = "playerLower" + player.index.toString();
-                const playerLower = scene.getObjectByName(lowerName);
-                if (!loadedObjects.includes(lowerName) || !playerLower) {
-                    const playerLowerTemp = scene.getObjectByName("lower");
-                    if (playerLowerTemp) {
-                        loadedObjects.push(lowerName)
-                        setLoadedObjects(loadedObjects);
-                        const newPlayerLower = playerLowerTemp.clone();
-                        newPlayerLower.position.set(player.posX, player.posY, player.posZ)
-                        newPlayerLower.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotX)
-                        newPlayerLower.name = lowerName;
-                        scene.add(newPlayerLower);
-                    }
-                } else {
-                    if (playerLower) {
-                        if (team !== ReplayTeam.Spectator) {
-                            playerLower.traverse(function (child) {
-                                if (child instanceof THREE.Mesh) {
-                                    if (team === 0) {
-                                        child.material = redMaterial;
-                                    } else {
-                                        child.material = blueMaterial;
-                                    }
-                                }
-                            });
-                        }
-                        playerLower.position.set(player.posX, player.posY, player.posZ)
-                        playerLower.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ)
-                    }
-                }
-
-                const upperName = "playerUpper" + player.index.toString();
-                let playerUpper = scene.getObjectByName(upperName);
-                if (!loadedObjects.includes(upperName) || !playerUpper) {
-                    const playerUpperTemp = scene.getObjectByName("upper");
-                    if (playerUpperTemp) {
-                        loadedObjects.push(upperName)
-                        setLoadedObjects(loadedObjects);
-                        const newPlayerUpper = playerUpperTemp.clone();
-                        newPlayerUpper.position.set(player.posX, player.posY, player.posZ)
-                        newPlayerUpper.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ)
-                        newPlayerUpper.name = upperName;
-
-                        scene.add(newPlayerUpper);
-
-                    }
-                } else {
-                    if (playerUpper) {
-                        if (team !== ReplayTeam.Spectator) {
-                            playerUpper.traverse(function (child) {
-                                if (child instanceof THREE.Mesh) {
-                                    if (team === 0) {
-                                        child.material = redMaterial;
-                                    } else {
-                                        child.material = blueMaterial;
-                                    }
-                                }
-                            });
-                        }
-
-                        playerUpper.position.set(player.posX, player.posY, player.posZ)
-                        playerUpper.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ)
-                        playerUpper.rotateOnAxis(new THREE.Vector3(1, 0, 0), -player.bodyLean);
-                        playerUpper.rotateOnAxis(new THREE.Vector3(0, 1, 1), -player.headTurn);
-                    }
-                }
-
-                const stickName = "playerStick" + player.index.toString();
-                let playerStick = scene.getObjectByName(stickName);
-                if (!loadedObjects.includes(stickName) || !playerStick) {
-                    const playerStickTemp = scene.getObjectByName("stick");
-                    if (playerStickTemp) {
-                        loadedObjects.push(stickName)
-                        setLoadedObjects(loadedObjects);
-                        const newPlayerStick = playerStickTemp.clone();
-                        newPlayerStick.position.set(player.stickPosX, player.stickPosY, player.stickPosZ)
-                        newPlayerStick.setRotationFromEuler(new THREE.Euler(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ));
-                        newPlayerStick.name = stickName;
-
-                        scene.add(newPlayerStick);
-
-                    }
-                } else {
-                    if (playerStick) {
-                        playerStick.position.set(player.stickPosX, player.stickPosY, player.stickPosZ);
-                        playerStick.setRotationFromEuler(new THREE.Euler(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ));
-
-                    }
-                }
-
-                const playerTextName = "playerText" + player.index.toString();
+                handlePlayerObject("lower", player, player.index, loadedObjects, scene, team);
+                handlePlayerObject("upper", player, player.index, loadedObjects, scene, team);
+                handlePlayerObject("stick", player, player.index, loadedObjects, scene, team);
+                const playerTextName = "text" + player.index.toString();
                 let playerText = scene.getObjectByName(playerTextName);
-                if ((!loadedObjects.includes(playerTextName) || !playerStick) && font) {
+
+                if ((!loadedObjects.includes(playerTextName) || !playerText) && font) {
                     loadedObjects.push(playerTextName)
                     setLoadedObjects(loadedObjects);
                     const geometry = new TextGeometry(name, {
                         font: font,
                         size: 0.15,
-                        depth: 0.1
+                        depth: 0.1,
                     })
 
                     geometry.center();
 
                     const mesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({ color: 0x000000 })]);
-
                     mesh.position.set(player.posX, player.posY + 1, player.posZ)
                     mesh.name = playerTextName;
                     scene.add(mesh);
@@ -546,7 +541,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                         playerText.lookAt(camera.position)
                     }
                 }
-            })
+            });
         }
     }
 
@@ -625,6 +620,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                     ref={canvasRef}
                     className={styles.replayCanvas}
                 />
+
             </div>
             {!externalId &&
                 <>
@@ -643,7 +639,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                             <Button icon={<BorderOutlined />} onClick={() => setShowMap(!showMap)} />
                         </Popover>
                     </div>
-                    <div className={styles.highlights}>
+                    <div className={styles.highlights} style={{ bottom: isMobile ? 122 : 82 }}>
                         <Popover content={highlightContent} trigger="click" placement="bottomLeft" open={showHighlights}>
                             <Button icon={<OrderedListOutlined />} onClick={() => setShowHighlights(!showHighlights)} />
                         </Popover>
@@ -651,30 +647,32 @@ const ReplayViewer = ({ externalId, pause, externalScene, onReady, onStart }: IP
                     <div className={styles.score}>
                         {scoreContent}
                     </div>
-                    <div className={styles.slider} style={{ bottom: isMobile ? 56 : 16 }}>
-                        <Button type="text" icon={loading ? <LoadingOutlined /> : (paused ? <CaretRightOutlined /> : <PauseOutlined />)} onClick={onPlayPause} />
-                        <Slider
-                            className={styles.sliderItem}
-                            min={min}
-                            max={max}
-                            value={currentTick}
-                            marks={toObject(goals)}
-                            onChange={onChange}
-                        />
-                        <Select
-                            style={{ width: 70 }}
-                            value={speed}
-                            options={[
-                                { value: 2, label: '0.5x' },
-                                { value: 1, label: '1x' },
-                                { value: 0.5, label: '2x' },
-                                { value: 0.2, label: '5x' },
-                            ]}
-                            onChange={setSpeed}
-                        />
-                    </div>
                 </>
             }
+            <div className={styles.slider} style={{ bottom: isMobile ? 56 : 16, display: !externalId ? "flex" : "none" }} >
+                <Button type="text" icon={loading ? <LoadingOutlined /> : (paused ? <CaretRightOutlined /> : <PauseOutlined />)} onClick={onPlayPause} />
+                <Slider
+                    id="loop-slider"
+                    className={styles.sliderItem + " loop-slider"}
+                    min={min}
+                    max={max}
+                    value={currentTick}
+                    marks={toObject(goals)}
+                    onChange={onChange}
+                />
+                <Select
+                    style={{ width: 70 }}
+                    value={speed}
+                    options={[
+                        { value: 2, label: '0.5x' },
+                        { value: 1, label: '1x' },
+                        { value: 0.5, label: '2x' },
+                        { value: 0.2, label: '5x' },
+                    ]}
+                    onChange={setSpeed}
+                />
+            </div>
+
         </div>
     )
 }

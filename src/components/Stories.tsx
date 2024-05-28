@@ -2,10 +2,10 @@ import { useAppDispatch } from "hooks/useAppDispatch";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import PlayerItem from "shared/PlayerItem";
-import { selectStorageUrl, selectStories } from "stores/season";
-import { getStories } from "stores/season/async-actions";
+import { selectStorageUrl, selectStories, setStories } from "stores/season";
+import { getStories, likeStory } from "stores/season/async-actions";
 import styles from './Stories.module.css'
-import { Avatar, Button, Modal, Tooltip, Typography } from 'antd';
+import { Avatar, Badge, Button, Modal, Skeleton, Tooltip, Typography } from 'antd';
 import 'stories-react/dist/index.css';
 import Stories from 'stories-react';
 import { isMobile } from "react-device-detect";
@@ -13,10 +13,10 @@ import ReplayViewer from "./ReplayViewer";
 import * as THREE from "three";
 import ReplayService from "services/ReplayService";
 import { convertDate } from "shared/DateConverter";
-import { EnterOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import { cloneDeep, orderBy } from "lodash";
-import { IStoryResponse } from "models/IStoryResponse";
+import { HeartFilled, HeartOutlined } from '@ant-design/icons';
+import { selectCurrentUser } from "stores/auth";
 
 const { Text, Title } = Typography;
 
@@ -26,13 +26,18 @@ const StoriesComponent = () => {
 
     const stories = useSelector(selectStories);
     const storageUrl = useSelector(selectStorageUrl);
+    const currentUser = useSelector(selectCurrentUser);
 
     const [storiesOpen, setStoriesOpen] = useState<boolean>(false);
     const [selectedPlayer, setSelectedPlayer] = useState<number>(0);
     const [scene, setScene] = useState<THREE.Scene>();
-    const [clickedBefore, setClickedBefore] = useState<boolean>(false);
     const [watchedStories, setWatchedStories] = useState<string[]>([]);
     const [currentStoryIndex, setCurrentStoryIndex] = useState<number>(0);
+    const [startTick, setStartTick] = useState<number>(0);
+    const [currentTick, setCurrentTick] = useState<number>(0);
+    const [play, setPlay] = useState<boolean>(false);
+    const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+    const [isLiked, setIsLiked] = useState<boolean>(false);
 
     useEffect(() => {
         dispatch(getStories());
@@ -40,6 +45,28 @@ const StoriesComponent = () => {
             setScene(scene);
         })
     }, []);
+
+    useEffect(() => {
+        if (currentTick === startTick + 296) {
+            next();
+        }
+    }, [currentTick, startTick]);
+
+    useEffect(() => {
+        setPlay(false);
+        setCurrentTick(0);
+        setStartTick(0);
+        setLoadingIndex(currentStoryIndex)
+    }, [currentStoryIndex, selectedPlayer]);
+
+    useEffect(() => {
+        const player = stories.find(x => x.playerId === selectedPlayer);
+        let liked = false;
+        if (player && currentUser) {
+            liked = player.goals[currentStoryIndex].likes.findIndex(x => x.id === currentUser.id) !== -1
+        }
+        setIsLiked(liked);
+    }, [stories, currentStoryIndex, selectedPlayer]);
 
     useEffect(() => {
         if (watchedStories.length !== 0) {
@@ -91,8 +118,45 @@ const StoriesComponent = () => {
         setStoriesOpen(true);
     }
 
-    const replayComponent = (props: any) => {
+    const onReady = (tick: number, storyId: string) => {
+        setStartTick(tick);
+        setPlay(true);
+        setLoadingIndex(null)
 
+        if (!watchedStories.includes(storyId)) {
+            const temp = cloneDeep(watchedStories)
+            temp.push(storyId);
+            setWatchedStories(temp)
+        }
+    }
+
+    const likeDislike = (id: string) => {
+        if (currentUser) {
+            dispatch(likeStory({
+                id: id
+            }))
+            const playerIndex = stories.findIndex(x => x.playerId === selectedPlayer);
+            const tempStores = cloneDeep(stories);
+            if (isLiked) {
+                tempStores[playerIndex].goals[currentStoryIndex].likes = tempStores[playerIndex].goals[currentStoryIndex].likes.filter(x => x.id !== currentUser.id)
+
+                setIsLiked(false);
+            } else {
+                tempStores[playerIndex].goals[currentStoryIndex].likes.push({
+                    id: currentUser.id,
+                    name: currentUser.name
+                });
+
+                setIsLiked(true);
+            }
+            setStories(tempStores)
+        } else {
+            navigate("/login");
+        }
+
+    }
+
+    const replayComponent = useMemo(() => {
         const player = stories.find(x => x.playerId === selectedPlayer);
         if (player) {
             return (
@@ -101,39 +165,32 @@ const StoriesComponent = () => {
                         <PlayerItem id={player.playerId} name={player.name} />
                     </div>
                     <div className={styles.storyDate}>
-                        <Text type="secondary">{convertDate(player.goals[props.story.index].date)}</Text>
+                        <Text type="secondary">{convertDate(player.goals[currentStoryIndex].date)}</Text>
                     </div>
                     <div className={styles.storyActions}>
-                        <Button type="text" icon={<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" onClick={() => navigate("replay?id=" + player.goals[props.story.index].replayId + "&t=" + (player.goals[props.story.index].packet))}>
+                        <Button type="text" icon={<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" onClick={() => navigate("replay?id=" + player.goals[currentStoryIndex].replayId + "&t=" + (player.goals[currentStoryIndex].packet))}>
                             <g id="Interface / External_Link">
                                 <path id="Vector" d="M10.0002 5H8.2002C7.08009 5 6.51962 5 6.0918 5.21799C5.71547 5.40973 5.40973 5.71547 5.21799 6.0918C5 6.51962 5 7.08009 5 8.2002V15.8002C5 16.9203 5 17.4801 5.21799 17.9079C5.40973 18.2842 5.71547 18.5905 6.0918 18.7822C6.5192 19 7.07899 19 8.19691 19H15.8031C16.921 19 17.48 19 17.9074 18.7822C18.2837 18.5905 18.5905 18.2839 18.7822 17.9076C19 17.4802 19 16.921 19 15.8031V14M20 9V4M20 4H15M20 4L13 11" stroke="gray" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </g>
                         </svg>} />
                     </div>
+                    <div className={styles.storyLike}>
+                        <Badge size="small" offset={[-8, 8]} count={player.goals[currentStoryIndex].likes.length}>
+                            <Button size="large" type="text" icon={isLiked ? <HeartFilled style={{ color: "#FF7276" }} /> : <HeartOutlined />} onClick={() => likeDislike(player.goals[currentStoryIndex].id)} />
+                        </Badge>
+                    </div>
                     <ReplayViewer
-                        externalId={player.goals[props.story.index].id}
-                        onReady={() => props.resume()}
-                        onStart={() => props.pause()}
-                        pause={props.isPaused}
+                        externalId={player.goals[currentStoryIndex].id}
+                        externalPlayerName={player.name}
+                        pause={!play}
+                        onReady={onReady}
+                        onTickChanged={setCurrentTick}
                         externalScene={scene}
                     />
                 </div>
             );
         }
-    }
-
-    const currentStores = useMemo(() => {
-        const player = stories.find(x => x.playerId === selectedPlayer);
-        if (player) {
-            return player.goals.map(goalId => {
-                return {
-                    type: "component",
-                    duration: 6500,
-                    component: (props: any) => replayComponent(props)
-                }
-            })
-        }
-    }, [selectedPlayer])
+    }, [stories, currentUser, currentStoryIndex, selectedPlayer, isLiked, play, onReady, setCurrentTick])
 
     const size = useMemo(() => {
         if (isMobile) {
@@ -149,48 +206,20 @@ const StoriesComponent = () => {
         }
     }, [isMobile])
 
-    const nextPlayerStory = () => {
-        const currentIndex = stories.findIndex(x => x.playerId === selectedPlayer);
-        if (currentIndex !== stories.length - 1) {
-            let found = false;
-            stories[currentIndex + 1].goals.forEach((story, index) => {
-                if (!watchedStories.includes(story.id) && !found) {
-                    setCurrentStoryIndex(index);
-                    found = true;
+    const orderedStories = useMemo(() => {
+        const os = orderBy(stories, (item) => {
+            let unwatchedFound = false;
+            item.goals.forEach(story => {
+                if (!watchedStories.includes(story.id)) {
+                    unwatchedFound = true;
                 }
             })
 
-            setSelectedPlayer(stories[currentIndex + 1].playerId)
-        } else {
-            setStoriesOpen(false)
-        }
-        setClickedBefore(false);
-    }
+            return !unwatchedFound
+        })
 
-    const onChangeStory = (index: number) => {
-        setCurrentStoryIndex(index);
-
-        const player = stories.find(x => x.playerId === selectedPlayer);
-        if (player && index) {
-            const storyId = player.goals[index].id;
-            if (!watchedStories.includes(storyId)) {
-                const temp = cloneDeep(watchedStories)
-                temp.push(storyId);
-                setWatchedStories(temp)
-            }
-        }
-
-        const nextEl = document.querySelectorAll('[class^="Actions-styles_right"]')[0];
-        if (nextEl && player && player.goals.length - 1 === index) {
-            nextEl.addEventListener("click", () => {
-                if (!clickedBefore) {
-                    setClickedBefore(true);
-                } else {
-                    nextPlayerStory();
-                }
-            })
-        }
-    }
+        return os
+    }, [stories, watchedStories])
 
     const storesComponent = useMemo(() => {
         const orderedStories = orderBy(stories, (item) => {
@@ -223,6 +252,37 @@ const StoriesComponent = () => {
 
     }, [stories, watchedStories])
 
+    const currentPlayer = useMemo(() => {
+        return orderedStories.find(x => x.playerId === selectedPlayer)
+
+    }, [selectedPlayer, orderedStories])
+
+    const next = () => {
+        const currentIndex = stories.findIndex(x => x.playerId === selectedPlayer);
+        if (currentStoryIndex !== stories[currentIndex].goals.length - 1) {
+            setCurrentStoryIndex(currentStoryIndex + 1);
+        } else {
+            if (stories[currentIndex + 1]) {
+                setSelectedPlayer(stories[currentIndex + 1].playerId)
+                setCurrentStoryIndex(0);
+            } else {
+                setStoriesOpen(false)
+            }
+        }
+    }
+
+    const prev = () => {
+        const currentIndex = stories.findIndex(x => x.playerId === selectedPlayer);
+        if (currentStoryIndex !== 0) {
+            setCurrentStoryIndex(currentStoryIndex - 1);
+        } else {
+            if (stories[currentIndex - 1]) {
+                setSelectedPlayer(stories[currentIndex - 1].playerId)
+                setCurrentStoryIndex(0);
+            }
+        }
+    }
+
     return (
         <div className={styles.storyContainer}>
             {storesComponent}
@@ -234,15 +294,36 @@ const StoriesComponent = () => {
                 onCancel={() => setStoriesOpen(false)}
                 footer={[]}
             >
-                <Stories
-                    width={size.x + "px"}
-                    height={size.y + "px"}
-                    isPaused={true}
-                    currentIndex={currentStoryIndex}
-                    stories={currentStores}
-                    onStoryChange={onChangeStory}
-                    onAllStoriesEnd={nextPlayerStory}
-                />
+                <div className={styles.storyReplay} style={{ width: size.x, height: size.y }}>
+                    {replayComponent}
+                    {loadingIndex &&
+                        <div className={styles.storyLoading} style={{ width: size.x, height: size.y }}>
+                            <Skeleton.Node active style={{ width: size.x, height: size.y }}>
+                                <span />
+                            </Skeleton.Node>
+                        </div>
+                    }
+                </div>
+                <div className={styles.storyReplayOverlay} />
+                <div className={styles.storyReplayLeft} onClick={prev} />
+                <div className={styles.storyReplayRight} onClick={next} />
+                <div className={styles.storyTimeline}>
+                    {currentPlayer && currentPlayer.goals.map((goal, index) => {
+                        const percent = ((currentTick - startTick) / 296 * 100);
+                        const watched = watchedStories.includes(goal.id);
+                        let background = "rgba(255, 255, 255, 0.12)";
+                        if (loadingIndex === index) {
+                            return <Skeleton.Node active className={styles.storyTimelineItemLoading} >
+                                <span />
+                            </Skeleton.Node>
+                        } else if (currentStoryIndex === index) {
+                            background = "linear-gradient(90deg, white " + percent + "%, rgba(255, 255, 255, 0.12) " + percent + "%, rgba(255, 255, 255, 0.12) 100%)";
+                        } else if (watched) {
+                            background = "white"
+                        }
+                        return <div className={styles.storyTimelineItem} style={{ background: background }} />
+                    })}
+                </div>
             </Modal>
         </div>
     )

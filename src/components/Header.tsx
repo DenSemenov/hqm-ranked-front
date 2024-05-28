@@ -31,7 +31,6 @@ const Header = () => {
     }, [isAuth])
 
     useEffect(() => {
-        console.log("effect")
         if (currentUser) {
             if (!currentUser.isAcceptedRules && location.pathname !== "/rules") {
                 navigate("/rules")
@@ -66,7 +65,7 @@ const Header = () => {
 
     const loginButton = useMemo(() => {
         if (!isMobile) {
-            if (userName && currentUser) {
+            if (userName && currentUser && isAuth) {
                 return <Badge count={currentUser.isBanned ? "BAN" : undefined} offset={[-16, 16]}>
                     <Avatar shape='square' style={{ cursor: "pointer" }} src={storageUrl + "images/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
                 </Badge>
@@ -76,7 +75,7 @@ const Header = () => {
         } else {
             return <></>
         }
-    }, [isMobile, currentUser, userName, avatarName])
+    }, [isMobile, currentUser, userName, avatarName, isAuth])
 
     return (
         <>

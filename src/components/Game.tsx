@@ -4,12 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { convertDate } from "shared/DateConverter";
-import { selectCurrentGameData } from "stores/season";
+import { selectCurrentGameData, selectLoading } from "stores/season";
 import { getGameData, getReplay } from "stores/season/async-actions";
 import styles from './Game.module.css'
 import PlayerItem from "shared/PlayerItem";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { orderBy, sum, uniqBy } from "lodash";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const { Text, Title } = Typography;
 
@@ -19,6 +20,7 @@ const Game = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const currentGameData = useSelector(selectCurrentGameData);
+    const loading = useSelector(selectLoading);
 
     useEffect(() => {
         const id = searchParams.get("id");
@@ -57,7 +59,7 @@ const Game = () => {
     }, [currentGameData])
 
 
-    return currentGameData ? (
+    return currentGameData && !loading ? (
         <Row gutter={[0, 16]}>
             <Col xs={24} sm={8}>
                 <Card styles={{ body: { padding: 0 } }}>
@@ -228,9 +230,6 @@ const Game = () => {
                     />
                 </Card>
             </Col>
-            <Col span={24}>
-
-            </Col>
             {currentGameData.hasReplayFragments &&
                 <>
                     <Title level={5}>Goals</Title>
@@ -256,7 +255,9 @@ const Game = () => {
                 </>
             }
         </Row>
-    ) : <div />
+    ) : <div className='content-loading-in'>
+        <LoadingOutlined style={{ fontSize: 64 }} />
+    </div>
 }
 
 export default Game;

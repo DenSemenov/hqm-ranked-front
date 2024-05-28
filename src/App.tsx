@@ -12,7 +12,7 @@ import { getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores
 import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
-import { selectCurrentSeason } from 'stores/season';
+import { selectCurrentSeason, selectLoading } from 'stores/season';
 import { selectCurrentUser, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
 import Player from 'components/Player';
 import LoginModal from 'components/LoginModal';
@@ -39,15 +39,16 @@ function App() {
   const currentSeason = useSelector(selectCurrentSeason);
   const theme = useSelector(selectTheme);
   const loadingUser = useSelector(selectLoadingUser);
-  const currentUser = useSelector(selectCurrentUser);
+  const loading = useSelector(selectLoading);
 
   const singnalR = new SignalrService();
 
   const contentStyle: React.CSSProperties = {
-    height: !isMobile ? "calc(-48px + 100vh)" : "calc(-92px + 100vh)",
+    height: "calc(-48px + 100vh)",
     padding: isMobile ? 0 : 16,
     width: "100vw",
-    overflow: "auto"
+    overflow: "auto",
+    marginBottom: isMobile ? 60 : 0
   };
 
   const headerStyle: React.CSSProperties = {
@@ -61,13 +62,15 @@ function App() {
   };
 
   const footerStyle: React.CSSProperties = {
-    height: 48,
+    height: 68,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     width: "100vw",
     padding: "0 16px",
-    background: "#141414"
+    background: "#141414",
+    position: "fixed",
+    bottom: 0
   };
 
   useEffect(() => {

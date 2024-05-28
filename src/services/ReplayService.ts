@@ -6,13 +6,8 @@ export default class ReplayService {
     static async getDefaultScene() {
         const scene = new THREE.Scene();
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1)
-        ambientLight.position.set(15, 5, 30.5)
-        scene.add(ambientLight)
 
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(0, 5, 0);
-        light.castShadow = true;
+        var light = new THREE.AmbientLight(0xffffff, 1);
         scene.add(light);
 
         const loader = new GLTFLoader();
@@ -26,30 +21,31 @@ export default class ReplayService {
         puck.scene.name = "puck";
         scene.add(puck.scene);
 
-        const stick = await loader.loadAsync('/assets/stick.glb');
-        stick.scene.position.set(999, 999, 999);
-        stick.scene.name = "stick";
-        scene.add(stick.scene);
+        const stick = await fbxLoader.loadAsync('/assets/stick.fbx');
+        stick.position.set(999, 999, 999);
+        stick.scale.set(0.01, 0.01, 0.01);
+        stick.name = "stick";
+        scene.add(stick);
 
-        const lower = await fbxLoader.loadAsync('/assets/lower.fbx')
-        lower.position.set(999, 999, 999);
-        lower.scale.set(0.01, 0.01, 0.01);
-        lower.traverse(function (child) {
-            if (child instanceof THREE.Mesh)
-                child.material.color.setRGB(1, 0, 0);
-        });
-        lower.name = "lower";
-        scene.add(lower);
+        const redlower = await loader.loadAsync('/assets/redlower.glb');
+        redlower.scene.position.set(999, 999, 999);
+        redlower.scene.name = "redlower";
+        scene.add(redlower.scene);
 
-        const upper = await fbxLoader.loadAsync('/assets/upper.fbx');
-        upper.position.set(999, 999, 999);
-        upper.scale.set(0.01, 0.01, 0.01);
-        upper.traverse(function (child) {
-            if (child instanceof THREE.Mesh)
-                child.material.color.setRGB(1, 0, 0);
-        });
-        upper.name = "upper";
-        scene.add(upper);
+        const bluelower = await loader.loadAsync('/assets/bluelower.glb');
+        bluelower.scene.position.set(999, 999, 999);
+        bluelower.scene.name = "bluelower";
+        scene.add(bluelower.scene);
+
+        const redupper = await loader.loadAsync('/assets/redupper.glb');
+        redupper.scene.position.set(999, 999, 999);
+        redupper.scene.name = "redupper";
+        scene.add(redupper.scene);
+
+        const blueupper = await loader.loadAsync('/assets/blueupper.glb');
+        blueupper.scene.position.set(999, 999, 999);
+        blueupper.scene.name = "blueupper";
+        scene.add(blueupper.scene);
 
         const cubeTextureLoader = new THREE.CubeTextureLoader();
         const texture = await cubeTextureLoader.loadAsync([

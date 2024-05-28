@@ -1,7 +1,7 @@
 import styles from './Games.module.css'
 import { useSelector } from "react-redux";
 import { selectCurrentSeason, selectCurrentSeasonGames } from "stores/season";
-import { Avatar, Button, Card, Col, Row, Tag } from "antd";
+import { Avatar, Button, Card, Col, List, Row, Tag } from "antd";
 import { convertDate } from "shared/DateConverter";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { getSeasonsGames } from 'stores/season/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { CaretRightOutlined } from "@ant-design/icons";
+import VirtualList from 'rc-virtual-list';
+import { ISeasonGameResponse } from 'models/ISeasonGameResponse';
 
 const Games = () => {
     const dispatch = useAppDispatch();
@@ -31,8 +33,12 @@ const Games = () => {
     }, [isMobile]);
 
     const setTableHeightAction = () => {
-        let h = document.body.clientHeight - 42 - 32 - 16 * 2 - 425;
-        setHeight(h);
+        const gc = document.getElementById("games-container");
+        if (gc) {
+            let h = gc.clientHeight;
+            setHeight(h);
+        }
+
     }
 
     const onScroll = (e: any) => {
@@ -48,43 +54,53 @@ const Games = () => {
     }
 
     return (
-        <div style={{ height: "100%", overflow: "auto" }} onScroll={onScroll}>
-            {currentSeasonGames.map(game => (
-                <div className={styles.gamesItem} key={game.gameId} onClick={() => navigate("/game?id=" + game.gameId)}>
-                    <Row gutter={[8, 8]} >
-                        <Col span={16}>
-                            <span className="subtitle">{convertDate(game.date)}</span>
-                        </Col>
-                        <Col span={8} className={styles.gameStatus}>
-                            {game.hasReplayFragments &&
-                                <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
-                                    e.stopPropagation();
-                                    navigate("/replay?id=" + game.replayId)
-                                }} />
-                            }
-                            <Tag style={{ marginRight: 0 }}>{game.status}</Tag>
-                        </Col>
-                        <Col span={16} className={styles.gameContentName}>
-                            <div className={styles.teamTitle}>
-                                <Avatar.Group>
-                                    {game.players.filter(x => x.team == 0).map(x => {
-                                        return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
-                                    })}
-                                </Avatar.Group>
-                                {"vs"}
-                                <Avatar.Group>
-                                    {game.players.filter(x => x.team == 1).map(x => {
-                                        return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
-                                    })}
-                                </Avatar.Group>
-                            </div>
-                        </Col>
-                        <Col span={8} className={styles.gameContent} >
-                            {game.redScore + " - " + game.blueScore}
-                        </Col>
-                    </Row>
-                </div>
-            ))}
+        <div id="games-container" style={{ height: "100%" }}>
+            <List>
+                <VirtualList
+                    data={currentSeasonGames}
+                    height={height}
+                    itemHeight={72}
+                    itemKey="id"
+                    onScroll={onScroll}
+                >
+                    {(game: ISeasonGameResponse) => (
+                        <div className={styles.gamesItem} key={game.gameId} onClick={() => navigate("/game?id=" + game.gameId)}>
+                            <Row gutter={[8, 8]} >
+                                <Col span={16}>
+                                    <span className="subtitle">{convertDate(game.date)}</span>
+                                </Col>
+                                <Col span={8} className={styles.gameStatus}>
+                                    {game.hasReplayFragments &&
+                                        <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate("/replay?id=" + game.replayId)
+                                        }} />
+                                    }
+                                    <Tag style={{ marginRight: 0 }}>{game.status}</Tag>
+                                </Col>
+                                <Col span={16} className={styles.gameContentName}>
+                                    <div className={styles.teamTitle}>
+                                        <Avatar.Group>
+                                            {game.players.filter(x => x.team == 0).map(x => {
+                                                return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                            })}
+                                        </Avatar.Group>
+                                        {"vs"}
+                                        <Avatar.Group>
+                                            {game.players.filter(x => x.team == 1).map(x => {
+                                                return <PlayerItem key={x.id} id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                            })}
+                                        </Avatar.Group>
+                                    </div>
+                                </Col>
+                                <Col span={8} className={styles.gameContent} >
+                                    {game.redScore + " - " + game.blueScore}
+                                </Col>
+                            </Row>
+                        </div>
+                    )}
+                </VirtualList>
+            </List>
         </div>
     )
 }

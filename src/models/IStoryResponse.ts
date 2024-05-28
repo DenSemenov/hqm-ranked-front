@@ -9,4 +9,10 @@ export interface IStoryGoalResponse {
     date: Date;
     replayId: string;
     packet: number;
+    likes: IStoryLikeResponse[]
+}
+
+export interface IStoryLikeResponse {
+    id: number;
+    name: string;
 }

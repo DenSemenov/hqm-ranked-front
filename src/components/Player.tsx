@@ -3,12 +3,13 @@ import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { selectCurrentPlayerData, selectStorageUrl } from "stores/season";
+import { selectCurrentPlayerData, selectLoading, selectStorageUrl } from "stores/season";
 import { getPlayerData } from "stores/season/async-actions";
 import styles from './Player.module.css'
 import { convertDate } from "shared/DateConverter";
 import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
 import { DownOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from "@ant-design/icons";
 
 const { Text, Title } = Typography;
 
@@ -18,6 +19,7 @@ const Player = () => {
 
     const currentPlayerData = useSelector(selectCurrentPlayerData);
     const storageUrl = useSelector(selectStorageUrl);
+    const loading = useSelector(selectLoading);
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -31,7 +33,7 @@ const Player = () => {
     }, [searchParams]);
 
 
-    return currentPlayerData ? (
+    return currentPlayerData && !loading ? (
         <Row gutter={[32, 32]}>
             <Col sm={8} xs={24}>
                 <div className={styles.playerLeft}>
@@ -175,7 +177,9 @@ const Player = () => {
                 </div>
             </Col> */}
         </Row >
-    ) : <div />
+    ) : <div className='content-loading-in'>
+        <LoadingOutlined style={{ fontSize: 64 }} />
+    </div>
 }
 
 export default Player;

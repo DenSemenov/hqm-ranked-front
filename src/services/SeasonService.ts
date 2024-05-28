@@ -15,6 +15,7 @@ import { IRulesResponse } from "models/IRulesResponse";
 import { ISeasonGameResponse } from "models/ISeasonGameResponse";
 import { ISeasonResponse } from "models/ISeasonResponse";
 import { ISeasonStatsResponse } from "models/ISeasonStatsResponse";
+import { IStoryLikeRequest } from "models/IStoryLikeRequest";
 import { IStoryReplayViewerRequest } from "models/IStoryReplayViewerRequest";
 import { IStoryResponse } from "models/IStoryResponse";
 
@@ -60,5 +61,8 @@ export default class SeasonService {
     }
     static async getStoryReplayViewer(data: IStoryReplayViewerRequest): Promise<AxiosResponse<any>> {
         return $api.post<IReplayViewerResponse>('api/replay/GetStoryReplayViewer', data);
+    }
+    static async likeStory(data: IStoryLikeRequest): Promise<AxiosResponse<any>> {
+        return $api.post('api/replay/LikeStory', data);
     }
 }

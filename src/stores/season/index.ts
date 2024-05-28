@@ -21,6 +21,7 @@ export interface ISeasonState {
     storageUrl: string;
 
     stories: IStoryResponse[]
+    loading: boolean;
 }
 
 const initialState: ISeasonState = {
@@ -38,7 +39,9 @@ const initialState: ISeasonState = {
 
     storageUrl: "",
 
-    stories: []
+    stories: [],
+
+    loading: false,
 }
 
 export const seasonSlicer = createSlice({
@@ -61,9 +64,19 @@ export const seasonSlicer = createSlice({
         },
         setCurrentPlayerData: (state: ISeasonState, action: PayloadAction<IPlayerResponse | null>) => {
             state.currentPlayerData = action.payload;
+            if (action.payload) {
+                state.loading = false
+            } else {
+                state.loading = true
+            }
         },
         setCurrentGameData: (state: ISeasonState, action: PayloadAction<IGameResponse | null>) => {
             state.currentGameData = action.payload;
+            if (action.payload) {
+                state.loading = false
+            } else {
+                state.loading = true
+            }
         },
         setRules: (state: ISeasonState, action: PayloadAction<IRulesResponse>) => {
             state.rules = action.payload;
@@ -100,5 +113,6 @@ export const selectCurrentGameData = (state: RootState) => state.season.currentG
 export const selectRules = (state: RootState) => state.season.rules;
 export const selectStorageUrl = (state: RootState) => state.season.storageUrl;
 export const selectStories = (state: RootState) => state.season.stories;
+export const selectLoading = (state: RootState) => state.season.loading;
 
 export default seasonSlicer.reducer

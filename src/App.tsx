@@ -32,6 +32,7 @@ import Footer from 'components/Footer';
 import Servers from 'components/Servers';
 import Other from 'components/Other';
 import RulesAcception from 'components/RulesAcception';
+import Top from 'components/Top';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -141,6 +142,7 @@ function App() {
       <Route path="/servers" element={<Servers />} />
       <Route path="/other" element={<Other />} />
       <Route path="/rules" element={<RulesAcception />} />
+      <Route path="/top" element={<Top />} />
     </Routes>
   }, [])
 
@@ -156,7 +158,7 @@ function App() {
                 <Layout.Header style={headerStyle}>
                   <Header />
                 </Layout.Header>
-                <Layout.Content style={contentStyle}>
+                <Layout.Content style={contentStyle} id="layout">
                   {routes}
                 </Layout.Content>
                 {isMobile &&

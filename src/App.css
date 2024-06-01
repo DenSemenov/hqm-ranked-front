@@ -222,5 +222,5 @@ ul.slick-dots.slick-dots-bottom {
 }
 
 .ant-modal-root .ant-modal {
-  max-width: none;
+  max-width: 100%;
 }

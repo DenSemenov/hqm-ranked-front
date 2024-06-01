@@ -46,8 +46,9 @@ const PlayersTable = () => {
                         title: "#",
                         width: 70,
                         dataIndex: "place",
+                        sorter: (a, b) => a.place - b.place,
                         render(value, record, index) {
-                            return currentSeasonStats.indexOf(record) + 1
+                            return value
                         },
                     },
                     {
@@ -61,10 +62,11 @@ const PlayersTable = () => {
                         },
                     },
                     {
-                        title: "G",
+                        title: "GP",
                         width: 90,
                         align: "right",
                         dataIndex: "g",
+                        sorter: (a, b) => (a.win + a.lose) - (b.win + b.lose),
                         render(value, record, index) {
                             return record.win + record.lose
                         },
@@ -73,12 +75,14 @@ const PlayersTable = () => {
                         title: "WIN",
                         width: 90,
                         align: "right",
+                        sorter: (a, b) => a.win - b.win,
                         dataIndex: "win"
                     },
                     {
                         title: "LOSE",
                         width: 90,
                         align: "right",
+                        sorter: (a, b) => a.lose - b.lose,
                         dataIndex: "lose"
                     },
                     {
@@ -86,6 +90,7 @@ const PlayersTable = () => {
                         width: 90,
                         align: "right",
                         dataIndex: "winrate",
+                        sorter: (a, b) => (Math.round(a.win / (a.win + a.lose) * 100 * 100)) - (Math.round(b.win / (b.win + b.lose) * 100 * 100)),
                         render(value, record, index) {
                             return Math.round(record.win / (record.win + record.lose) * 100 * 100) / 100 + "%"
                         },
@@ -94,6 +99,7 @@ const PlayersTable = () => {
                         title: "G",
                         width: 70,
                         align: "right",
+                        sorter: (a, b) => a.goals - b.goals,
                         dataIndex: "goals"
                     },
                     {
@@ -101,6 +107,7 @@ const PlayersTable = () => {
                         width: 70,
                         align: "right",
                         dataIndex: "gpg",
+                        sorter: (a, b) => (Math.floor(a.goals / (a.win + a.lose) * 100) / 100) - (Math.floor(b.goals / (b.win + b.lose) * 100) / 100),
                         render(value, record, index) {
                             return Math.floor(record.goals / (record.win + record.lose) * 100) / 100
                         },
@@ -109,6 +116,7 @@ const PlayersTable = () => {
                         title: "A",
                         width: 70,
                         align: "right",
+                        sorter: (a, b) => a.assists - b.assists,
                         dataIndex: "assists"
                     },
                     {
@@ -116,6 +124,7 @@ const PlayersTable = () => {
                         width: 70,
                         align: "right",
                         dataIndex: "gpg",
+                        sorter: (a, b) => (Math.floor(a.assists / (a.win + a.lose) * 100) / 100) - (Math.floor(b.assists / (b.win + b.lose) * 100) / 100),
                         render(value, record, index) {
                             return Math.floor(record.assists / (record.win + record.lose) * 100) / 100
                         },
@@ -124,6 +133,7 @@ const PlayersTable = () => {
                         title: "MVP",
                         width: 90,
                         align: "right",
+                        sorter: (a, b) => a.mvp - b.mvp,
                         dataIndex: "mvp"
                     },
 
@@ -132,8 +142,9 @@ const PlayersTable = () => {
                         width: 70,
                         align: "right",
                         dataIndex: "gpg",
+                        sorter: (a, b) => (Math.floor(a.mvp / (a.win + a.lose) * 100)) - Math.floor(b.mvp / (b.win + b.lose) * 100),
                         render(value, record, index) {
-                            return Math.floor(record.mvp / (record.win + record.lose) * 100) / 100
+                            return Math.floor(record.mvp / (record.win + record.lose) * 100) + "%"
                         },
                     },
                     {
@@ -141,6 +152,7 @@ const PlayersTable = () => {
                         width: 120,
                         align: "right",
                         dataIndex: "rating",
+                        sorter: (a, b) => a.rating - b.rating,
                         fixed: "right",
                     },
                 ]}

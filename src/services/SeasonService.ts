@@ -18,6 +18,7 @@ import { ISeasonStatsResponse } from "models/ISeasonStatsResponse";
 import { IStoryLikeRequest } from "models/IStoryLikeRequest";
 import { IStoryReplayViewerRequest } from "models/IStoryReplayViewerRequest";
 import { IStoryResponse } from "models/IStoryResponse";
+import { ITopStatsResponse } from "models/ITopStatsResponse";
 
 export default class SeasonService {
     static async getSeasons(): Promise<AxiosResponse<ISeasonResponse[]>> {
@@ -64,5 +65,8 @@ export default class SeasonService {
     }
     static async likeStory(data: IStoryLikeRequest): Promise<AxiosResponse<any>> {
         return $api.post('api/replay/LikeStory', data);
+    }
+    static async getTopStats(): Promise<AxiosResponse<ITopStatsResponse[]>> {
+        return $api.post<ITopStatsResponse[]>('api/seasons/GetTopStats');
     }
 }

@@ -2,8 +2,8 @@ import { useAppDispatch } from "hooks/useAppDispatch";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import PlayerItem from "shared/PlayerItem";
-import { selectStorageUrl, selectStories, setStories } from "stores/season";
-import { getStories, likeStory } from "stores/season/async-actions";
+import { selectMainStories, selectStorageUrl, selectStories, setStories } from "stores/season";
+import { getMainStories, getStories, likeStory } from "stores/season/async-actions";
 import styles from './Stories.module.css'
 import { Avatar, Badge, Button, Modal, Skeleton, Tooltip, Typography } from 'antd';
 import 'stories-react/dist/index.css';
@@ -15,7 +15,7 @@ import ReplayService from "services/ReplayService";
 import { convertDate } from "shared/DateConverter";
 import { useNavigate } from "react-router-dom";
 import { cloneDeep, orderBy } from "lodash";
-import { HeartFilled, HeartOutlined } from '@ant-design/icons';
+import { HeartFilled, HeartOutlined, LinkOutlined } from '@ant-design/icons';
 import { selectCurrentUser } from "stores/auth";
 
 const { Text, Title } = Typography;
@@ -25,6 +25,7 @@ const StoriesComponent = () => {
     const navigate = useNavigate();
 
     const stories = useSelector(selectStories);
+    const mainStories = useSelector(selectMainStories);
     const storageUrl = useSelector(selectStorageUrl);
     const currentUser = useSelector(selectCurrentUser);
 
@@ -41,6 +42,7 @@ const StoriesComponent = () => {
 
     useEffect(() => {
         dispatch(getStories());
+        dispatch(getMainStories());
         ReplayService.getDefaultScene().then((scene) => {
             setScene(scene);
         })
@@ -56,7 +58,9 @@ const StoriesComponent = () => {
         setPlay(false);
         setCurrentTick(0);
         setStartTick(0);
-        setLoadingIndex(currentStoryIndex)
+        if (selectedPlayer) {
+            setLoadingIndex(currentStoryIndex)
+        }
     }, [currentStoryIndex, selectedPlayer]);
 
     useEffect(() => {
@@ -92,6 +96,12 @@ const StoriesComponent = () => {
 
     const getAvatarName = (name: string) => {
         return name[0].toUpperCase()
+    }
+
+    const openMainStories = () => {
+        setCurrentStoryIndex(0);
+        setSelectedPlayer(0);
+        setStoriesOpen(true);
     }
 
     const openStories = (playerId: number) => {
@@ -153,7 +163,21 @@ const StoriesComponent = () => {
         } else {
             navigate("/login");
         }
+    }
 
+    const randomColor = () => {
+        const hexString = "0123456789abcdef";
+        let hexCode = "#";
+        for (let i = 0; i < 6; i++) {
+            hexCode += hexString[Math.floor(Math.random() * hexString.length)];
+        }
+        return hexCode;
+    }
+
+    const generateGrad = () => {
+        let colorOne = randomColor();
+        let colorTwo = randomColor();
+        return { colorOne, colorTwo }
     }
 
     const replayComponent = useMemo(() => {
@@ -189,8 +213,44 @@ const StoriesComponent = () => {
                     />
                 </div>
             );
+        } else {
+            if (mainStories.length !== 0) {
+                let font = 18;
+                const text = mainStories[currentStoryIndex].text;
+
+                if (text.length < 500) {
+                    font = 24;
+                } else if (text.length > 500 && text.length < 1000) {
+                    font = 18;
+                } else {
+                    font = 12;
+                }
+
+                const grad = generateGrad();
+
+                return (
+                    <div>
+                        <div className={styles.storyAvatar}>
+                            <svg height="36" width="36"><image href="/icons/logo.svg" height="36" width="36"></image></svg>
+                        </div>
+                        <div className={styles.storyDate}>
+                            <Text type="secondary">{convertDate(mainStories[currentStoryIndex].date)}</Text>
+                        </div>
+                        <div className={styles.storyText} style={{ backgroundImage: "linear-gradient(" + grad.colorOne + ", " + grad.colorTwo + ")" }}>
+                            <div className={styles.storyTextInner} style={{ fontSize: font }}>
+                                <div dangerouslySetInnerHTML={{ __html: text }} />
+                            </div>
+                        </div>
+                        {mainStories[currentStoryIndex].link &&
+                            <div className={styles.storyLink}>
+                                <Button icon={<LinkOutlined />} type="primary" onClick={() => navigate(mainStories[currentStoryIndex].link)}>Link</Button>
+                            </div>
+                        }
+                    </div>
+                )
+            }
         }
-    }, [stories, currentUser, currentStoryIndex, selectedPlayer, isLiked, play, onReady, setCurrentTick])
+    }, [stories, currentUser, currentStoryIndex, selectedPlayer, isLiked, play, mainStories, onReady, setCurrentTick])
 
     const size = useMemo(() => {
         if (isMobile) {
@@ -234,6 +294,11 @@ const StoriesComponent = () => {
         })
 
         return <>
+            {mainStories.length !== 0 &&
+                <div className={styles.storyMainContainer} onClick={() => openMainStories()}>
+                    <Avatar size={44} src={"/icons/logo.svg"}></Avatar>
+                </div>
+            }
             {orderedStories.map(x => {
                 let unwatchedFound = false;
                 x.goals.forEach(story => {
@@ -250,7 +315,7 @@ const StoriesComponent = () => {
             })}
         </>
 
-    }, [stories, watchedStories])
+    }, [stories, watchedStories, mainStories])
 
     const currentPlayer = useMemo(() => {
         return orderedStories.find(x => x.playerId === selectedPlayer)
@@ -259,12 +324,20 @@ const StoriesComponent = () => {
 
     const next = () => {
         const currentIndex = stories.findIndex(x => x.playerId === selectedPlayer);
-        if (currentStoryIndex !== stories[currentIndex].goals.length - 1) {
-            setCurrentStoryIndex(currentStoryIndex + 1);
+        if (currentIndex !== -1) {
+            if (currentStoryIndex !== stories[currentIndex].goals.length - 1) {
+                setCurrentStoryIndex(currentStoryIndex + 1);
+            } else {
+                if (stories[currentIndex + 1]) {
+                    setSelectedPlayer(stories[currentIndex + 1].playerId)
+                    setCurrentStoryIndex(0);
+                } else {
+                    setStoriesOpen(false)
+                }
+            }
         } else {
-            if (stories[currentIndex + 1]) {
-                setSelectedPlayer(stories[currentIndex + 1].playerId)
-                setCurrentStoryIndex(0);
+            if (currentStoryIndex !== mainStories.length - 1) {
+                setCurrentStoryIndex(currentStoryIndex + 1);
             } else {
                 setStoriesOpen(false)
             }
@@ -273,12 +346,20 @@ const StoriesComponent = () => {
 
     const prev = () => {
         const currentIndex = stories.findIndex(x => x.playerId === selectedPlayer);
-        if (currentStoryIndex !== 0) {
-            setCurrentStoryIndex(currentStoryIndex - 1);
+        if (currentIndex !== -1) {
+            if (currentStoryIndex !== 0) {
+                setCurrentStoryIndex(currentStoryIndex - 1);
+            } else {
+                if (stories[currentIndex - 1]) {
+                    setSelectedPlayer(stories[currentIndex - 1].playerId)
+                    setCurrentStoryIndex(0);
+                }
+            }
         } else {
-            if (stories[currentIndex - 1]) {
-                setSelectedPlayer(stories[currentIndex - 1].playerId)
-                setCurrentStoryIndex(0);
+            if (currentStoryIndex !== 0) {
+                setCurrentStoryIndex(currentStoryIndex - 1);
+            } else {
+                setStoriesOpen(false)
             }
         }
     }
@@ -318,6 +399,16 @@ const StoriesComponent = () => {
                             </Skeleton.Node>
                         } else if (currentStoryIndex === index) {
                             background = "linear-gradient(90deg, white " + percent + "%, rgba(255, 255, 255, 0.12) " + percent + "%, rgba(255, 255, 255, 0.12) 100%)";
+                        } else if (watched) {
+                            background = "white"
+                        }
+                        return <div className={styles.storyTimelineItem} style={{ background: background }} />
+                    })}
+                    {!currentPlayer && mainStories.map((story, index) => {
+                        let background = "rgba(255, 255, 255, 0.12)";
+                        const watched = watchedStories.includes(story.id);
+                        if (currentStoryIndex === index) {
+                            background = "white"
                         } else if (watched) {
                             background = "white"
                         }

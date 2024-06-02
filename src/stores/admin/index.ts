@@ -2,6 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { IAdminPlayerResponse } from "models/IAdminPlayerResponse";
 import { IAdminResponse } from "models/IAdminResponse";
 import { IAdminServer } from "models/IAdminServer";
+import { IAdminStoryResponse } from "models/IAdminStoryResponse";
 import { ISettingsResponse } from "models/ISettingsResponse";
 import { RootState } from "stores"
 
@@ -10,7 +11,8 @@ export interface IAdminState {
     players: IAdminPlayerResponse[];
     admins: IAdminResponse[];
     settings: ISettingsResponse | undefined,
-    unapprovedUsers: IAdminPlayerResponse[]
+    unapprovedUsers: IAdminPlayerResponse[];
+    adminStories: IAdminStoryResponse[]
 }
 
 const initialState: IAdminState = {
@@ -18,7 +20,8 @@ const initialState: IAdminState = {
     players: [],
     admins: [],
     settings: undefined,
-    unapprovedUsers: []
+    unapprovedUsers: [],
+    adminStories: []
 }
 
 export const adminSlicer = createSlice({
@@ -40,6 +43,9 @@ export const adminSlicer = createSlice({
         setUnapprovedUsers: (state: IAdminState, action: PayloadAction<IAdminPlayerResponse[]>) => {
             state.unapprovedUsers = action.payload;
         },
+        setAdminStories: (state: IAdminState, action: PayloadAction<IAdminStoryResponse[]>) => {
+            state.adminStories = action.payload;
+        },
     },
 })
 
@@ -48,7 +54,8 @@ export const {
     setPlayers,
     setAdmins,
     setSettings,
-    setUnapprovedUsers
+    setUnapprovedUsers,
+    setAdminStories
 } =
     adminSlicer.actions
 
@@ -57,5 +64,6 @@ export const selectPlayers = (state: RootState) => state.admin.players;
 export const selectAdmins = (state: RootState) => state.admin.admins;
 export const selectSettings = (state: RootState) => state.admin.settings;
 export const selectUnapprovedUsers = (state: RootState) => state.admin.unapprovedUsers;
+export const selectAdminStories = (state: RootState) => state.admin.adminStories;
 
 export default adminSlicer.reducer

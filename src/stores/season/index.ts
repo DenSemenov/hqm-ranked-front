@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
+import { IAdminStoryResponse } from "models/IAdminStoryResponse";
 import { IGameResponse } from "models/IGameResponse";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { IRulesResponse } from "models/IRulesResponse";
@@ -22,6 +23,7 @@ export interface ISeasonState {
     storageUrl: string;
 
     stories: IStoryResponse[]
+    mainStories: IAdminStoryResponse[]
     loading: boolean;
 
     topStats: ITopStatsResponse[];
@@ -43,6 +45,7 @@ const initialState: ISeasonState = {
     storageUrl: "",
 
     stories: [],
+    mainStories: [],
 
     loading: false,
 
@@ -92,6 +95,9 @@ export const seasonSlicer = createSlice({
         setStories: (state: ISeasonState, action: PayloadAction<IStoryResponse[]>) => {
             state.stories = action.payload;
         },
+        setMainStories: (state: ISeasonState, action: PayloadAction<IAdminStoryResponse[]>) => {
+            state.mainStories = action.payload;
+        },
         setTopStats: (state: ISeasonState, action: PayloadAction<ITopStatsResponse[]>) => {
             state.topStats = action.payload;
         },
@@ -108,6 +114,7 @@ export const {
     setRules,
     setStorageUrl,
     setStories,
+    setMainStories,
     setTopStats
 } =
     seasonSlicer.actions
@@ -122,6 +129,7 @@ export const selectCurrentGameData = (state: RootState) => state.season.currentG
 export const selectRules = (state: RootState) => state.season.rules;
 export const selectStorageUrl = (state: RootState) => state.season.storageUrl;
 export const selectStories = (state: RootState) => state.season.stories;
+export const selectMainStories = (state: RootState) => state.season.mainStories;
 export const selectLoading = (state: RootState) => state.season.loading;
 export const selectTopStats = (state: RootState) => state.season.topStats;
 

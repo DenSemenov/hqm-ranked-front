@@ -8,6 +8,9 @@ import { IAddRemoveAdminRequest } from "models/IAddRemoveAdminRequest";
 import { ISettingsResponse } from "models/ISettingsResponse";
 import { IAdminPlayerResponse } from "models/IAdminPlayerResponse";
 import { IApproveRequest } from "models/IApproveRequest";
+import { IAdminStoryRequest } from "models/IAdminStoryRequest";
+import { IRemoveAdminStoryRequest } from "models/IRemoveAdminStoryRequest";
+import { IAdminStoryResponse } from "models/IAdminStoryResponse";
 
 export default class AdminService {
     static async getServers(): Promise<AxiosResponse<IAdminServer[]>> {
@@ -42,5 +45,14 @@ export default class AdminService {
     }
     static async approveUser(data: IApproveRequest): Promise<AxiosResponse> {
         return $api.post('api/admin/ApproveUser', data);
+    }
+    static async addAdminStory(data: IAdminStoryRequest): Promise<AxiosResponse> {
+        return $api.post('api/admin/AddAdminStory', data);
+    }
+    static async removeAdminStory(data: IRemoveAdminStoryRequest): Promise<AxiosResponse> {
+        return $api.post('api/admin/RemoveAdminStory', data);
+    }
+    static async getAdminStories(): Promise<AxiosResponse<IAdminStoryResponse[]>> {
+        return $api.post<IAdminStoryResponse[]>('api/admin/GetAdminStories');
     }
 }

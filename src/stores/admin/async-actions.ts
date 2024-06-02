@@ -1,12 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import AdminService from "services/AdminService"
-import { setAdmins, setPlayers, setServers, setSettings, setUnapprovedUsers } from "."
+import { setAdminStories, setAdmins, setPlayers, setServers, setSettings, setUnapprovedUsers } from "."
 import { IDeleteServerRequest } from "models/IDeleteServerRequest"
 import { IAddServerRequest } from "models/IAddServerRequest"
 import { IBanUnbanRequest } from "models/IBanUnbanRequest"
 import { IAddRemoveAdminRequest } from "models/IAddRemoveAdminRequest"
 import { ISettingsResponse } from "models/ISettingsResponse"
 import { IApproveRequest } from "models/IApproveRequest"
+import { IAdminStoryRequest } from "models/IAdminStoryRequest"
+import { IRemoveAdminStoryRequest } from "models/IRemoveAdminStoryRequest"
 
 export const getServers = createAsyncThunk('admin/getServers', async (payload: void, thunkApi) => {
     try {
@@ -122,6 +124,38 @@ export const getUnApprovedUsers = createAsyncThunk('admin/getUnApprovedUsers', a
 export const approveUser = createAsyncThunk('admin/approveUser', async (payload: IApproveRequest, thunkApi) => {
     try {
         const response = await AdminService.approveUser(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const addAdminStory = createAsyncThunk('admin/addAdminStory', async (payload: IAdminStoryRequest, thunkApi) => {
+    try {
+        const response = await AdminService.addAdminStory(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const removeAdminStory = createAsyncThunk('admin/removeAdminStory', async (payload: IRemoveAdminStoryRequest, thunkApi) => {
+    try {
+        const response = await AdminService.removeAdminStory(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getAdminStories = createAsyncThunk('admin/adminStories', async (payload: void, thunkApi) => {
+    try {
+        const response = await AdminService.getAdminStories()
+
+        thunkApi.dispatch(setAdminStories(response.data))
 
         return response.data
     } catch (e: any) {

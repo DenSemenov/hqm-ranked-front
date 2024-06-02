@@ -3,9 +3,10 @@ import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { convertDate } from "shared/DateConverter";
 import PlayerItem from "shared/PlayerItem";
-import { selectAdmins, selectPlayers, selectServers, selectSettings, selectUnapprovedUsers } from "stores/admin";
-import { addRemoveAdmin, addServer, approveUser, banUnban, deleteServer, getAdmins, getPlayers, getServers, getSettings, getUnApprovedUsers, saveSettings } from "stores/admin/async-actions";
+import { selectAdminStories, selectAdmins, selectPlayers, selectServers, selectSettings, selectUnapprovedUsers } from "stores/admin";
+import { addAdminStory, addRemoveAdmin, addServer, approveUser, banUnban, deleteServer, getAdminStories, getAdmins, getPlayers, getServers, getSettings, getUnApprovedUsers, removeAdminStory, saveSettings } from "stores/admin/async-actions";
 import { selectIsAdmin } from "stores/auth";
 
 const { TextArea } = Input;
@@ -20,6 +21,7 @@ const Admin = () => {
     const admins = useSelector(selectAdmins);
     const settings = useSelector(selectSettings);
     const unapprovedUsers = useSelector(selectUnapprovedUsers);
+    const adminStories = useSelector(selectAdminStories);
 
     useEffect(() => {
         if (!isAdmin) {
@@ -30,6 +32,7 @@ const Admin = () => {
             dispatch(getAdmins())
             dispatch(getSettings())
             dispatch(getUnApprovedUsers())
+            dispatch(getAdminStories())
         }
     }, [isAdmin])
 
@@ -333,6 +336,95 @@ const Admin = () => {
         }
     }, [settings])
 
+    const onRemoveStory = (id: string) => {
+        dispatch(removeAdminStory({
+            id: id
+        })).unwrap().then(() => {
+            dispatch(getAdminStories())
+        })
+    }
+
+    const onAddStory = (values: any) => {
+        dispatch(addAdminStory(values)).unwrap().then(() => {
+            dispatch(getAdminStories())
+        })
+    }
+
+    const storiesTab = useMemo(() => {
+        return <Table
+            dataSource={adminStories}
+            bordered={false}
+            pagination={false}
+            rowKey={"id"}
+            footer={() => <Popover
+                title="Add story"
+                content={
+                    <Form
+                        style={{ width: 400 }}
+                        layout="vertical"
+                        onFinish={(values) => onAddStory(values)}
+                    >
+                        <Form.Item
+                            label="Text"
+                            name="text"
+                        >
+                            <Input.TextArea rows={5} />
+                        </Form.Item>
+                        <Form.Item
+                            label="Link"
+                            name="link"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Expiration (hide after one day)"
+                            name="expiration"
+                            valuePropName="checked"
+                        >
+                            <Checkbox />
+                        </Form.Item>
+                        <Form.Item >
+                            <Button type="primary" htmlType="submit">
+                                Add story
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                }
+                trigger={"click"}
+            >
+                <Button >Add story</Button>
+            </Popover>}
+            columns={[
+                {
+                    title: "Text",
+                    dataIndex: "text",
+                },
+                {
+                    title: "Expiration",
+                    dataIndex: "expiration",
+                    render(value, record, index) {
+                        return <Checkbox checked={value} disabled />
+                    },
+                },
+                {
+                    title: "Date",
+                    dataIndex: "date",
+                    render(value, record, index) {
+                        return convertDate(value);
+                    },
+                },
+                {
+                    title: "",
+                    align: "right",
+                    dataIndex: "action",
+                    render(value, record, index) {
+                        return <Button onClick={() => onRemoveStory(record.id)}>Remove</Button>
+                    },
+                },
+            ]}
+        />
+    }, [adminStories])
+
     const onApprovePlayer = (id: number) => {
         dispatch(approveUser({
             id: id
@@ -394,6 +486,11 @@ const Admin = () => {
                     label: "Unapproved users",
                     key: "UnapprovedUsers",
                     children: unapprovedUsersTab
+                },
+                {
+                    label: "Stories",
+                    key: "Stories",
+                    children: storiesTab
                 },
                 {
                     label: "Settings",

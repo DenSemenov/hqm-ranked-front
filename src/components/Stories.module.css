@@ -6,9 +6,47 @@
 
 .storyAvatarContainer {
     background-image: linear-gradient(#ba6fcdba, #1f5687c4);
-    padding: 1px;
+    padding: 2px;
     border-radius: 1000px;
     cursor: pointer;
+}
+
+.storyMainContainer {
+    background-image: linear-gradient(#0f792fc0, #093f0538);
+    padding: 2px;
+    border-radius: 1000px;
+    cursor: pointer;
+}
+
+.storyMainContainer>span>img {
+    object-fit: contain;
+}
+
+.storyText {
+    background-image: linear-gradient(#6fcd8b, #28871f);
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    border-radius: 8px;
+}
+
+.storyTextInner {
+    padding: 64px 32px;
+    width: calc(-64px + 100%);
+    height: calc(-128px + 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.storyLink {
+    position: absolute;
+    bottom: 0;
+    padding: 32px;
+    width: calc(-64px + 100%);
+    text-align: center;
+    z-index: 10;
 }
 
 .storyAvatarContainerWatched {

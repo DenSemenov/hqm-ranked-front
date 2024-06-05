@@ -4,6 +4,7 @@ export interface IRulesResponse {
 }
 
 export interface IRulesItemResponse {
+    id: string;
     title: string;
     description: string;
 }

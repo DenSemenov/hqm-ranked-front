@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import SeasonService from "services/SeasonService"
-import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setMainStories, setRules, setSeasons, setStorageUrl, setStories, setTopStats } from "."
+import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setMainStories, setPatrols, setRules, setSeasons, setStorageUrl, setStories, setTopStats } from "."
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest"
 import { IPlayerRequest } from "models/IPlayerRequest"
 import { IGameRequest } from "models/IGameRequest"
@@ -8,6 +8,9 @@ import { IReplayRequest } from "models/IReplayRequest"
 import { IReplayViewerRequest } from "models/IReplayViewerRequest"
 import { IStoryReplayViewerRequest } from "models/IStoryReplayViewerRequest"
 import { IStoryLikeRequest } from "models/IStoryLikeRequest"
+import { IReportRequest } from "models/IReportRequest"
+import { IReportViewerRequest } from "models/IReportViewerRequest"
+import { IReportReportCancelRequest } from "models/IReportReportCancelRequest"
 
 export const getSeasons = createAsyncThunk('season/getSeasons', async (payload: void, thunkApi) => {
     try {
@@ -201,3 +204,44 @@ export const getTopStats = createAsyncThunk('season/getTopStats', async (payload
     }
 })
 
+export const report = createAsyncThunk('season/report', async (payload: IReportRequest, thunkApi) => {
+    try {
+        const response = await SeasonService.report(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const reportDecision = createAsyncThunk('season/reportDecision', async (payload: IReportReportCancelRequest, thunkApi) => {
+    try {
+        const response = await SeasonService.reportDecision(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getPatrol = createAsyncThunk('season/getPatrol', async (payload: void, thunkApi) => {
+    try {
+        const response = await SeasonService.getPatrol()
+
+        thunkApi.dispatch(setPatrols(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getReportViewer = createAsyncThunk('replay/getReportViewer', async (payload: IReportViewerRequest, thunkApi) => {
+    try {
+        const response = await SeasonService.getReportViewer(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})

@@ -95,14 +95,6 @@ body {
   justify-content: center;
 }
 
-.ant-notification .ant-notification-notice-wrapper {
-  background-color: var(--layoutAccent);
-}
-
-.ant-notification .ant-notification-notice-wrapper .ant-notification-notice-message {
-  color: var(--text);
-}
-
 .ant-btn-dashed {
   box-shadow: none;
 }

@@ -58,6 +58,18 @@
     right: 16px;
 }
 
+.reportOverlay {
+    position: absolute;
+    top: 58px;
+    right: 16px;
+    width: 200px;
+    background-color: #14141452;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
 .score {
     position: absolute;
@@ -89,6 +101,18 @@
     height: 8px;
 }
 
+.skaterName {
+    position: absolute;
+    text-align: center;
+    font-size: 10px;
+    width: 0;
+    z-index: 1;
+}
+
+.skaterName>span {
+    left: -50%;
+}
+
 .puck {
     position: absolute;
     background-color: black;
@@ -116,4 +140,14 @@
     gap: 8px;
     cursor: pointer;
     justify-content: space-between
+}
+
+.objectsItem {
+    padding: 4px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.objectsItemSelected {
+    color: rgb(16, 142, 233)
 }

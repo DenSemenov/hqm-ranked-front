@@ -1,5 +1,6 @@
 export interface IReplayViewerResponse {
     index: number;
+    gameId: string;
     fragments: IFragment[];
     data: ReplayTick[];
 }

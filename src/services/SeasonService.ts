@@ -4,6 +4,7 @@ import { IAdminStoryResponse } from "models/IAdminStoryResponse";
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest";
 import { IGameRequest } from "models/IGameRequest";
 import { IGameResponse } from "models/IGameResponse";
+import { IPartolResponse } from "models/IPartolResponse";
 import { IPlayerRequest } from "models/IPlayerRequest";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { IReplayChatMessage } from "models/IReplayChatMessage";
@@ -12,6 +13,9 @@ import { IReplayHighlight } from "models/IReplayHighlight";
 import { IReplayRequest } from "models/IReplayRequest";
 import { IReplayViewerRequest } from "models/IReplayViewerRequest";
 import { IReplayViewerResponse } from "models/IReplayViewerResponse";
+import { IReportReportCancelRequest } from "models/IReportReportCancelRequest";
+import { IReportRequest } from "models/IReportRequest";
+import { IReportViewerRequest } from "models/IReportViewerRequest";
 import { IRulesResponse } from "models/IRulesResponse";
 import { ISeasonGameResponse } from "models/ISeasonGameResponse";
 import { ISeasonResponse } from "models/ISeasonResponse";
@@ -72,5 +76,17 @@ export default class SeasonService {
     }
     static async getTopStats(): Promise<AxiosResponse<ITopStatsResponse[]>> {
         return $api.post<ITopStatsResponse[]>('api/seasons/GetTopStats');
+    }
+    static async report(data: IReportRequest): Promise<AxiosResponse<string>> {
+        return $api.post<string>('api/seasons/Report', data);
+    }
+    static async getPatrol(): Promise<AxiosResponse<IPartolResponse[]>> {
+        return $api.post<IPartolResponse[]>('api/seasons/GetPatrol');
+    }
+    static async getReportViewer(data: IReportViewerRequest): Promise<AxiosResponse<IReplayViewerResponse>> {
+        return $api.post<IReplayViewerResponse>('api/replay/GetReportViewer', data);
+    }
+    static async reportDecision(data: IReportReportCancelRequest): Promise<AxiosResponse> {
+        return $api.post('api/seasons/ReportDecision', data);
     }
 }

@@ -33,6 +33,7 @@ import Servers from 'components/Servers';
 import Other from 'components/Other';
 import RulesAcception from 'components/RulesAcception';
 import Top from 'components/Top';
+import Patrol from 'components/Patrol';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -143,6 +144,7 @@ function App() {
       <Route path="/other" element={<Other />} />
       <Route path="/rules" element={<RulesAcception />} />
       <Route path="/top" element={<Top />} />
+      <Route path="/patrol" element={<Patrol />} />
     </Routes>
   }, [])
 

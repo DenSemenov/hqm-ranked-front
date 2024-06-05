@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { IAdminStoryResponse } from "models/IAdminStoryResponse";
 import { IGameResponse } from "models/IGameResponse";
+import { IPartolResponse } from "models/IPartolResponse";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { IRulesResponse } from "models/IRulesResponse";
 import { ISeasonGameResponse } from "models/ISeasonGameResponse";
@@ -27,6 +28,8 @@ export interface ISeasonState {
     loading: boolean;
 
     topStats: ITopStatsResponse[];
+
+    patrols: IPartolResponse[];
 }
 
 const initialState: ISeasonState = {
@@ -49,7 +52,9 @@ const initialState: ISeasonState = {
 
     loading: false,
 
-    topStats: []
+    topStats: [],
+
+    patrols: []
 }
 
 export const seasonSlicer = createSlice({
@@ -101,6 +106,9 @@ export const seasonSlicer = createSlice({
         setTopStats: (state: ISeasonState, action: PayloadAction<ITopStatsResponse[]>) => {
             state.topStats = action.payload;
         },
+        setPatrols: (state: ISeasonState, action: PayloadAction<IPartolResponse[]>) => {
+            state.patrols = action.payload;
+        },
     },
 })
 
@@ -115,7 +123,8 @@ export const {
     setStorageUrl,
     setStories,
     setMainStories,
-    setTopStats
+    setTopStats,
+    setPatrols
 } =
     seasonSlicer.actions
 
@@ -132,5 +141,6 @@ export const selectStories = (state: RootState) => state.season.stories;
 export const selectMainStories = (state: RootState) => state.season.mainStories;
 export const selectLoading = (state: RootState) => state.season.loading;
 export const selectTopStats = (state: RootState) => state.season.topStats;
+export const selectPatrols = (state: RootState) => state.season.patrols;
 
 export default seasonSlicer.reducer

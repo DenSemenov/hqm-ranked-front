@@ -1,11 +1,11 @@
-import { Button, Popover, Select, Slider, Tag } from "antd";
+import { Button, Col, Popover, Row, Select, Slider, Tag, Tooltip, Typography, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getReplayChatMessages, getReplayGoals, getReplayHighlights, getReplayViewer, getStoryReplayViewer } from "stores/season/async-actions";
+import { getPatrol, getReplayChatMessages, getReplayGoals, getReplayHighlights, getReplayViewer, getReportViewer, getRules, getStoryReplayViewer, reportDecision } from "stores/season/async-actions";
 import styles from './ReplayViewer.module.css'
-import { CaretRightOutlined, PauseOutlined, UnorderedListOutlined, WechatWorkOutlined, BorderOutlined, LoadingOutlined, OrderedListOutlined } from "@ant-design/icons";
+import { CaretRightOutlined, PauseOutlined, UnorderedListOutlined, WechatWorkOutlined, BorderOutlined, LoadingOutlined, OrderedListOutlined, WarningOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { IFragment, IReplayViewerResponse, PlayerInList, ReplayPlayer, ReplayPuck, ReplayTeam, ReplayTick } from "models/IReplayViewerResponse";
-import { createSearchParams, useSearchParams } from "react-router-dom";
+import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 import * as THREE from "three";
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
@@ -15,20 +15,31 @@ import { isMobile } from "react-device-detect";
 import ReplayService from "services/ReplayService";
 import { IReplayHighlight } from "models/IReplayHighlight";
 import { uniqBy } from "lodash";
+import { useSelector } from "react-redux";
+import { selectIsAuth } from "stores/auth";
+import ReportModal from "./ReportModal";
+import { selectRules } from "stores/season";
 
 const excludedNames = ["Scene", "redupper", "blueupper", "redlower", "bluelower", "puck", "stick", "basebluegoal", "baseboardlower", "text", "baseboards", "basestick", "baseice", "baseredgoal"]
+
+const { Text, Title } = Typography;
 
 interface IProps {
     externalId?: string;
     externalPlayerName?: string;
     pause?: boolean;
     externalScene?: THREE.Scene;
+    reportId?: string;
     onReady?: (startTick: number, currentId: string) => void;
     onTickChanged?: (tick: number) => void;
 }
 
-const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, onReady, onTickChanged }: IProps) => {
+const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, reportId, onReady, onTickChanged }: IProps) => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
+    const isAuth = useSelector(selectIsAuth);
+    const rules = useSelector(selectRules);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const [currentTick, setCurrentTick] = useState<number>(0);
@@ -51,6 +62,9 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
     const [highlights, setHighlights] = useState<IReplayHighlight[]>([]);
     const [sceneReady, setSceneReady] = useState<boolean>(false);
     const [dataReady, setDataReady] = useState<boolean>(false);
+    const [selectedObject, setSelectedObject] = useState<string>("Puck 0");
+    const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
+    const [gameId, setGameId] = useState<string>("");
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const rendererRef = useRef<any>();
     const cameraRef = useRef<any>();
@@ -71,6 +85,11 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
             setPaused(false)
         }
     }, [pause])
+
+
+    useEffect(() => {
+        dispatch(getRules());
+    }, []);
 
     useEffect(() => {
         setDataReady(false);
@@ -95,6 +114,26 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
 
                 setDataReady(true);
             });
+        } else if (reportId) {
+            setCurrentId(reportId);
+
+            dispatch(getReportViewer({
+                id: reportId,
+            })).unwrap().then((data: IReplayViewerResponse) => {
+                fragments.push(...data.data);
+                setFragments(fragments);
+                setLoadedIndexes([0])
+                setGameId(data.gameId);
+                setMin(data.fragments[0].min)
+                setMax(data.fragments[data.fragments.length - 1].max)
+                setCurrentTick(data.fragments[0].min);
+                setIndexes(data.fragments);
+                setLoading(false);
+
+                setSelectedObject("Reported")
+
+                initRenderer();
+            });
         } else {
             const id = searchParams.get("id");
             const t = searchParams.get("t");
@@ -109,7 +148,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
                     fragments.push(...data.data);
                     setFragments(fragments);
                     setLoadedIndexes([0])
-
+                    setGameId(data.gameId);
                     setMin(data.fragments[0].min)
                     setMax(data.fragments[data.fragments.length - 1].max)
                     setCurrentTick(data.fragments[0].min);
@@ -229,15 +268,23 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
         const ls = document.getElementsByClassName("ant-slider-handle")[0];
         if (ls) {
             const t = ls.getAttribute("aria-valuenow");
-            if (rendererRef.current && cameraRef.current && sceneRef.current && t) {
-                let tick = t ? +t : 0;
 
-                const renderer = rendererRef.current;
-                const scene = sceneRef.current;
-                const camera = cameraRef.current;
-                frameChange(tick, scene, camera, f);
+            const os = document.getElementById("objectSelector");
+            if (os) {
+                const osVal = os.parentElement?.parentElement?.children[1];
+                if (osVal) {
+                    const selected = osVal.innerHTML;
+                    if (rendererRef.current && cameraRef.current && sceneRef.current && t) {
+                        let tick = t ? +t : 0;
 
-                renderer.render(scene, camera)
+                        const renderer = rendererRef.current;
+                        const scene = sceneRef.current;
+                        const camera = cameraRef.current;
+                        frameChange(tick, scene, camera, f, selected);
+
+                        renderer.render(scene, camera)
+                    }
+                }
             }
         }
     }
@@ -312,6 +359,17 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
         setCurrentTick(value);
     }
 
+    const currentPlayers = useMemo(() => {
+        let players: PlayerInList[] = [];
+
+        const tickData = fragments.find(x => x.packetNumber === currentTick);
+        if (tickData) {
+            players = tickData.playersInList;
+        }
+
+        return players.map(x => x.name);
+    }, [currentTick, fragments])
+
     const playersContent = useMemo(() => {
         let players: PlayerInList[] = [];
 
@@ -332,7 +390,30 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
                 return <div style={{ color: color }}>{x.name}</div>
             })}
         </div>
-    }, [currentTick])
+    }, [currentTick, fragments])
+
+    const objectsItems = useMemo(() => {
+        let objects: { value: string, label: string }[] = [];
+
+        const tickData = fragments.find(x => x.packetNumber === currentTick);
+        if (tickData) {
+            objects.push(...tickData.playersInList.map(x => {
+                return {
+                    value: x.name,
+                    label: x.name
+                }
+            }));
+            objects.push(...tickData.pucks.map(x => {
+                const name = "Puck " + x.index;
+                return {
+                    value: name,
+                    label: name
+                }
+            }));
+        }
+
+        return objects;
+    }, [currentTick, selectedObject, fragments])
 
     const mapContent = useMemo(() => {
         let players: PlayerInList[] = [];
@@ -349,17 +430,22 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
         return <div className={styles.mapContent}>
             {skaters.map(skater => {
                 let team = 0;
+                let name = "";
                 const pl = players.find(x => x.index === skater.index);
                 if (pl) {
                     team = pl.team;
+                    name = pl.name;
                 }
-                return <div className={styles.skater} style={{ top: skater.posZ * 5 - 4, left: skater.posX * 5 - 4, background: team === 0 ? "#F9665E" : "#799FCB" }} />
+                return <>
+                    <div className={styles.skaterName} style={{ top: skater.posZ * 5 - 4, left: skater.posX * 5 - 4 }}><span>{name}</span></div>
+                    <div className={styles.skater} style={{ top: skater.posZ * 5 - 4, left: skater.posX * 5 - 4, background: team === 0 ? "#F9665E" : "#799FCB" }} />
+                </>
             })}
             {pucks.map(puck => {
                 return <div className={styles.puck} style={{ top: puck.posZ * 5 - 3, left: puck.posX * 5 - 3 }} />
             })}
         </div>
-    }, [currentTick])
+    }, [currentTick, fragments])
 
     const handlePlayerObject = (objectType: string, player: ReplayPlayer, index: number, loadedObjects: string[], scene: THREE.Scene, team: ReplayTeam) => {
         const objectName = `${objectType}${index}`;
@@ -440,7 +526,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
         return object;
     }
 
-    const frameChange = (current: number, scene: THREE.Scene, camera: THREE.Camera, font: Font) => {
+    const frameChange = (current: number, scene: THREE.Scene, camera: THREE.Camera, font: Font, selectedObject: string) => {
         const tickData = fragments.find(x => x.packetNumber === current);
         if (tickData) {
             const existsPlayerLowerNames = tickData.players.map(x => "lower" + x.index.toString());
@@ -486,12 +572,14 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
                         puckObject.rotation.set(Math.PI * 2 - puck.rotX, puck.rotY, puck.rotZ)
 
                         if (!externalPlayerName) {
-                            const howLongFromCenter = puck.posZ - 30.5;
-                            const x = puck.posX * 0.5;
-                            camera.position.setZ(30.5 + howLongFromCenter * 0.2);
-                            camera.position.setY(2 + (0.1 * puck.posX));
-                            camera.position.setX(x);
-                            camera.lookAt(puckObject.position)
+                            if (selectedObject === "Puck " + puck.index) {
+                                const howLongFromCenter = puck.posZ - 30.5;
+                                const x = puck.posX * 0.5;
+                                camera.position.setZ(30.5 + howLongFromCenter * 0.2);
+                                camera.position.setY(2 + (0.1 * puck.posX));
+                                camera.position.setX(x);
+                                camera.lookAt(puckObject.position)
+                            }
                         } else {
                             const howLongFromCenter = puck.posZ - 30.5;
                             const x = puck.posX * 1;
@@ -520,6 +608,16 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
                 const playerTextName = "text" + player.index.toString();
                 let playerText = scene.getObjectByName(playerTextName);
 
+                if (selectedObject === name) {
+                    const howLongFromCenter = player.posZ - 30.5;
+                    const x = player.posX * 0.5;
+                    camera.position.setZ(30.5 + howLongFromCenter * 0.2);
+                    camera.position.setY(2 + (0.1 * player.posX));
+                    camera.position.setX(x);
+                    camera.lookAt(player.posX, player.posY, player.posZ);
+                }
+
+
                 if ((!loadedObjects.includes(playerTextName) || !playerText) && font) {
                     loadedObjects.push(playerTextName)
                     setLoadedObjects(loadedObjects);
@@ -539,8 +637,12 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
                     if (playerText) {
                         playerText.position.set(player.posX, player.posY + 1, player.posZ);
                         playerText.lookAt(camera.position)
+
                     }
                 }
+
+
+
             });
         }
     }
@@ -576,7 +678,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
             <span>{redScore + " - " + blueScore}</span>
             <span>{timeWithPeriod}</span>
         </>
-    }, [currentTick])
+    }, [currentTick, fragments])
 
     const toObject = (arr: IReplayGoalResponse[]) => {
         var rv: any = {};
@@ -611,6 +713,26 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
         </div>
     }, [highlights])
 
+    const onSendReport = () => {
+        setPaused(true);
+        setReportModalOpen(true);
+    }
+
+    const onReportDecision = (isReported: boolean) => {
+        if (reportId) {
+            dispatch(reportDecision({
+                id: reportId,
+                isReported: isReported
+            })).unwrap().then(() => {
+                dispatch(getPatrol());
+                navigate("/");
+                notification.info({
+                    message: "Thank you for your cooperation"
+                })
+            });
+        }
+    }
+
     return (
         <div className={styles.viewerContainer + " content-without-padding"}>
             <div id="replay-viewer" className={styles.replayViewer} style={{ borderRadius: externalId && !isMobile ? 8 : 0, top: externalId ? 0 : 48, height: externalId ? "100%" : (isMobile ? "calc(-92px + 100%)" : "calc(-48px + 100%)") }}>
@@ -622,7 +744,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
                 />
 
             </div>
-            {!externalId &&
+            {!externalId && !reportId &&
                 <>
                     <div className={styles.playerList}>
                         <Popover content={playersContent} trigger="click" placement="bottomLeft" open={showPlayers}>
@@ -649,6 +771,19 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
                     </div>
                 </>
             }
+            {reportId &&
+                <div className={styles.reportOverlay}>
+                    <Title level={5}>Report decision</Title>
+                    <Row gutter={8}>
+                        <Col span={12}>
+                            <Button style={{ width: "100%" }} type="primary" onClick={() => onReportDecision(true)}>Report</Button>
+                        </Col>
+                        <Col span={12}>
+                            <Button danger style={{ width: "100%" }} onClick={() => onReportDecision(false)}>Cancel</Button>
+                        </Col>
+                    </Row>
+                </div>
+            }
             <div className={styles.slider} style={{ bottom: isMobile ? 56 : 16, display: !externalId ? "flex" : "none" }} >
                 <Button type="text" icon={loading ? <LoadingOutlined /> : (paused ? <CaretRightOutlined /> : <PauseOutlined />)} onClick={onPlayPause} />
                 <Slider
@@ -671,8 +806,27 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, on
                     ]}
                     onChange={setSpeed}
                 />
-            </div>
 
+                <Select
+                    id="objectSelector"
+                    style={{ width: 100, display: !reportId ? "flex" : "none" }}
+                    value={selectedObject}
+                    options={objectsItems}
+                    onChange={setSelectedObject}
+                />
+                <Button
+                    style={{ display: !reportId ? "flex" : "none" }}
+                    type="text"
+                    danger
+                    icon={<WarningOutlined />}
+                    onClick={onSendReport}
+                    title={"Report"}
+                    disabled={!isAuth}
+                />
+            </div>
+            {reportModalOpen &&
+                <ReportModal open={reportModalOpen} onClose={() => setReportModalOpen(false)} gameId={gameId} tick={currentTick} />
+            }
         </div>
     )
 }

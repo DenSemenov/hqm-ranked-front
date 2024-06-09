@@ -10,6 +10,15 @@ export interface IStoryGoalResponse {
     replayId: string;
     packet: number;
     likes: IStoryLikeResponse[]
+    music: IStoryGoalMusicResponse;
+}
+
+export interface IStoryGoalMusicResponse {
+    id: string;
+    imageUrl: string;
+    name: string;
+    title: string;
+    url: string;
 }
 
 export interface IStoryLikeResponse {

@@ -1,7 +1,7 @@
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import PlayerItem from "shared/PlayerItem";
+import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
 import { selectMainStories, selectStorageUrl, selectStories, setStories } from "stores/season";
 import { getMainStories, getStories, likeStory } from "stores/season/async-actions";
 import styles from './Stories.module.css'
@@ -39,6 +39,7 @@ const StoriesComponent = () => {
     const [play, setPlay] = useState<boolean>(false);
     const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
     const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [currentTrack, setCurrentTrack] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         dispatch(getStories());
@@ -77,6 +78,12 @@ const StoriesComponent = () => {
             localStorage.setItem("watchedStories", JSON.stringify(watchedStories))
         }
     }, [watchedStories]);
+
+    useEffect(() => {
+        if (loadingIndex) {
+            setCurrentTrack(undefined);
+        }
+    }, [loadingIndex]);
 
     useEffect(() => {
         const watched = localStorage.getItem("watchedStories")
@@ -133,6 +140,14 @@ const StoriesComponent = () => {
         setPlay(true);
         setLoadingIndex(null)
 
+        const player = stories.find(x => x.playerId === selectedPlayer);
+        if (player) {
+            const music = player.goals[currentStoryIndex].music;
+            if (music) {
+                setCurrentTrack(music.url);
+            }
+        }
+
         if (!watchedStories.includes(storyId)) {
             const temp = cloneDeep(watchedStories)
             temp.push(storyId);
@@ -186,10 +201,24 @@ const StoriesComponent = () => {
             return (
                 <div>
                     <div className={styles.storyAvatar}>
-                        <PlayerItem id={player.playerId} name={player.name} />
+                        {!player.goals[currentStoryIndex].music &&
+                            <PlayerItem id={player.playerId} name={player.name} />
+                        }
+                        {player.goals[currentStoryIndex].music &&
+                            <>
+                                <PlayerItem id={player.playerId} name={player.name} type={PlayerItemType.Avatar} />
+                                <div style={{ display: "flex", flexDirection: "column", width: 360 }}>
+                                    <span>{player.name}</span>
+                                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                                        <Avatar shape="square" size={16} src={player.goals[currentStoryIndex].music.imageUrl} />
+                                        <Text type="secondary" style={{ whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden", width: "calc(-64px + 100%)" }}>{player.goals[currentStoryIndex].music.title + " - " + player.goals[currentStoryIndex].music.name}</Text>
+                                    </div>
+                                </div>
+                            </>
+                        }
                     </div>
                     <div className={styles.storyDate}>
-                        <Text type="secondary">{convertDate(player.goals[currentStoryIndex].date)}</Text>
+                        <Text >{convertDate(player.goals[currentStoryIndex].date)}</Text>
                     </div>
                     <div className={styles.storyActions}>
                         <Button type="text" icon={<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" onClick={() => navigate("replay?id=" + player.goals[currentStoryIndex].replayId + "&t=" + (player.goals[currentStoryIndex].packet))}>
@@ -367,55 +396,58 @@ const StoriesComponent = () => {
     return (
         <div className={styles.storyContainer}>
             {storesComponent}
-            <Modal
-                style={isMobile ? { top: 0 } : undefined}
-                wrapClassName={isMobile ? "mobile-modal-without-background" : "modal-without-background"}
-                open={storiesOpen}
-                width={size.x}
-                onCancel={() => setStoriesOpen(false)}
-                footer={[]}
-            >
-                <div className={styles.storyReplay} style={{ width: size.x, height: size.y }}>
-                    {replayComponent}
-                    {loadingIndex &&
-                        <div className={styles.storyLoading} style={{ width: size.x, height: size.y }}>
-                            <Skeleton.Node active style={{ width: size.x, height: size.y }}>
-                                <span />
-                            </Skeleton.Node>
-                        </div>
-                    }
-                </div>
-                <div className={styles.storyReplayOverlay} />
-                <div className={styles.storyReplayLeft} onClick={prev} />
-                <div className={styles.storyReplayRight} onClick={next} />
-                <div className={styles.storyTimeline}>
-                    {currentPlayer && currentPlayer.goals.map((goal, index) => {
-                        const percent = ((currentTick - startTick) / 296 * 100);
-                        const watched = watchedStories.includes(goal.id);
-                        let background = "rgba(255, 255, 255, 0.12)";
-                        if (loadingIndex === index) {
-                            return <Skeleton.Node active className={styles.storyTimelineItemLoading} >
-                                <span />
-                            </Skeleton.Node>
-                        } else if (currentStoryIndex === index) {
-                            background = "linear-gradient(90deg, white " + percent + "%, rgba(255, 255, 255, 0.12) " + percent + "%, rgba(255, 255, 255, 0.12) 100%)";
-                        } else if (watched) {
-                            background = "white"
+            {storiesOpen &&
+                <Modal
+                    style={isMobile ? { top: 0 } : undefined}
+                    wrapClassName={isMobile ? "mobile-modal-without-background" : "modal-without-background"}
+                    open={storiesOpen}
+                    width={size.x}
+                    onCancel={() => setStoriesOpen(false)}
+                    footer={[]}
+                >
+                    <div className={styles.storyReplay} style={{ width: size.x, height: size.y }}>
+                        {replayComponent}
+                        {loadingIndex &&
+                            <div className={styles.storyLoading} style={{ width: size.x, height: size.y }}>
+                                <Skeleton.Node active style={{ width: size.x, height: size.y }}>
+                                    <span />
+                                </Skeleton.Node>
+                            </div>
                         }
-                        return <div className={styles.storyTimelineItem} style={{ background: background }} />
-                    })}
-                    {!currentPlayer && mainStories.map((story, index) => {
-                        let background = "rgba(255, 255, 255, 0.12)";
-                        const watched = watchedStories.includes(story.id);
-                        if (currentStoryIndex === index) {
-                            background = "white"
-                        } else if (watched) {
-                            background = "white"
-                        }
-                        return <div className={styles.storyTimelineItem} style={{ background: background }} />
-                    })}
-                </div>
-            </Modal>
+                    </div>
+                    <div className={styles.storyReplayOverlay} />
+                    <div className={styles.storyReplayLeft} onClick={prev} />
+                    <div className={styles.storyReplayRight} onClick={next} />
+                    <div className={styles.storyTimeline}>
+                        {currentPlayer && currentPlayer.goals.map((goal, index) => {
+                            const percent = ((currentTick - startTick) / 296 * 100);
+                            const watched = watchedStories.includes(goal.id);
+                            let background = "rgba(255, 255, 255, 0.12)";
+                            if (loadingIndex === index) {
+                                return <Skeleton.Node active className={styles.storyTimelineItemLoading} >
+                                    <span />
+                                </Skeleton.Node>
+                            } else if (currentStoryIndex === index) {
+                                background = "linear-gradient(90deg, white " + percent + "%, rgba(255, 255, 255, 0.12) " + percent + "%, rgba(255, 255, 255, 0.12) 100%)";
+                            } else if (watched) {
+                                background = "white"
+                            }
+                            return <div className={styles.storyTimelineItem} style={{ background: background }} />
+                        })}
+                        {!currentPlayer && mainStories.map((story, index) => {
+                            let background = "rgba(255, 255, 255, 0.12)";
+                            const watched = watchedStories.includes(story.id);
+                            if (currentStoryIndex === index) {
+                                background = "white"
+                            } else if (watched) {
+                                background = "white"
+                            }
+                            return <div className={styles.storyTimelineItem} style={{ background: background }} />
+                        })}
+                    </div>
+                    <audio src={currentTrack} autoPlay />
+                </Modal>
+            }
         </div>
     )
 }

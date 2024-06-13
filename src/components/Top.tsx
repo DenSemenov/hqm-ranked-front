@@ -3,6 +3,7 @@ import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { useSelector } from "react-redux";
+import { convertMoney } from "shared/MoneyCoverter";
 import PlayerItem from "shared/PlayerItem";
 import { selectTopStats } from "stores/season";
 import { getTopStats } from "stores/season/async-actions";
@@ -29,9 +30,6 @@ const Top = () => {
         }
 
     }
-
-
-    console.log(topStats)
 
     return <Table
         dataSource={topStats}
@@ -111,6 +109,16 @@ const Top = () => {
                 align: "right",
                 dataIndex: "assistsPerGame",
                 sorter: (a, b) => a.assistsPerGame - b.assistsPerGame,
+            },
+            {
+                title: "COST",
+                width: 70,
+                align: "right",
+                dataIndex: "cost",
+                sorter: (a, b) => a.cost - b.cost,
+                render(value, record, index) {
+                    return value !== 0 ? convertMoney(value) : "-"
+                },
             },
             {
                 title: "RATING",

@@ -9,5 +9,6 @@ export interface ITopStatsResponse {
     goalsPerGame: number;
     assistsPerGame: number;
     winrate: number;
+    cost: number;
     elo: number;
 }

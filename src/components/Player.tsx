@@ -10,6 +10,7 @@ import { convertDate } from "shared/DateConverter";
 import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
 import { DownOutlined } from '@ant-design/icons';
 import { LoadingOutlined } from "@ant-design/icons";
+import { convertMoney } from "shared/MoneyCoverter";
 
 const { Text, Title } = Typography;
 
@@ -59,6 +60,7 @@ const Player = () => {
                             </Space>
                         </Title>
                     </Dropdown>
+                    <Title level={3}>{convertMoney(currentPlayerData.cost)}</Title>
                     <div className={styles.playerLeftStats}>
                         <Row>
                             <Col span={8}>

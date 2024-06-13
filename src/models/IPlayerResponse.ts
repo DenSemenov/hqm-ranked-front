@@ -7,6 +7,7 @@ export interface IPlayerResponse {
     goals: number;
     assists: number;
     points: number;
+    cost: number;
     currentSeasonData: PlayerLastSeasonViewModel;
     lastGames: PlayerLastGamesViewModel[];
     lastSeasons: PlayerSeasonsViewModel[];

@@ -1,0 +1,26 @@
+.playerLeft {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px;
+    gap: 16px;
+    width: 100%;
+}
+
+.playerLeftTitle {
+    margin-bottom: 16px;
+}
+
+.playerLeftStats {
+    width: 100%;
+}
+
+.playerLeftStatsCount {
+    display: block;
+    margin-block-start: 1.33em;
+    margin-block-end: 1.33em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: 100;
+    opacity: 0.7;
+}

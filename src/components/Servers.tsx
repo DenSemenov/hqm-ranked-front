@@ -1,7 +1,10 @@
 import { Card, Carousel, Col, Row, Tag, Typography } from "antd";
 import { IActiveServerResponse } from "models/IActiveServerResponse";
+import { IInstanceType } from "models/IInstanceType";
+import { useMemo } from "react";
 import { isMobile } from "react-device-detect";
 import { useSelector } from "react-redux";
+import { selectCurrentMode } from "stores/season";
 import { selectServers } from "stores/server";
 
 const { Text, Title } = Typography;
@@ -9,6 +12,7 @@ const { Text, Title } = Typography;
 const Servers = () => {
 
     const servers = useSelector(selectServers);
+    const currentMode = useSelector(selectCurrentMode);
 
     const getStateById = (state: number) => {
         let text = "";
@@ -26,6 +30,21 @@ const Servers = () => {
         }
 
         return <Tag>{text}</Tag>
+    }
+
+    const getInstanceTypeById = (state: IInstanceType) => {
+        let text = "";
+
+        switch (state) {
+            case 0:
+                text = "Ranked";
+                break;
+            case 1:
+                text = "Teams";
+                break;
+        }
+
+        return text
     }
 
     const getPeriodWithTime = (period: number, time: number) => {
@@ -63,11 +82,17 @@ const Servers = () => {
         }
     }
 
+    const filteredServers = useMemo(() => {
+        return servers.filter(x => x.instanceType === currentMode)
+    }, [servers, currentMode])
+
     return (
         <Carousel style={{ height: "calc(-24px + 100%)", padding: isMobile ? 16 : 0 }} fade waitForAnimate >
-            {servers.map(server => {
+            {filteredServers.map(server => {
                 return <><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Title level={3}>{server.name}</Title>
+                    <Title level={3} style={{ display: "flex", alignItems: "center" }}>
+                        {server.name}
+                    </Title>
                     {getStateById(server.state)}
                 </div>
                     <div style={{ height: "calc(-68px + 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>

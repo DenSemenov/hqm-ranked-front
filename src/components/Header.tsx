@@ -1,5 +1,5 @@
 
-import { Avatar, Badge, Button, Card, Col, List, Popover, Row, Tag, Typography } from 'antd';
+import { Avatar, Badge, Button, Card, Col, List, Popover, Row, Space, Tag, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import styles from './Header.module.css'
 import { useEffect, useMemo, useState } from 'react';
@@ -8,13 +8,17 @@ import { selectCurrentUser, selectIsAuth } from 'stores/auth';
 import { getCurrentUser } from 'stores/auth/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import ChangePasswordModal from './ChangePasswordModal';
-import { selectCurrentSeason, selectPatrols, selectSeasons, selectStorageUrl } from 'stores/season';
+import { selectClearImageCache, selectCurrentMode, selectCurrentSeason, selectPatrols, selectSeasons, selectStorageUrl, setCurrentMode } from 'stores/season';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ThemeButton from './ThemeButton';
 import { isMobile } from 'react-device-detect';
 import { getPatrol } from 'stores/season/async-actions';
 import { convertDate } from 'shared/DateConverter';
-import { CaretRightOutlined } from "@ant-design/icons";
+import { CaretRightOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { IInstanceType } from 'models/IInstanceType';
+import { selectPlayerInvites, selectTeamsState } from 'stores/teams';
+import { applyPlayerInvite, cancelInvite, declinePlayerInvite, getInvites, getTeamsState } from 'stores/teams/async-actions';
+import TeamItem from 'shared/TeamItem';
 
 const { Text, Title } = Typography;
 
@@ -29,6 +33,10 @@ const Header = () => {
     const currentSeason = useSelector(selectCurrentSeason);
     const seasons = useSelector(selectSeasons);
     const patrols = useSelector(selectPatrols);
+    const currentMode = useSelector(selectCurrentMode);
+    const playerInvites = useSelector(selectPlayerInvites);
+    const teamsState = useSelector(selectTeamsState);
+    const clearImageCache = useSelector(selectClearImageCache);
 
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
 
@@ -36,6 +44,7 @@ const Header = () => {
         if (isAuth) {
             dispatch(getCurrentUser());
             dispatch(getPatrol())
+            dispatch(getInvites())
         }
     }, [isAuth])
 
@@ -72,11 +81,17 @@ const Header = () => {
         return (currentUser && currentUser.name) ? currentUser.name[0].toUpperCase() : "";
     }, [currentUser])
 
+    const query = useMemo(() => {
+        if (clearImageCache) {
+            return clearImageCache.getTime();
+        }
+    }, [clearImageCache])
+
     const loginButton = useMemo(() => {
         if (!isMobile) {
             if (userName && currentUser && isAuth) {
                 return <Badge count={currentUser.isBanned ? "BAN" : undefined} offset={[-16, 16]}>
-                    <Avatar shape='square' style={{ cursor: "pointer" }} src={storageUrl + "images/" + currentUser.id + ".png"} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
+                    <Avatar shape='square' style={{ cursor: "pointer" }} src={storageUrl + "images/" + currentUser.id + ".png" + "?t=" + query} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
                 </Badge>
             } else {
                 return <Button icon={<UserOutlined />} onClick={loginPage} />
@@ -84,7 +99,63 @@ const Header = () => {
         } else {
             return <></>
         }
-    }, [isMobile, currentUser, userName, avatarName, isAuth])
+    }, [isMobile, currentUser, userName, avatarName, isAuth, query])
+
+    const onApplyInvite = (inviteId: string) => {
+        dispatch(applyPlayerInvite({
+            inviteId: inviteId
+        })).unwrap().then(() => {
+            dispatch(getTeamsState())
+            dispatch(getInvites())
+        })
+    }
+
+    const onDeclineInvite = (inviteId: string) => {
+        dispatch(declinePlayerInvite({
+            inviteId: inviteId
+        })).unwrap().then(() => {
+            dispatch(getTeamsState())
+            dispatch(getInvites())
+        })
+    }
+
+    const playerInvitesContent = useMemo(() => {
+        return <List
+            dataSource={playerInvites}
+            renderItem={(item, index) => {
+                return <Row className={styles.patrolHeader}>
+                    <Col span={12}>
+                        <TeamItem id={item.teamId} name={item.teamName} />
+                    </Col>
+                    <Col span={12} className='right-align' >
+                        <Space size={"small"}>
+                            <Button type="primary" icon={<CheckOutlined />} onClick={() => onApplyInvite(item.inviteId)} />
+                            <Button type="primary" danger icon={<CloseOutlined />} onClick={() => onDeclineInvite(item.inviteId)} />
+                        </Space>
+                    </Col>
+
+                </Row>
+            }}
+        />
+    }, [playerInvites])
+
+    const playerInvitesNotify = useMemo(() => {
+        if (playerInvites.length !== 0 && !teamsState.team) {
+            return <Popover content={playerInvitesContent} title="Invites to team" trigger={"click"}>
+                <Badge count={playerInvites.length}>
+                    <Button
+                        type="text"
+                        title='Invites'
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="24px" height="24px" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
+                            <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="#ff2147" stroke="none">
+                                <path d="M446 4634 c-153 -37 -308 -162 -378 -304 -71 -145 -68 -86 -68 -1490 0 -1404 -3 -1345 68 -1490 53 -108 151 -205 263 -258 46 -22 108 -45 137 -51 35 -7 279 -11 724 -11 l672 0 255 -253 c286 -283 308 -299 426 -305 54 -3 83 1 130 19 55 20 81 43 321 280 l260 259 672 0 c445 0 689 4 724 11 162 33 328 161 401 310 70 142 67 74 67 1489 0 1078 -3 1286 -15 1344 -46 216 -225 401 -436 451 -93 22 -4132 21 -4223 -1z m1896 -942 c253 -124 311 -459 113 -657 -238 -237 -634 -111 -694 222 -35 192 91 397 282 459 27 9 77 13 138 11 84 -2 103 -6 161 -35z m987 -142 c46 -13 99 -65 111 -110 5 -19 10 -60 10 -91 l0 -57 79 -3 c88 -4 118 -19 159 -79 30 -45 30 -115 -1 -160 -34 -51 -78 -72 -163 -78 l-74 -5 0 -61 c0 -72 -28 -138 -73 -170 -40 -29 -134 -29 -173 0 -55 41 -69 70 -72 153 l-4 79 -78 4 c-66 4 -84 9 -114 32 -97 73 -90 206 12 264 31 17 56 22 111 22 l71 0 0 67 c0 105 40 169 119 193 36 11 42 11 80 0z m-601 -839 c75 -41 125 -94 161 -170 25 -54 26 -64 29 -259 3 -195 2 -204 -20 -243 -13 -23 -40 -51 -64 -65 l-41 -24 -628 0 -628 0 -44 25 c-27 16 -51 41 -64 66 -19 38 -20 55 -17 247 3 204 3 208 30 259 37 69 81 118 135 150 92 53 82 53 603 50 l485 -2 63 -34z" />
+                            </g>
+                        </svg>}
+                    />
+                </Badge>
+            </Popover>
+        }
+    }, [playerInvites, teamsState])
 
     const patrolContent = useMemo(() => {
         return <List
@@ -126,22 +197,33 @@ const Header = () => {
             const current = seasons.find(x => x.id === currentSeason)
             if (current) {
                 const leftDays = Math.round((new Date(current.dateEnd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                return <Tag color="#108ee9" style={{ height: 20 }}>{leftDays + " days left"}</Tag>
+                return <Tag color="#108ee9" style={{ height: 20, marginLeft: 16 }}>{leftDays + " days left"}</Tag>
             }
         }
     }, [currentSeason, seasons])
 
+    const onChangeMode = (mode: IInstanceType) => {
+        dispatch(setCurrentMode(mode))
+        navigate("/")
+    }
 
     return (
         <>
-            <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                <svg height="36" width="36" onClick={() => navigate("/")}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
+                <svg height="36" width="36" onClick={() => onChangeMode(IInstanceType.Ranked)} className={currentMode !== IInstanceType.Ranked ? styles.filteredLogo : undefined}>
                     <image href="/icons/logo.svg" height="36" width="36" />
                 </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M13.2939 7.17041L11.9998 12L10.7058 16.8297" stroke="#4d4d4d" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                <div className={styles.teamsLogo + " " + (currentMode !== IInstanceType.Teams ? styles.filteredLogo : undefined)} onClick={() => onChangeMode(IInstanceType.Teams)}>
+                    TEAMS
+                </div>
                 {endsIn}
             </div>
             <div className={styles.headerContainerLogin}>
                 <ThemeButton />
+                {playerInvitesNotify}
                 {patrolsButton}
                 {loginButton}
             </div>

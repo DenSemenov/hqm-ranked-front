@@ -12,7 +12,7 @@ import { getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores
 import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
-import { selectCurrentSeason, selectLoading } from 'stores/season';
+import { selectCurrentMode, selectCurrentSeason, selectLoading } from 'stores/season';
 import { selectCurrentUser, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
 import Player from 'components/Player';
 import LoginModal from 'components/LoginModal';
@@ -34,6 +34,11 @@ import Other from 'components/Other';
 import RulesAcception from 'components/RulesAcception';
 import Top from 'components/Top';
 import Patrol from 'components/Patrol';
+import { IInstanceType } from 'models/IInstanceType';
+import Teams from 'components/Teams';
+import FreeAgents from 'components/FreeAgents';
+import Team from 'components/Team';
+import TeamSettings from 'components/TeamSettings';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -42,6 +47,7 @@ function App() {
   const theme = useSelector(selectTheme);
   const loadingUser = useSelector(selectLoadingUser);
   const loading = useSelector(selectLoading);
+  const currentMode = useSelector(selectCurrentMode);
 
   const singnalR = new SignalrService();
 
@@ -128,25 +134,51 @@ function App() {
   }
 
   const routes = useMemo(() => {
-    return <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/players" element={<PlayersTable />} />
-      <Route path="/games" element={<Games />} />
-      <Route path="/player" element={<Player />} />
-      <Route path="/game" element={<Game />} />
-      <Route path="/login" element={<LoginModal />} />
-      <Route path="/registration" element={<RegisterModal />} />
-      <Route path="/admin" element={<Admin />} />
-      <Route path="/profile" element={<ProfilePage />} />
-      <Route path="/replay" element={<ReplayViewer />} />
-      <Route path="/notifications" element={<Notifications />} />
-      <Route path="/servers" element={<Servers />} />
-      <Route path="/other" element={<Other />} />
-      <Route path="/rules" element={<RulesAcception />} />
-      <Route path="/top" element={<Top />} />
-      <Route path="/patrol" element={<Patrol />} />
-    </Routes>
-  }, [])
+    if (currentMode === IInstanceType.Ranked) {
+      return <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/players" element={<PlayersTable />} />
+        <Route path="/games" element={<Games />} />
+        <Route path="/player" element={<Player />} />
+        <Route path="/game" element={<Game />} />
+        <Route path="/login" element={<LoginModal />} />
+        <Route path="/registration" element={<RegisterModal />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/replay" element={<ReplayViewer />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/servers" element={<Servers />} />
+        <Route path="/other" element={<Other />} />
+        <Route path="/rules" element={<RulesAcception />} />
+        <Route path="/top" element={<Top />} />
+        <Route path="/patrol" element={<Patrol />} />
+        <Route path="/free-agents" element={<FreeAgents />} />
+        <Route path="/team" element={<Team />} />
+        <Route path="/team-settings" element={<TeamSettings />} />
+      </Routes>
+    }
+    if (currentMode === IInstanceType.Teams) {
+      return <Routes>
+        <Route path="/" element={<Teams />} />
+        <Route path="/player" element={<Player />} />
+        <Route path="/game" element={<Game />} />
+        <Route path="/login" element={<LoginModal />} />
+        <Route path="/registration" element={<RegisterModal />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/replay" element={<ReplayViewer />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/servers" element={<Servers />} />
+        <Route path="/other" element={<Other />} />
+        <Route path="/rules" element={<RulesAcception />} />
+        <Route path="/top" element={<Top />} />
+        <Route path="/patrol" element={<Patrol />} />
+        <Route path="/free-agents" element={<FreeAgents />} />
+        <Route path="/team" element={<Team />} />
+        <Route path="/team-settings" element={<TeamSettings />} />
+      </Routes>
+    }
+  }, [currentMode])
 
   return (
     <ConfigProvider

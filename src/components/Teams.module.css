@@ -1,0 +1,12 @@
+.teamActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.budgetHistoryItem {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}

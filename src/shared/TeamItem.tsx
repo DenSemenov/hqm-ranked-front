@@ -13,26 +13,21 @@ export enum PlayerItemType {
 }
 
 interface IProps {
-    id: number;
+    id: string;
     key?: number;
     name: string;
     type?: PlayerItemType,
 }
 
-const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both }: IProps) => {
+const TeamItem = ({ id, name, key = 0, type = PlayerItemType.Both }: IProps) => {
     const navigate = useNavigate();
 
     const storageUrl = useSelector(selectStorageUrl);
-    const currentUser = useSelector(selectCurrentUser);
     const clearImageCache = useSelector(selectClearImageCache);
 
     const avatarName = useMemo(() => {
         return name[0].toUpperCase()
     }, [name])
-
-    const isCurrent = useMemo(() => {
-        return currentUser ? currentUser.id === id : false
-    }, [id, currentUser])
 
     const query = useMemo(() => {
         if (clearImageCache) {
@@ -42,13 +37,13 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both }: IProps) =
 
     return (
         <div
-            className={styles.playerItem + " " + (isCurrent ? styles.currentUserTextStyle : undefined)}
+            className={styles.playerItem}
             key={key}
-            onClick={() => navigate("/player?id=" + id)}
+            onClick={() => navigate("/team?id=" + id)}
         >
             {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
                 <Tooltip title={type === PlayerItemType.Avatar ? name : undefined}>
-                    <Avatar className={isCurrent ? styles.currentUserStyle : undefined} shape='square' src={storageUrl + "images/" + id + ".png" + "?t=" + query}>{avatarName}</Avatar>
+                    <Avatar shape='square' src={storageUrl + "images/" + id + ".png" + "?t=" + query}>{avatarName}</Avatar>
                 </Tooltip>
             }
             {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&
@@ -58,4 +53,4 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both }: IProps) =
     )
 }
 
-export default PlayerItem;
+export default TeamItem;

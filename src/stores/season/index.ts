@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { IAdminStoryResponse } from "models/IAdminStoryResponse";
 import { IGameResponse } from "models/IGameResponse";
+import { IInstanceType } from "models/IInstanceType";
 import { IPartolResponse } from "models/IPartolResponse";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { IRulesResponse } from "models/IRulesResponse";
@@ -30,6 +31,10 @@ export interface ISeasonState {
     topStats: ITopStatsResponse[];
 
     patrols: IPartolResponse[];
+
+    currentMode: IInstanceType;
+
+    clearImageCache: Date | undefined;
 }
 
 const initialState: ISeasonState = {
@@ -54,7 +59,11 @@ const initialState: ISeasonState = {
 
     topStats: [],
 
-    patrols: []
+    patrols: [],
+
+    currentMode: IInstanceType.Ranked,
+
+    clearImageCache: undefined
 }
 
 export const seasonSlicer = createSlice({
@@ -109,6 +118,12 @@ export const seasonSlicer = createSlice({
         setPatrols: (state: ISeasonState, action: PayloadAction<IPartolResponse[]>) => {
             state.patrols = action.payload;
         },
+        setCurrentMode: (state: ISeasonState, action: PayloadAction<IInstanceType>) => {
+            state.currentMode = action.payload;
+        },
+        setClearImageCache: (state: ISeasonState, action: PayloadAction<Date>) => {
+            state.clearImageCache = action.payload;
+        },
     },
 })
 
@@ -124,7 +139,9 @@ export const {
     setStories,
     setMainStories,
     setTopStats,
-    setPatrols
+    setPatrols,
+    setCurrentMode,
+    setClearImageCache
 } =
     seasonSlicer.actions
 
@@ -142,5 +159,7 @@ export const selectMainStories = (state: RootState) => state.season.mainStories;
 export const selectLoading = (state: RootState) => state.season.loading;
 export const selectTopStats = (state: RootState) => state.season.topStats;
 export const selectPatrols = (state: RootState) => state.season.patrols;
+export const selectCurrentMode = (state: RootState) => state.season.currentMode;
+export const selectClearImageCache = (state: RootState) => state.season.clearImageCache;
 
 export default seasonSlicer.reducer

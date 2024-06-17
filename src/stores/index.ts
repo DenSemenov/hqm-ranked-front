@@ -5,6 +5,7 @@ import { loadState } from "./save-load";
 import server from "./server";
 import admin from "./admin";
 import events from "./events";
+import teams from "./teams";
 
 export const store = configureStore({
     reducer: {
@@ -12,7 +13,8 @@ export const store = configureStore({
         season,
         server,
         admin,
-        events
+        events,
+        teams
     },
     preloadedState: loadState(),
 });

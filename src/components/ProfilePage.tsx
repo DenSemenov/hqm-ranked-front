@@ -11,6 +11,7 @@ import ChangeNicknameModal from "./ChangeNicknameModal";
 import { addPushToken, removePushToken } from "stores/auth/async-actions";
 import { requestNotificationPermission } from "firebaseService";
 import { isMobile } from "react-device-detect";
+import { setClearImageCache } from "stores/season";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -68,6 +69,8 @@ const ProfilePage = () => {
 
     const onChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
         setFileList(newFileList);
+
+        dispatch(setClearImageCache(new Date()))
     };
 
     const onEnablePush = async () => {

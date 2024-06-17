@@ -7,5 +7,3 @@ export default class EventsService {
         return $api.post<ICurrentEventResponse>('api/events/GetCurrentEvent');
     }
 }
-
-

@@ -1,0 +1,16 @@
+.playerItem {
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.currentUserStyle {
+    box-shadow: 0 0 4px 4px #1668dc;
+    margin: 4px;
+}
+
+.currentUserTextStyle {
+    color: #1668dc !important;
+    font-weight: 900;
+}

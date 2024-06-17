@@ -1,3 +1,5 @@
+import { IInstanceType } from "./IInstanceType";
+
 export interface IActiveServerResponse {
     id: string;
     name: string;
@@ -8,4 +10,5 @@ export interface IActiveServerResponse {
     redScore: number;
     blueScore: number;
     state: number;
+    instanceType: IInstanceType
 }

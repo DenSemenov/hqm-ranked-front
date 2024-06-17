@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { useSelector } from "react-redux";
 import { selectCurrentUser, selectIsAuth } from "stores/auth";
-import { selectStorageUrl } from "stores/season";
+import { selectClearImageCache, selectStorageUrl } from "stores/season";
 
 const Footer = () => {
     const navigate = useNavigate();
@@ -14,6 +14,7 @@ const Footer = () => {
     const currentUser = useSelector(selectCurrentUser);
     const isAuth = useSelector(selectIsAuth);
     const storageUrl = useSelector(selectStorageUrl);
+    const clearImageCache = useSelector(selectClearImageCache);
 
     const [currentPage, setCurrentPage] = useState<string>("players");
 
@@ -29,6 +30,12 @@ const Footer = () => {
         return (currentUser && currentUser.name) ? currentUser.name[0].toUpperCase() : "";
     }, [currentUser])
 
+    const query = useMemo(() => {
+        if (clearImageCache) {
+            return clearImageCache.getTime();
+        }
+    }, [clearImageCache])
+
     const loginButton = useMemo(() => {
         if (userName && currentUser && isAuth) {
             return <div className={styles.footerButton} onClick={() => {
@@ -36,7 +43,7 @@ const Footer = () => {
                 setCurrentPage("auth")
             }}
             >
-                <Avatar shape='square' style={{ cursor: "pointer", borderColor: currentPage === "auth" ? "#1677FF" : "transparent" }} src={storageUrl + "images/" + currentUser.id + ".png"} >{avatarName}</Avatar>
+                <Avatar shape='square' style={{ cursor: "pointer", borderColor: currentPage === "auth" ? "#1677FF" : "transparent" }} src={storageUrl + "images/" + currentUser.id + ".png" + "?t=" + query} >{avatarName}</Avatar>
             </div>
         } else {
             return <div className={styles.footerButton} onClick={() => {
@@ -47,7 +54,7 @@ const Footer = () => {
                 <UserOutlined className={styles.icon} style={{ color: currentPage === "auth" ? "#1677FF" : "white" }} />
             </div>
         }
-    }, [currentUser, userName, avatarName, currentPage, isAuth])
+    }, [currentUser, userName, avatarName, currentPage, isAuth, query])
 
     return (
         <div className={styles.footerItems}>

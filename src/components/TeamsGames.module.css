@@ -1,0 +1,40 @@
+.gameInviteContainer {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    overflow: auto;
+    padding: 8px;
+}
+
+.gameInviteItem {
+    width: 250px;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.inviteContainer {
+    border-radius: 8px;
+    border: 1px solid black;
+}
+
+.timeTitle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px
+}
+
+.voteStatus {
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px
+}

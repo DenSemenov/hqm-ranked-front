@@ -1,5 +1,6 @@
-import { Button, Checkbox, Form, Input, InputNumber, Popconfirm, Popover, Select, Table, Tabs, notification } from "antd";
+import { Button, Checkbox, Form, Input, InputNumber, Popconfirm, Popover, Select, Table, Tabs, Tag, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
+import { IInstanceType } from "models/IInstanceType";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -44,9 +45,11 @@ const Admin = () => {
         })
     }
 
-    const onAddServer = () => {
+    const onAddServer = (instanceType: IInstanceType) => {
         dispatch(addServer({
-            name: "Not connected"
+            name: "Not connected",
+            instanceType: instanceType
+
         })).unwrap().then(() => {
             dispatch(getServers())
         })
@@ -76,11 +79,26 @@ const Admin = () => {
             bordered={false}
             pagination={false}
             rowKey={"id"}
-            footer={() => <Button onClick={onAddServer}>Add server</Button>}
+            footer={() => <div style={{ display: "flex", gap: 8 }}>
+                <Button onClick={() => onAddServer(IInstanceType.Ranked)}>Add ranked server</Button>
+                <Button onClick={() => onAddServer(IInstanceType.Teams)}>Add teams server</Button>
+            </div>}
             columns={[
                 {
                     title: "Name",
                     dataIndex: "name"
+                },
+                {
+                    title: "Type",
+                    dataIndex: "instanceType",
+                    render(value, record, index) {
+                        if (value === 0) {
+                            return <Tag>Ranked</Tag>
+                        }
+                        if (value === 1) {
+                            return <Tag>Teams</Tag>
+                        }
+                    },
                 },
                 {
                     title: "Token",

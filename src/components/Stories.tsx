@@ -7,7 +7,6 @@ import { getMainStories, getStories, likeStory } from "stores/season/async-actio
 import styles from './Stories.module.css'
 import { Avatar, Badge, Button, Modal, Skeleton, Tooltip, Typography } from 'antd';
 import 'stories-react/dist/index.css';
-import Stories from 'stories-react';
 import { isMobile } from "react-device-detect";
 import ReplayViewer from "./ReplayViewer";
 import * as THREE from "three";

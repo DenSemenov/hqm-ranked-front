@@ -1,3 +1,5 @@
+import { IInstanceType } from "./IInstanceType";
+
 export interface ISeasonGameResponse {
     gameId: string;
     date: Date;
@@ -7,6 +9,11 @@ export interface ISeasonGameResponse {
     hasReplayFragments: boolean;
     replayId: string;
     players: IGamePlayerItem[];
+    instanceType: IInstanceType;
+    redTeamId?: string;
+    blueTeamId?: string;
+    redTeamName?: string;
+    blueTeamName?: string;
 }
 
 export interface IGamePlayerItem {

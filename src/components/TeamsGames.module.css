@@ -38,3 +38,46 @@
     justify-content: space-between;
     gap: 8px
 }
+
+.gamesItem {
+    cursor: pointer;
+    border-radius: 0;
+    padding: 8px 16px;
+
+}
+
+.gamesItem:hover {
+    background: var(--layoutAccent);
+}
+
+.gameStatusTitle {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+.teamTitle {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.gameStatus {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    gap: 8px;
+}
+
+.gameContentName {
+    display: flex;
+    gap: 4px;
+    flex-direction: column;
+    align-content: center;
+}
+
+.gameContent {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}

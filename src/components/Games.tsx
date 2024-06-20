@@ -10,20 +10,15 @@ import { useNavigate } from "react-router-dom";
 import { getSeasonsGames } from 'stores/season/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { CaretRightOutlined } from "@ant-design/icons";
+import { IInstanceType } from 'models/IInstanceType';
 
 const Games = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const currentSeasonGames = useSelector(selectCurrentSeasonGames);
-    const currentSeason = useSelector(selectCurrentSeason);
 
     const [height, setHeight] = useState<number>(0);
-
-    useEffect(() => {
-        setTableHeightAction();
-        window.addEventListener('resize', setTableHeightAction, true);
-    }, []);
 
     useEffect(() => {
         setTableHeightAction();
@@ -39,22 +34,10 @@ const Games = () => {
 
     }
 
-    const onScroll = (e: any) => {
-        if (currentSeason) {
-            const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
-            if (bottom) {
-                dispatch(getSeasonsGames({
-                    seasonId: currentSeason,
-                    offset: currentSeasonGames.length,
-                }));
-            }
-        }
-    }
-
     return (
         <div id="games-container" style={{ height: "100%" }}>
             <List
-                dataSource={currentSeasonGames}
+                dataSource={currentSeasonGames.filter(x => x.instanceType === IInstanceType.Ranked)}
                 style={{ height: height, overflow: "auto" }}
                 renderItem={(game, index) => {
                     return <div className={styles.gamesItem} key={game.gameId} onClick={() => navigate("/game?id=" + game.gameId)}>

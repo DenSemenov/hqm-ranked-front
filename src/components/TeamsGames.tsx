@@ -1,21 +1,27 @@
-import { Button, DatePicker, Form, List, Modal, Popover, Progress, Space, Tooltip, Typography, notification } from "antd";
+import { Avatar, Button, Col, DatePicker, Form, List, Modal, Popover, Progress, Row, Space, Tag, Tooltip, Typography, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { selectGameInvites, selectTeamsState } from "stores/teams";
 import { InfoCircleOutlined, DeleteOutlined, CheckOutlined, QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import { createGameInvite, getGameInvites, removeGameInvite, voteGameInvite } from "stores/teams/async-actions";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { selectCurrentUser, selectIsAuth } from "stores/auth";
 import styles from './TeamsGames.module.css'
 import Card from "antd/es/card/Card";
 import { convertDate, convertFullDate } from "shared/DateConverter";
 import TeamItem from "shared/TeamItem";
-import PlayerItem from "shared/PlayerItem";
+import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
+import { selectCurrentSeasonGames } from "stores/season";
+import { useNavigate } from "react-router-dom";
+import { IInstanceType } from "models/IInstanceType";
+import { CaretRightOutlined } from "@ant-design/icons";
+import { isMobile } from "react-device-detect";
 
 const { Text, Title } = Typography;
 
 const TeamsGames = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const [modal, contextHolder] = Modal.useModal();
 
@@ -23,6 +29,23 @@ const TeamsGames = () => {
     const isAuth = useSelector(selectIsAuth);
     const gameInvites = useSelector(selectGameInvites);
     const currentUser = useSelector(selectCurrentUser);
+    const currentSeasonGames = useSelector(selectCurrentSeasonGames);
+
+    const [height, setHeight] = useState<number>(0);
+
+    useEffect(() => {
+        setTableHeightAction();
+        window.addEventListener('resize', setTableHeightAction, true);
+    }, [isMobile]);
+
+    const setTableHeightAction = () => {
+        const gc = document.getElementById("games-container");
+        if (gc) {
+            let h = gc.clientHeight;
+            setHeight(h);
+        }
+
+    }
 
     useEffect(() => {
         if (isAuth) {
@@ -66,7 +89,7 @@ const TeamsGames = () => {
     }
 
     return (
-        <div>
+        <div style={{ height: "100%", display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16 }}>
                 {(teamsState.isCaptain || teamsState.isAssistant) &&
                     <Popover
@@ -165,6 +188,40 @@ const TeamsGames = () => {
                     </Card>
                 }
 
+            </div>
+            <div id="games-container" style={{ flex: "auto" }}>
+                <List
+                    dataSource={currentSeasonGames.filter(x => x.instanceType === IInstanceType.Teams)}
+                    style={{ overflow: "auto" }}
+                    renderItem={(game, index) => {
+                        return <div className={styles.gamesItem} key={game.gameId} onClick={() => navigate("/game?id=" + game.gameId)}>
+                            <Row gutter={[8, 8]} >
+                                <Col span={16}>
+                                    <span className="subtitle">{convertDate(game.date)}</span>
+                                </Col>
+                                <Col span={8} className={styles.gameStatus}>
+                                    {game.hasReplayFragments &&
+                                        <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate("/replay?id=" + game.replayId)
+                                        }} />
+                                    }
+                                    <Tag style={{ marginRight: 0 }}>{game.status}</Tag>
+                                </Col>
+                                <Col span={16} className={styles.gameContentName}>
+                                    <div className={styles.teamTitle}>
+                                        <TeamItem id={game.redTeamId as string} name={game.redTeamName as string} />
+                                        {"vs"}
+                                        <TeamItem id={game.blueTeamId as string} name={game.blueTeamName as string} />
+                                    </div>
+                                </Col>
+                                <Col span={8} className={styles.gameContent} >
+                                    {game.redScore + " - " + game.blueScore}
+                                </Col>
+                            </Row>
+                        </div>
+                    }}
+                />
             </div>
             {contextHolder}
         </div>

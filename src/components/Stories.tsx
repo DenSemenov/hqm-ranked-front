@@ -55,6 +55,11 @@ const StoriesComponent = () => {
     }, [currentTick, startTick]);
 
     useEffect(() => {
+        const audioItem = document.getElementById("stories-audio") as any;
+
+        if (audioItem) {
+            audioItem.volume = 0.5;
+        }
         setPlay(false);
         setCurrentTick(0);
         setStartTick(0);
@@ -111,6 +116,7 @@ const StoriesComponent = () => {
     }
 
     const openStories = (playerId: number) => {
+
         setSelectedPlayer(playerId);
 
         const player = stories.find(x => x.playerId === playerId);
@@ -444,7 +450,7 @@ const StoriesComponent = () => {
                             return <div className={styles.storyTimelineItem} style={{ background: background }} />
                         })}
                     </div>
-                    <audio src={currentTrack} autoPlay />
+                    <audio id="stories-audio" src={currentTrack} autoPlay />
                 </Modal>
             }
         </div>

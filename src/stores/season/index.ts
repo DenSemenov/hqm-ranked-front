@@ -103,6 +103,9 @@ export const seasonSlicer = createSlice({
         setRules: (state: ISeasonState, action: PayloadAction<IRulesResponse>) => {
             state.rules = action.payload;
         },
+        setLoading: (state: ISeasonState, action: PayloadAction<boolean>) => {
+            state.loading = action.payload;
+        },
         setStorageUrl: (state: ISeasonState, action: PayloadAction<string>) => {
             state.storageUrl = action.payload;
         },
@@ -141,7 +144,8 @@ export const {
     setTopStats,
     setPatrols,
     setCurrentMode,
-    setClearImageCache
+    setClearImageCache,
+    setLoading
 } =
     seasonSlicer.actions
 

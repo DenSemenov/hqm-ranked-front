@@ -11,6 +11,7 @@ import { ICreateGameInviteRequest } from "models/ICreateGameInviteRequest";
 import { IRemoveGameInviteRequest } from "models/IRemoveGameInviteRequest";
 import { IVoteGameInviteRequest } from "models/IVoteGameInviteRequest";
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest";
+import { setLoading } from "stores/season";
 
 export const getTeamsState = createAsyncThunk('teams/getTeamsState', async (payload: void, thunkApi) => {
     try {
@@ -26,7 +27,9 @@ export const getTeamsState = createAsyncThunk('teams/getTeamsState', async (payl
 
 export const createTeam = createAsyncThunk('teams/createTeam', async (payload: ICreateTeamRequest, thunkApi) => {
     try {
+        thunkApi.dispatch(setLoading(true))
         const response = await TeamsService.createTeam(payload);
+        thunkApi.dispatch(setLoading(false))
 
         return response.data
     } catch (e: any) {

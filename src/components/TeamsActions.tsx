@@ -13,6 +13,7 @@ import modal from "antd/es/modal"
 import { useAppDispatch } from "hooks/useAppDispatch"
 import { useNavigate } from "react-router-dom"
 import { leaveTeam, getTeamsState, createTeam } from "stores/teams/async-actions"
+import { selectLoading, setLoading } from "stores/season"
 
 const { Text, Title } = Typography;
 
@@ -21,6 +22,7 @@ const TeamsActions = () => {
     const navigate = useNavigate();
 
     const teamsState = useSelector(selectTeamsState);
+    const loading = useSelector(selectLoading);
 
     const getBudgetType = (historyItem: ITeamsStateCurrentTeamBudgetHistoryResponse) => {
         switch (historyItem.type) {
@@ -87,6 +89,7 @@ const TeamsActions = () => {
 
     const onCreateTeam = (values: any) => {
         dispatch(createTeam(values)).unwrap().then(() => {
+            dispatch(setLoading(false))
             dispatch(getTeamsState())
         })
     }
@@ -134,7 +137,7 @@ const TeamsActions = () => {
                             </Form.Item>
 
                             <Form.Item >
-                                <Button type="primary" htmlType="submit">
+                                <Button type="primary" htmlType="submit" loading={loading} >
                                     Create
                                 </Button>
                             </Form.Item>
@@ -146,7 +149,7 @@ const TeamsActions = () => {
                 </Popover>
             </div>
         }
-    }, [teamsState])
+    }, [teamsState, loading])
     return teamsActions
 }
 

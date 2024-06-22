@@ -5,6 +5,7 @@ import { IGameInviteResponse } from "models/IGameInviteResponse";
 import { IPlayerInviteResponse } from "models/IPlayerInviteResponse";
 import { ITeamResponse } from "models/ITeamResponse";
 import { ITeamsStateResponse } from "models/ITeamsStateResponse";
+import { ITeamsStatsResponse } from "models/ITeamsStatsResponse";
 import { RootState } from "stores"
 
 export interface ITeamsState {
@@ -13,6 +14,7 @@ export interface ITeamsState {
     invites: IPlayerInviteResponse[],
     currentTeam: ITeamResponse | undefined
     gameInvites: IGameInviteResponse[]
+    teamsStats: ITeamsStatsResponse[]
 }
 
 const initialState: ITeamsState = {
@@ -26,7 +28,8 @@ const initialState: ITeamsState = {
     freeAgents: [],
     invites: [],
     currentTeam: undefined,
-    gameInvites: []
+    gameInvites: [],
+    teamsStats: []
 }
 
 export const teamsSlicer = createSlice({
@@ -48,6 +51,9 @@ export const teamsSlicer = createSlice({
         setGameInvites: (state: ITeamsState, action: PayloadAction<IGameInviteResponse[]>) => {
             state.gameInvites = action.payload;
         },
+        setTeamsStats: (state: ITeamsState, action: PayloadAction<ITeamsStatsResponse[]>) => {
+            state.teamsStats = action.payload;
+        },
     },
 })
 
@@ -56,7 +62,8 @@ export const {
     setFreeAgents,
     setPlayerInvites,
     setCurrentTeam,
-    setGameInvites
+    setGameInvites,
+    setTeamsStats
 } =
     teamsSlicer.actions
 
@@ -66,5 +73,6 @@ export const selectFreeAgents = (state: RootState) => state.teams.freeAgents;
 export const selectPlayerInvites = (state: RootState) => state.teams.invites;
 export const selectCurrentTeam = (state: RootState) => state.teams.currentTeam;
 export const selectGameInvites = (state: RootState) => state.teams.gameInvites;
+export const selectTeamsStats = (state: RootState) => state.teams.teamsStats;
 
 export default teamsSlicer.reducer

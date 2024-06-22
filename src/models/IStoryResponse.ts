@@ -1,3 +1,5 @@
+import { IInstanceType } from "./IInstanceType";
+
 export interface IStoryResponse {
     playerId: number;
     name: string;
@@ -11,6 +13,7 @@ export interface IStoryGoalResponse {
     packet: number;
     likes: IStoryLikeResponse[]
     music: IStoryGoalMusicResponse;
+    instanceType: IInstanceType
 }
 
 export interface IStoryGoalMusicResponse {

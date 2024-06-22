@@ -11,6 +11,8 @@ import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
 import { DownOutlined } from '@ant-design/icons';
 import { LoadingOutlined } from "@ant-design/icons";
 import { convertMoney } from "shared/MoneyCoverter";
+import { IInstanceType } from "models/IInstanceType";
+import TeamItem from "shared/TeamItem";
 
 const { Text, Title } = Typography;
 
@@ -85,49 +87,6 @@ const Player = () => {
             </Col>
             <Col sm={10} xs={24}>
                 <div className={styles.playerCenter}>
-                    <h3>RANKED</h3>
-                    <div className={styles.playerCenterStats}>
-                        <div className={styles.playerCenterItem}>
-                            <div >
-                                POS
-                            </div>
-                            <div >
-                                {"#" + currentPlayerData.currentSeasonData.position}
-                            </div>
-                        </div>
-                        <div className={styles.playerCenterItem}>
-                            <div >
-                                GP
-                            </div>
-                            <div >
-                                {currentPlayerData.currentSeasonData.games}
-                            </div>
-                        </div>
-                        <div className={styles.playerCenterItem}>
-                            <div >
-                                G
-                            </div>
-                            <div >
-                                {currentPlayerData.currentSeasonData.goals}
-                            </div>
-                        </div>
-                        <div className={styles.playerCenterItem}>
-                            <div >
-                                A
-                            </div>
-                            <div >
-                                {currentPlayerData.currentSeasonData.assists}
-                            </div>
-                        </div>
-                        <div className={styles.playerCenterItem}>
-                            <div >
-                                ELO
-                            </div>
-                            <div >
-                                {currentPlayerData.currentSeasonData.elo}
-                            </div>
-                        </div>
-                    </div>
                     <div className={styles.playerCenterGames}>
                         {currentPlayerData.lastGames.map(game => {
                             return <div className={styles.playerCenterGamesItem} onClick={() => navigate("/game?id=" + game.gameId)}>
@@ -140,17 +99,28 @@ const Player = () => {
                                     </Col>
                                     <Col span={16} className={styles.gameContentName}>
                                         <div className={styles.teamTitle}>
-                                            <Avatar.Group>
-                                                {game.players.filter(x => x.team == 0).map(x => {
-                                                    return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
-                                                })}
-                                            </Avatar.Group>
-                                            {"vs"}
-                                            <Avatar.Group>
-                                                {game.players.filter(x => x.team == 1).map(x => {
-                                                    return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
-                                                })}
-                                            </Avatar.Group>
+                                            {game.instanceType === IInstanceType.Ranked &&
+                                                <>
+                                                    <Avatar.Group>
+                                                        {game.players.filter(x => x.team == 0).map(x => {
+                                                            return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                                        })}
+                                                    </Avatar.Group>
+                                                    {"vs"}
+                                                    <Avatar.Group>
+                                                        {game.players.filter(x => x.team == 1).map(x => {
+                                                            return <PlayerItem id={x.id} name={x.name} type={PlayerItemType.Avatar} />
+                                                        })}
+                                                    </Avatar.Group>
+                                                </>
+                                            }
+                                            {game.instanceType === IInstanceType.Teams &&
+                                                <>
+                                                    <TeamItem id={game.redTeamId as string} name={game.redTeamName as string} />
+                                                    {"vs"}
+                                                    <TeamItem id={game.blueTeamId as string} name={game.blueTeamName as string} />
+                                                </>
+                                            }
                                         </div>
                                     </Col>
                                     <Col span={8} className={styles.gameContent} >

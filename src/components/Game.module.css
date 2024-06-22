@@ -4,3 +4,10 @@
     align-items: center;
     gap: 16px;
 }
+
+.team {
+    display: flex;
+    height: 48px;
+    align-items: center;
+    justify-content: space-between;
+}

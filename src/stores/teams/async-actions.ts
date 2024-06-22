@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import TeamsService from "services/TeamsService"
-import { setCurrentTeam, setFreeAgents, setGameInvites, setPlayerInvites, setTeamsState } from ".";
+import { setCurrentTeam, setFreeAgents, setGameInvites, setPlayerInvites, setTeamsState, setTeamsStats } from ".";
 import { ICreateTeamRequest } from "models/ICreateTeamRequest";
 import { IInvitePlayerRequest } from "models/IInvitePlayerRequest";
 import { ICancelPlayerInviteRequest } from "models/ICancelPlayerInviteRequest";
@@ -10,6 +10,7 @@ import { IMakeCapOrAssistantRequest } from "models/IMakeCapOrAssistantRequest";
 import { ICreateGameInviteRequest } from "models/ICreateGameInviteRequest";
 import { IRemoveGameInviteRequest } from "models/IRemoveGameInviteRequest";
 import { IVoteGameInviteRequest } from "models/IVoteGameInviteRequest";
+import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest";
 
 export const getTeamsState = createAsyncThunk('teams/getTeamsState', async (payload: void, thunkApi) => {
     try {
@@ -185,10 +186,21 @@ export const getGameInvites = createAsyncThunk('teams/getGameInvites', async (pa
     }
 })
 
-
 export const voteGameInvite = createAsyncThunk('teams/voteGameInvite', async (payload: IVoteGameInviteRequest, thunkApi) => {
     try {
         const response = await TeamsService.voteGameInvite(payload);
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getTeamsStats = createAsyncThunk('teams/getTeamsStats', async (payload: ICurrentSeasonStatsRequest, thunkApi) => {
+    try {
+        const response = await TeamsService.getTeamsStats(payload);
+
+        thunkApi.dispatch(setTeamsStats(response.data))
 
         return response.data
     } catch (e: any) {

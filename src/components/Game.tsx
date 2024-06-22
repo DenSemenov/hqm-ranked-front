@@ -11,6 +11,8 @@ import PlayerItem from "shared/PlayerItem";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { orderBy, sum, uniqBy } from "lodash";
 import { LoadingOutlined } from "@ant-design/icons";
+import { IInstanceType } from "models/IInstanceType";
+import TeamItem from "shared/TeamItem";
 
 const { Text, Title } = Typography;
 
@@ -61,8 +63,17 @@ const Game = () => {
 
     return currentGameData && !loading ? (
         <Row gutter={[0, 16]}>
+
             <Col xs={24} sm={8}>
-                <Card styles={{ body: { padding: 0 } }}>
+                <Card
+                    styles={{ body: { padding: 0 } }}
+                    title={currentGameData.instanceType === IInstanceType.Teams ? <div className={styles.team}>
+                        <TeamItem id={currentGameData.redTeamId as string} name={currentGameData.redTeamName as string} />
+                        <Tag style={{ fontSize: 12 }} color={currentGameData.redPoints >= 0 ? "success" : "error"}>{currentGameData.redPoints}</Tag>
+                    </div>
+                        : undefined
+                    }
+                >
                     <Table
                         dataSource={currentGameData.players.filter(x => x.team == 0)}
                         bordered={false}
@@ -131,6 +142,7 @@ const Game = () => {
                                 title: "Score",
                                 align: "right",
                                 dataIndex: "score",
+                                hidden: currentGameData.instanceType === IInstanceType.Teams,
                                 render(value, record, index) {
                                     return <Tag style={{ fontSize: 12 }} color={value >= 0 ? "success" : "error"}>{value}</Tag>
                                 },
@@ -153,7 +165,15 @@ const Game = () => {
                 }
             </Col>
             <Col xs={24} sm={8} className="right-align">
-                <Card styles={{ body: { padding: 0 } }}>
+                <Card
+                    styles={{ body: { padding: 0 } }}
+                    title={currentGameData.instanceType === IInstanceType.Teams ? <div className={styles.team}>
+                        <TeamItem id={currentGameData.blueTeamId as string} name={currentGameData.blueTeamName as string} />
+                        <Tag style={{ fontSize: 12 }} color={currentGameData.bluePoints >= 0 ? "success" : "error"}>{currentGameData.bluePoints}</Tag>
+                    </div>
+                        : undefined
+                    }
+                >
                     <Table
                         dataSource={currentGameData.players.filter(x => x.team == 1)}
                         bordered={false}
@@ -222,6 +242,7 @@ const Game = () => {
                                 title: "Score",
                                 align: "right",
                                 dataIndex: "score",
+                                hidden: currentGameData.instanceType === IInstanceType.Teams,
                                 render(value, record, index) {
                                     return <Tag style={{ fontSize: 12 }} color={value >= 0 ? "success" : "error"}>{value}</Tag>
                                 },

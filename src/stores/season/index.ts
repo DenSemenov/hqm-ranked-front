@@ -154,7 +154,21 @@ export const selectCurrentPlayerData = (state: RootState) => state.season.curren
 export const selectCurrentGameData = (state: RootState) => state.season.currentGameData;
 export const selectRules = (state: RootState) => state.season.rules;
 export const selectStorageUrl = (state: RootState) => state.season.storageUrl;
-export const selectStories = (state: RootState) => state.season.stories;
+export const selectStories = (state: RootState) => {
+    const stories: IStoryResponse[] = []
+    state.season.stories.forEach(player => {
+        const goals = player.goals.filter(x => x.instanceType === state.season.currentMode)
+        if (goals.length !== 0) {
+            stories.push({
+                playerId: player.playerId,
+                name: player.name,
+                goals: player.goals.filter(x => x.instanceType === state.season.currentMode)
+            })
+        }
+    })
+
+    return stories;
+};
 export const selectMainStories = (state: RootState) => state.season.mainStories;
 export const selectLoading = (state: RootState) => state.season.loading;
 export const selectTopStats = (state: RootState) => state.season.topStats;

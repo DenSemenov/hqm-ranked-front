@@ -14,6 +14,8 @@ import { ICreateGameInviteRequest } from "models/ICreateGameInviteRequest";
 import { IGameInviteResponse } from "models/IGameInviteResponse";
 import { IRemoveGameInviteRequest } from "models/IRemoveGameInviteRequest";
 import { IVoteGameInviteRequest } from "models/IVoteGameInviteRequest";
+import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest";
+import { ITeamsStatsResponse } from "models/ITeamsStatsResponse";
 
 export default class TeamsService {
     static async getTeamsState(): Promise<AxiosResponse<ITeamsStateResponse>> {
@@ -66,5 +68,8 @@ export default class TeamsService {
     }
     static async voteGameInvite(data: IVoteGameInviteRequest): Promise<AxiosResponse> {
         return $api.post('api/teams/VoteGameInvite', data);
+    }
+    static async getTeamsStats(data: ICurrentSeasonStatsRequest): Promise<AxiosResponse<ITeamsStatsResponse[]>> {
+        return $api.post<ITeamsStatsResponse[]>('api/teams/GetTeamsStats', data);
     }
 }

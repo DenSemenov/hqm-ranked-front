@@ -11,11 +11,12 @@ import Card from "antd/es/card/Card";
 import { convertDate, convertFullDate } from "shared/DateConverter";
 import TeamItem from "shared/TeamItem";
 import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
-import { selectCurrentSeasonGames } from "stores/season";
+import { selectCurrentSeason, selectCurrentSeasonGames } from "stores/season";
 import { useNavigate } from "react-router-dom";
 import { IInstanceType } from "models/IInstanceType";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { isMobile } from "react-device-detect";
+import { getSeasonsGames } from "stores/season/async-actions";
 
 const { Text, Title } = Typography;
 
@@ -30,6 +31,7 @@ const TeamsGames = () => {
     const gameInvites = useSelector(selectGameInvites);
     const currentUser = useSelector(selectCurrentUser);
     const currentSeasonGames = useSelector(selectCurrentSeasonGames);
+    const currentSeason = useSelector(selectCurrentSeason);
 
     const [height, setHeight] = useState<number>(0);
 
@@ -44,7 +46,6 @@ const TeamsGames = () => {
             let h = gc.clientHeight;
             setHeight(h);
         }
-
     }
 
     useEffect(() => {
@@ -81,11 +82,17 @@ const TeamsGames = () => {
     }
 
     const onVoteGameInvite = (inviteId: string) => {
-        dispatch(voteGameInvite({
-            inviteId: inviteId
-        })).unwrap().then(() => {
-            dispatch(getGameInvites())
-        })
+        if (currentSeason) {
+            dispatch(voteGameInvite({
+                inviteId: inviteId
+            })).unwrap().then(() => {
+                dispatch(getGameInvites())
+                dispatch(getSeasonsGames({
+                    seasonId: currentSeason,
+                    offset: 0,
+                }));
+            })
+        }
     }
 
     return (

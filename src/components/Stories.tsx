@@ -58,7 +58,7 @@ const StoriesComponent = () => {
         const audioItem = document.getElementById("stories-audio") as any;
 
         if (audioItem) {
-            audioItem.volume = 0.5;
+            audioItem.volume = 0.2;
         }
         setPlay(false);
         setCurrentTick(0);

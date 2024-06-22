@@ -2,6 +2,7 @@ import { Button, Card, Col, Input, Row, Table } from "antd";
 import Meta from "antd/es/card/Meta";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useMemo, useState } from "react";
+import { isMobile } from "react-device-detect";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { convertMoney } from "shared/MoneyCoverter";
@@ -49,7 +50,7 @@ const FreeAgents = () => {
     }
 
     return (
-        <Row gutter={[32, 32]}>
+        <Row gutter={[32, 32]} style={{ marginTop: isMobile ? 16 : 0 }}>
             <Col span={24}>
                 <Search
                     size={"large"}

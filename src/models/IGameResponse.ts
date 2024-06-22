@@ -1,3 +1,5 @@
+import { IInstanceType } from "./IInstanceType";
+
 export interface IGameResponse {
     id: string;
     state: string;
@@ -10,6 +12,13 @@ export interface IGameResponse {
     chatMessages: IGameChatResponse[]
     goals: IGameGoalResponse[]
     replayUrl: string;
+    instanceType: IInstanceType;
+    redTeamId?: string;
+    redTeamName?: string;
+    blueTeamId?: string;
+    blueTeamName?: string;
+    redPoints: number;
+    bluePoints: number;
 }
 
 export interface IGamePlayerResponse {

@@ -1,4 +1,5 @@
 import { IGamePlayerResponse } from "./IGameResponse";
+import { IInstanceType } from "./IInstanceType";
 
 export interface IPlayerResponse {
     id: number;
@@ -38,6 +39,11 @@ export interface PlayerLastGamesViewModel {
     assists: number;
     score: number;
     players: IGamePlayerResponse[]
+    redTeamId?: string;
+    redTeamName?: string;
+    blueTeamId?: string;
+    blueTeamName?: string;
+    instanceType: IInstanceType;
 }
 
 export interface PlayerCalcDataViewModel {

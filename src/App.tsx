@@ -39,6 +39,8 @@ import Teams from 'components/Teams';
 import FreeAgents from 'components/FreeAgents';
 import Team from 'components/Team';
 import TeamSettings from 'components/TeamSettings';
+import TeamsGames from 'components/TeamsGames';
+import TeamsControl from 'components/TeamsControl';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -52,11 +54,11 @@ function App() {
   const singnalR = new SignalrService();
 
   const contentStyle: React.CSSProperties = {
-    height: "calc(-48px + 100vh)",
+    height: isMobile ? "calc(-124px + 100vh)" : "calc(-48px + 100vh)",
     padding: isMobile ? 0 : 16,
     width: "100vw",
     overflow: "auto",
-    marginBottom: isMobile ? 60 : 0
+    paddingBottom: isMobile ? 68 : 0
   };
 
   const headerStyle: React.CSSProperties = {
@@ -78,7 +80,8 @@ function App() {
     padding: "0 16px",
     background: "#141414",
     position: "fixed",
-    bottom: 0
+    bottom: 0,
+    zIndex: 100
   };
 
   useEffect(() => {
@@ -162,6 +165,7 @@ function App() {
         <Route path="/" element={<Teams />} />
         <Route path="/player" element={<Player />} />
         <Route path="/game" element={<Game />} />
+        <Route path="/games" element={<TeamsControl />} />
         <Route path="/login" element={<LoginModal />} />
         <Route path="/registration" element={<RegisterModal />} />
         <Route path="/admin" element={<Admin />} />

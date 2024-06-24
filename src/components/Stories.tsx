@@ -42,9 +42,6 @@ const StoriesComponent = () => {
     useEffect(() => {
         dispatch(getStories());
         dispatch(getMainStories());
-        ReplayService.getDefaultScene().then((scene) => {
-            setScene(scene);
-        })
     }, []);
 
     useEffect(() => {
@@ -87,6 +84,16 @@ const StoriesComponent = () => {
             setCurrentTrack(undefined);
         }
     }, [loadingIndex]);
+
+    useEffect(() => {
+        if (storiesOpen && !scene) {
+            console.log("scene")
+            ReplayService.getDefaultScene().then((scene) => {
+                setScene(scene);
+            })
+        }
+    }, [storiesOpen]);
+
 
     useEffect(() => {
         const watched = localStorage.getItem("watchedStories")

@@ -31,6 +31,6 @@ export const getTheme = (dark: boolean) => {
                 colorBorder: "transparent"
             },
         },
-        algorithm: [(dark ? AntdTheme.darkAlgorithm : AntdTheme.defaultAlgorithm), AntdTheme.compactAlgorithm],
+        algorithm: [(dark ? AntdTheme.darkAlgorithm : AntdTheme.defaultAlgorithm)],
     }
 }

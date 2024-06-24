@@ -8,10 +8,15 @@ import { IRegisterRequest } from "models/IRegisterRequest";
 import { IChangeNicknameRequest } from "models/IChangeNicknameRequest";
 import { IPushTokenRequest } from "models/IPushTokenRequest";
 import { IPlayerNotificationsResponse } from "models/IPlayerNotificationsResponse";
+import { IWebsiteSettingsResponse } from "models/IWebsiteSettingsResponse";
+import { IDiscordAuthRequest } from "models/IDiscordAuthRequest";
 
 export default class AuthService {
     static async login(data: ILoginRequest): Promise<AxiosResponse<IAuthResponse>> {
         return $api.post<IAuthResponse>('api/player/login', data);
+    }
+    static async loginWithDiscord(data: IDiscordAuthRequest): Promise<AxiosResponse<IAuthResponse>> {
+        return $api.post<IAuthResponse>('api/player/LoginWithDiscord', data);
     }
 
     static async register(data: IRegisterRequest): Promise<AxiosResponse<IAuthResponse>> {
@@ -43,5 +48,14 @@ export default class AuthService {
     }
     static async acceptRules(): Promise<AxiosResponse> {
         return $api.post('api/player/AcceptRules');
+    }
+    static async getWebsiteSettings(): Promise<AxiosResponse<IWebsiteSettingsResponse>> {
+        return $api.post<IWebsiteSettingsResponse>('api/player/GetWebsiteSettings');
+    }
+    static async setDiscordByToken(data: IDiscordAuthRequest): Promise<AxiosResponse> {
+        return $api.post('api/player/SetDiscordByToken', data);
+    }
+    static async removeDiscord(): Promise<AxiosResponse> {
+        return $api.post('api/player/RemoveDiscord');
     }
 }

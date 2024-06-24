@@ -1,5 +1,5 @@
 
-import { Avatar, Badge, Button, Card, Col, List, Popover, Row, Space, Tag, Typography } from 'antd';
+import { Avatar, Badge, Button, Card, Col, List, Popover, Row, Select, Space, Tag, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import styles from './Header.module.css'
 import { useEffect, useMemo, useState } from 'react';
@@ -8,7 +8,7 @@ import { selectCurrentUser, selectIsAuth } from 'stores/auth';
 import { getCurrentUser } from 'stores/auth/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import ChangePasswordModal from './ChangePasswordModal';
-import { selectClearImageCache, selectCurrentMode, selectCurrentSeason, selectPatrols, selectSeasons, selectStorageUrl, setCurrentMode } from 'stores/season';
+import { selectClearImageCache, selectCurrentMode, selectCurrentSeason, selectPatrols, selectSeasons, selectStorageUrl, setCurrentMode, setCurrentSeason, setSeasons } from 'stores/season';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ThemeButton from './ThemeButton';
 import { isMobile } from 'react-device-detect';
@@ -197,7 +197,22 @@ const Header = () => {
             const current = seasons.find(x => x.id === currentSeason)
             if (current) {
                 const leftDays = Math.round((new Date(current.dateEnd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                return <Tag color="#108ee9" style={{ height: 20, marginLeft: 16 }}>{leftDays + " days left"}</Tag>
+                return <Popover trigger={["click", "hover"]} content={<Card>
+                    <Select
+                        options={seasons.map(x => {
+                            return {
+                                value: x.id,
+                                label: <><Text>{x.name}</Text><Text style={{ marginLeft: 8 }} type="secondary">{new Date(x.dateStart).toLocaleDateString() + " - " + new Date(x.dateEnd).toLocaleDateString()}</Text></>
+                            }
+                        })}
+                        value={currentSeason}
+                        onChange={(value) => {
+                            dispatch(setCurrentSeason(value))
+                        }}
+                    />
+                </Card>}>
+                    <Tag color="#108ee9" style={{ height: 20, marginLeft: 16 }}>{leftDays + " days left"}</Tag>
+                </Popover>
             }
         }
     }, [currentSeason, seasons])

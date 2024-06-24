@@ -1,17 +1,18 @@
-import { Button, Card, Col, Divider, Row, Upload, UploadFile, UploadProps, notification } from "antd";
+import { Button, Col, Divider, Row, Upload, UploadFile, UploadProps } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useState } from "react";
-import { selectIsAdmin, selectIsAuth, setCurrentUser, setIsAuth } from "stores/auth";
+import { selectCurrentUser, selectIsAdmin, selectIsAuth, selectWebsiteSettings, setCurrentUser, setIsAuth } from "stores/auth";
 import styles from './ProfilePage.module.css'
 import ChangePasswordModal from "./ChangePasswordModal";
 import ImgCrop from "antd-img-crop";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ChangeNicknameModal from "./ChangeNicknameModal";
-import { addPushToken, removePushToken } from "stores/auth/async-actions";
-import { requestNotificationPermission } from "firebaseService";
 import { isMobile } from "react-device-detect";
 import { setClearImageCache } from "stores/season";
+import { EditOutlined, KeyOutlined, NotificationOutlined, LogoutOutlined, CloseOutlined } from "@ant-design/icons";
+import { TbBrandDiscord } from "react-icons/tb";
+import { getCurrentUser, removeDiscord } from "stores/auth/async-actions";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -19,20 +20,16 @@ const ProfilePage = () => {
 
     const isAuth = useSelector(selectIsAuth);
     const isAdmin = useSelector(selectIsAdmin);
+    const websiteSettings = useSelector(selectWebsiteSettings);
+    const currentUser = useSelector(selectCurrentUser);
 
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
     const [changeNicknameModalOpen, setChangeNicknameModalOpen] = useState<boolean>(false);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
-    const [pushEnabled, setPushEnabled] = useState<boolean>(false);
 
     useEffect(() => {
         if (!isAuth) {
             navigate("/")
-        } else {
-            const pushToken = localStorage.getItem("pushToken");
-            if (pushToken) {
-                setPushEnabled(true)
-            }
         }
     }, [!isAuth])
 
@@ -73,36 +70,16 @@ const ProfilePage = () => {
         dispatch(setClearImageCache(new Date()))
     };
 
-    const onEnablePush = async () => {
-        if (pushEnabled) {
-            const t = localStorage.getItem("pushToken");
-            if (t) {
-                dispatch(removePushToken({
-                    token: t
-                }));
-                localStorage.removeItem("pushToken");
-            }
+    const onConnectDiscord = () => {
+        const redirect = window.origin + "/discordlogin";
+        window.location.href = "https://discord.com/api/oauth2/authorize?client_id=" + websiteSettings.discordAppClientId + "&redirect_uri=" + redirect + "&response_type=token&scope=identify";
+    }
 
-            notification.success({
-                message: "Push notifications disabled"
-            })
+    const onDisconnectDiscord = () => {
+        dispatch(removeDiscord()).unwrap().then(() => {
+            dispatch(getCurrentUser());
 
-            setPushEnabled(false);
-        } else {
-            const token = await requestNotificationPermission()
-            if (token) {
-                localStorage.setItem("pushToken", token);
-                dispatch(addPushToken({
-                    token: token
-                }));
-
-                setPushEnabled(true);
-
-                notification.success({
-                    message: "Push notifications enabled"
-                })
-            }
-        }
+        })
     }
 
     return (
@@ -125,10 +102,21 @@ const ProfilePage = () => {
                             {fileList.length < 1 && '+ Upload'}
                         </Upload>
                     </ImgCrop>
-                    <Button onClick={() => setChangeNicknameModalOpen(true)}>Change nickname</Button>
-                    <Button onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
-                    <Button onClick={() => navigate("/notifications")}>Notifications settings</Button>
-                    <Button danger onClick={onLogout}>Log out</Button>
+                    <Button icon={<EditOutlined />} onClick={() => setChangeNicknameModalOpen(true)}>Change nickname</Button>
+                    <Button icon={<KeyOutlined />} onClick={() => setChangePasswordModalOpen(true)}>Change password</Button>
+
+                    <Button icon={<NotificationOutlined />} onClick={() => navigate("/notifications")}>Notifications settings</Button>
+                    {currentUser?.discordLogin === "" &&
+                        <Button icon={<TbBrandDiscord style={{ marginTop: 2 }} />} onClick={onConnectDiscord}>Connect Discord</Button>
+                    }
+                    {currentUser?.discordLogin !== "" &&
+                        <div style={{ display: "flex", gap: 8, justifyContent: "space-between" }}>
+                            <Button style={{ width: "calc(-32px + 100%)" }} icon={<TbBrandDiscord style={{ marginTop: 2 }} />} >{currentUser?.discordLogin}</Button>
+                            <Button icon={<CloseOutlined />} onClick={onDisconnectDiscord} />
+                        </div>
+                    }
+                    <Divider />
+                    <Button icon={<LogoutOutlined />} danger onClick={onLogout}>Log out</Button>
 
                     {isAdmin &&
                         <>

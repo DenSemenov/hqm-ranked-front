@@ -5,7 +5,8 @@ import { login } from "stores/auth/async-actions";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { selectIsAuth } from "stores/auth";
+import { selectIsAuth, selectWebsiteSettings } from "stores/auth";
+import { TbBrandDiscord } from "react-icons/tb";
 
 
 const LoginModal = () => {
@@ -13,6 +14,7 @@ const LoginModal = () => {
     const navigate = useNavigate();
 
     const isAuth = useSelector(selectIsAuth);
+    const websiteSettings = useSelector(selectWebsiteSettings);
 
     useEffect(() => {
         if (isAuth) {
@@ -25,6 +27,11 @@ const LoginModal = () => {
             login: values.login,
             password: values.password,
         }))
+    }
+
+    const onSignInWithDiscord = () => {
+        const redirect = window.origin + "/discordlogin";
+        window.location.href = "https://discord.com/api/oauth2/authorize?client_id=" + websiteSettings.discordAppClientId + "&redirect_uri=" + redirect + "&response_type=token&scope=identify";
     }
 
     return (
@@ -56,9 +63,14 @@ const LoginModal = () => {
                             <Button type="dashed" onClick={() => navigate("/registration")}>Registration</Button>
                         </Col>
                         <Col span={12} className="right-align">
-                            <Form.Item>
-                                <Button type="primary" htmlType="submit">Sign in</Button>
-                            </Form.Item>
+                            <div style={{ display: "flex", justifyContent: "right", gap: 8 }}>
+                                <Form.Item>
+                                    <Button icon={<TbBrandDiscord style={{ marginTop: 2 }} />} onClick={onSignInWithDiscord}>Sign in with Discord</Button>
+                                </Form.Item>
+                                <Form.Item>
+                                    <Button type="primary" htmlType="submit">Sign in</Button>
+                                </Form.Item>
+                            </div>
                         </Col>
                     </Row>
                 </Form>

@@ -20,7 +20,7 @@ const PlayersTable = () => {
     const setTableHeightAction = () => {
         const playerCard = document.getElementById("playerCard");
         if (playerCard) {
-            let h = playerCard.clientHeight - 37;
+            let h = playerCard.clientHeight - 76;
             setHeight(h);
         }
 

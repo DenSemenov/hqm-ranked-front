@@ -6,4 +6,5 @@ export interface ICurrentUserResponse {
     isApproved: boolean;
     isBanned: boolean;
     isAcceptedRules: boolean;
+    discordLogin: string;
 }

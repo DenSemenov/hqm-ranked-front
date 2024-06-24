@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { IAuthResponse } from "models/IAuthResponse"
 import { ICurrentUserResponse } from "models/ICurrentUserResponse";
+import { IWebsiteSettingsResponse } from "models/IWebsiteSettingsResponse";
 import { RootState } from "stores"
 
 export interface IAuthState {
@@ -8,13 +9,17 @@ export interface IAuthState {
     isAuth: boolean,
     currentUser: ICurrentUserResponse | null;
     theme: string | null
+    websiteSettings: IWebsiteSettingsResponse
 }
 
 const initialState: IAuthState = {
     loadingUser: true,
     isAuth: false,
     currentUser: null,
-    theme: null
+    theme: null,
+    websiteSettings: {
+        discordAppClientId: ""
+    }
 }
 
 export const authSlicer = createSlice({
@@ -53,6 +58,9 @@ export const authSlicer = createSlice({
         setLoadingUser: (state: IAuthState, action: PayloadAction<boolean>) => {
             state.loadingUser = action.payload;
         },
+        setWebsiteSettings: (state: IAuthState, action: PayloadAction<IWebsiteSettingsResponse>) => {
+            state.websiteSettings = action.payload;
+        },
     },
 })
 
@@ -61,7 +69,8 @@ export const {
     setCurrentUser,
     setTheme,
     setLoadingUser,
-    setCurrentUserAcceptedRules
+    setCurrentUserAcceptedRules,
+    setWebsiteSettings
 } =
     authSlicer.actions
 
@@ -70,5 +79,6 @@ export const selectLoadingUser = (state: RootState) => state.auth.loadingUser;
 export const selectCurrentUser = (state: RootState) => state.auth.currentUser;
 export const selectTheme = (state: RootState) => state.auth.theme;
 export const selectIsAdmin = (state: RootState) => state.auth.currentUser ? state.auth.currentUser.role === "admin" : false;
+export const selectWebsiteSettings = (state: RootState) => state.auth.websiteSettings;
 
 export default authSlicer.reducer

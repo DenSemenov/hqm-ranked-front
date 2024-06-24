@@ -1,13 +1,13 @@
 import './App.css';
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import HomePage from './components/HomePage';
 import Header from './components/Header';
 import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag, Flex, Layout } from 'antd';
 import { BrowserView, MobileView, isMobile } from 'react-device-detect';
 import PlayersTable from 'components/PlayersTable';
 import Games from 'components/Games';
-import { useEffect, useMemo } from 'react';
-import { getCurrentUser } from 'stores/auth/async-actions';
+import { useContext, useEffect, useMemo } from 'react';
+import { getCurrentUser, getWebsiteSettings } from 'stores/auth/async-actions';
 import { getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores/season/async-actions';
 import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
@@ -41,17 +41,25 @@ import Team from 'components/Team';
 import TeamSettings from 'components/TeamSettings';
 import TeamsGames from 'components/TeamsGames';
 import TeamsControl from 'components/TeamsControl';
+import { useTransition, animated, useSpring } from "react-spring";
+import DiscordLogin from 'components/DiscordLogin';
 
 function App() {
   const dispatch = useAppDispatch();
+  const location = useLocation();
+  const springProps = useSpring({ to: { opacity: 1 }, from: { opacity: 0 } });
 
   const currentSeason = useSelector(selectCurrentSeason);
   const theme = useSelector(selectTheme);
   const loadingUser = useSelector(selectLoadingUser);
-  const loading = useSelector(selectLoading);
   const currentMode = useSelector(selectCurrentMode);
 
   const singnalR = new SignalrService();
+
+  useEffect(() => {
+    springProps.opacity.reset();
+    springProps.opacity.start();
+  }, [location.pathname]);
 
   const contentStyle: React.CSSProperties = {
     height: isMobile ? "calc(-124px + 100vh)" : "calc(-48px + 100vh)",
@@ -128,7 +136,7 @@ function App() {
         seasonId: currentSeason,
         offset: 0,
       }));
-
+      dispatch(getWebsiteSettings())
     }
   }, [currentSeason])
 
@@ -158,6 +166,8 @@ function App() {
         <Route path="/free-agents" element={<FreeAgents />} />
         <Route path="/team" element={<Team />} />
         <Route path="/team-settings" element={<TeamSettings />} />
+        <Route path="/discordlogin" element={<DiscordLogin />} />
+
       </Routes>
     }
     if (currentMode === IInstanceType.Teams) {
@@ -180,6 +190,7 @@ function App() {
         <Route path="/free-agents" element={<FreeAgents />} />
         <Route path="/team" element={<Team />} />
         <Route path="/team-settings" element={<TeamSettings />} />
+        <Route path="/discordlogin" element={<DiscordLogin />} />
       </Routes>
     }
   }, [currentMode])
@@ -192,19 +203,19 @@ function App() {
         <Layout style={{ height: "100vh" }}>
           {!loadingUser &&
             <>
-              <BrowserRouter>
-                <Layout.Header style={headerStyle}>
-                  <Header />
-                </Layout.Header>
-                <Layout.Content style={contentStyle} id="layout">
+              <Layout.Header style={headerStyle}>
+                <Header />
+              </Layout.Header>
+              <Layout.Content style={contentStyle} id="layout">
+                <animated.div style={springProps} className={"animated"}>
                   {routes}
-                </Layout.Content>
-                {isMobile &&
-                  <Layout.Footer style={footerStyle}>
-                    <Footer />
-                  </Layout.Footer>
-                }
-              </BrowserRouter>
+                </animated.div>
+              </Layout.Content>
+              {isMobile &&
+                <Layout.Footer style={footerStyle}>
+                  <Footer />
+                </Layout.Footer>
+              }
             </>
           }
           {loadingUser &&

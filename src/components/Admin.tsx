@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input, InputNumber, Popconfirm, Popover, Select, Table, Tabs, Tag, notification } from "antd";
+import { Button, Card, Checkbox, Form, Input, InputNumber, Popconfirm, Popover, Select, Table, Tabs, Tag, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { IInstanceType } from "models/IInstanceType";
 import { useEffect, useMemo } from "react";
@@ -59,7 +59,7 @@ const Admin = () => {
         dispatch(banUnban({
             id: id,
             isBanned: !banned,
-            days: 7
+            days: count
         })).unwrap().then(() => {
             dispatch(getPlayers())
         })
@@ -265,88 +265,141 @@ const Admin = () => {
                 initialValues={settings}
                 onFinish={onSaveSettings}
                 layout="vertical"
+                style={{ display: "flex", flexDirection: "column", gap: 16 }}
             >
-                <Form.Item
-                    label="Nickname change days limit"
-                    name="nicknameChangeDaysLimit"
-                >
-                    <InputNumber />
-                </Form.Item>
-                <Form.Item
-                    label="New players approve required"
-                    name="newPlayerApproveRequired"
-                    valuePropName="checked"
-                >
-                    <Checkbox />
-                </Form.Item>
-                <Form.Item
-                    label="Replay store days"
-                    name="replayStoreDays"
-                >
-                    <InputNumber />
-                </Form.Item>
-                <Form.Item
-                    label="Discord webhook"
-                    name="discordNotificationWebhook"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    label="Logged in notification if more or equal count"
-                    name="webhookCount"
-                >
-                    <InputNumber />
-                </Form.Item>
-                <Form.Item
-                    label="Next game check games count"
-                    name="nextGameCheckGames"
-                >
-                    <InputNumber />
-                </Form.Item>
-                <Form.Item
-                    label="Required shadow ban reports count"
-                    name="shadowBanReportsCount"
-                >
-                    <InputNumber />
-                </Form.Item>
-                <Form.Item
-                    label="Starting elo"
-                    name="startingElo"
-                >
-                    <InputNumber />
-                </Form.Item>
-                <Form.Item
-                    label="Rules"
-                    name="rules"
-                >
-                    <TextArea rows={4} />
-                </Form.Item>
-                <Form.Item
-                    label="S3 Domain"
-                    name="s3Domain"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    label="S3 Bucket"
-                    name="s3Bucket"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    label="S3 User"
-                    name="s3User"
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    label="S3 Key"
-                    name="s3Key"
-                >
-                    <Input />
-                </Form.Item>
+                <Card bordered={false} title="Main" >
+                    <div style={{ padding: 16 }}>
+                        <Form.Item
+                            label="Nickname change days limit"
+                            name="nicknameChangeDaysLimit"
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                        <Form.Item
+                            label="New players approve required"
+                            name="newPlayerApproveRequired"
+                            valuePropName="checked"
+                        >
+                            <Checkbox />
+                        </Form.Item>
+                        <Form.Item
+                            label="Replay store days"
+                            name="replayStoreDays"
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                        <Form.Item
+                            label="Next game check games count"
+                            name="nextGameCheckGames"
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                        <Form.Item
+                            label="Required shadow ban reports count"
+                            name="shadowBanReportsCount"
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                        <Form.Item
+                            label="Starting elo"
+                            name="startingElo"
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                        <Form.Item
+                            label="Rules"
+                            name="rules"
+                        >
+                            <TextArea rows={4} />
+                        </Form.Item>
+                    </div>
+                </Card>
+                <Card bordered={false} title="Discord" >
+                    <div style={{ padding: 16 }}>
+                        <Form.Item
+                            label="Discord notifications webhook"
+                            name="discordNotificationWebhook"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Logged in notification if more or equal count"
+                            name="webhookCount"
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                        <Form.Item
+                            label="Discord ClientId"
+                            tooltip={"For Discord auth"}
+                            name="discordAppClientId"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </div>
+                </Card>
+                <Card bordered={false} title="Teams" >
+                    <div style={{ padding: 16 }}>
+                        <Form.Item
+                            label="Team max players"
+                            name="teamsMaxPlayer"
+                            tooltip={"Uses in Teams"}
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                    </div>
+                </Card>
+                <Card bordered={false} title="Spotify" >
+                    <div style={{ padding: 16 }}>
+                        <Form.Item
+                            label="Spotify clientId"
+                            name="spotifyClientId"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Spotify secret"
+                            name="spotifySecret"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Spotify playlist"
+                            name="spotifyPlaylist"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </div>
+                </Card>
+                <Card bordered={false} title="S3" >
+                    <div style={{ padding: 16 }}>
+                        <Form.Item
+                            label="S3 Domain"
+                            name="s3Domain"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="S3 Bucket"
+                            name="s3Bucket"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="S3 User"
+                            name="s3User"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="S3 Key"
+                            name="s3Key"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </div>
+                </Card>
                 <Form.Item >
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
                         Save
                     </Button>
                 </Form.Item>

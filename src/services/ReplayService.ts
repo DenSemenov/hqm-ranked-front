@@ -47,16 +47,16 @@ export default class ReplayService {
         blueupper.scene.name = "blueupper";
         scene.add(blueupper.scene);
 
-        const cubeTextureLoader = new THREE.CubeTextureLoader();
-        const texture = await cubeTextureLoader.loadAsync([
-            '/assets/skybox/bluecloud_ft.jpg',
-            '/assets/skybox/bluecloud_bk.jpg',
-            '/assets/skybox/bluecloud_up.jpg',
-            '/assets/skybox/bluecloud_dn.jpg',
-            '/assets/skybox/bluecloud_rt.jpg',
-            '/assets/skybox/bluecloud_lf.jpg',
-        ]);
-        scene.background = texture;
+        // const cubeTextureLoader = new THREE.CubeTextureLoader();
+        // const texture = await cubeTextureLoader.loadAsync([
+        //     '/assets/skybox/bluecloud_ft.jpg',
+        //     '/assets/skybox/bluecloud_bk.jpg',
+        //     '/assets/skybox/bluecloud_up.jpg',
+        //     '/assets/skybox/bluecloud_dn.jpg',
+        //     '/assets/skybox/bluecloud_rt.jpg',
+        //     '/assets/skybox/bluecloud_lf.jpg',
+        // ]);
+        // scene.background = texture;
 
         return scene;
     }

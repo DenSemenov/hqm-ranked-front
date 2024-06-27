@@ -18,7 +18,7 @@ import { uniqBy } from "lodash";
 import { useSelector } from "react-redux";
 import { selectIsAuth } from "stores/auth";
 import ReportModal from "./ReportModal";
-import { selectRules } from "stores/season";
+import Stats from 'stats.js'
 
 const excludedNames = ["Scene", "redupper", "blueupper", "redlower", "bluelower", "puck", "stick", "basebluegoal", "baseboardlower", "text", "baseboards", "basestick", "baseice", "baseredgoal"]
 
@@ -37,9 +37,7 @@ interface IProps {
 const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, reportId, onReady, onTickChanged }: IProps) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-
     const isAuth = useSelector(selectIsAuth);
-    const rules = useSelector(selectRules);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const [currentTick, setCurrentTick] = useState<number>(0);
@@ -65,6 +63,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
     const [selectedObject, setSelectedObject] = useState<string>("Puck 0");
     const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
     const [gameId, setGameId] = useState<string>("");
+    const [stats, setStats] = useState<Stats>(new Stats());
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const rendererRef = useRef<any>();
     const cameraRef = useRef<any>();
@@ -86,9 +85,10 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
         }
     }, [pause])
 
-
     useEffect(() => {
         dispatch(getRules());
+        // stats.showPanel(0)
+        // document.body.appendChild(stats.dom)
     }, []);
 
     useEffect(() => {
@@ -258,6 +258,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                     )
                 }
             }, 40 * speed);
+
         } else if (paused && currentTick !== 0 && interval) {
             clearInterval(interval);
         }
@@ -275,6 +276,8 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                 if (osVal) {
                     const selected = osVal.innerHTML;
                     if (rendererRef.current && cameraRef.current && sceneRef.current && t) {
+
+                        stats.begin()
                         let tick = t ? +t : 0;
 
                         const renderer = rendererRef.current;
@@ -283,6 +286,8 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                         frameChange(tick, scene, camera, f, selected);
 
                         renderer.render(scene, camera)
+                        stats.end()
+                        console.log(stats);
                     }
                 }
             }
@@ -304,13 +309,13 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
         })
 
         const camera = new THREE.PerspectiveCamera(
-            75,
+            60,
             w / h,
             0.1,
             100
         )
         camera.rotateY(90);
-        camera.position.set(30, 6, 30.5);
+        camera.position.set(30, 10, 30.5);
 
         cameraRef.current = camera;
 
@@ -580,13 +585,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                                 camera.position.setX(x);
                                 camera.lookAt(puckObject.position)
                             }
-                        } else {
-                            const howLongFromCenter = puck.posZ - 30.5;
-                            const x = puck.posX * 1;
-                            camera.position.setZ(30.5 + howLongFromCenter * 0.4);
-                            camera.position.setY(3);
-                            camera.position.setX(x);
-                            camera.lookAt(puckObject.position)
                         }
                     }
                 }
@@ -608,13 +606,19 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                 const playerTextName = "text" + player.index.toString();
                 let playerText = scene.getObjectByName(playerTextName);
 
-                if (selectedObject === name) {
-                    const howLongFromCenter = player.posZ - 30.5;
-                    const x = player.posX * 0.5;
-                    camera.position.setZ(30.5 + howLongFromCenter * 0.2);
-                    camera.position.setY(2 + (0.1 * player.posX));
-                    camera.position.setX(x);
-                    camera.lookAt(player.posX, player.posY, player.posZ);
+                if (selectedObject === name || externalPlayerName === name) {
+                    const firstPuck = tickData.pucks[0];
+                    const puckPos = new THREE.Vector3(firstPuck.posX, 0, firstPuck.posZ);
+                    const position = new THREE.Vector3(player.posX, player.posY, player.posZ);
+                    var dir = new THREE.Vector3();
+                    var vec = dir.subVectors(puckPos, position).normalize();
+                    var euler = new THREE.Euler(vec.x, vec.y, vec.z);
+                    const quaternion = new THREE.Quaternion().setFromEuler(euler);
+                    const offset = new THREE.Vector3(0, 0, team === ReplayTeam.Red ? 9 : -9);
+                    const rotatedOffset = offset.applyQuaternion(quaternion);
+                    const positionBehind = position.clone().add(rotatedOffset);
+                    camera.position.set(Math.min(Math.max(positionBehind.x, 1), 29), 2, Math.min(Math.max(positionBehind.z, 1), 60));
+                    camera.lookAt(puckPos)
                 }
 
 

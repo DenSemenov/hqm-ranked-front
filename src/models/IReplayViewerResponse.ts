@@ -3,6 +3,7 @@ export interface IReplayViewerResponse {
     gameId: string;
     fragments: IFragment[];
     data: ReplayTick[];
+    url: string;
 }
 
 export interface IFragment {

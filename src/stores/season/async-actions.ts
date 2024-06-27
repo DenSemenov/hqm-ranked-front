@@ -182,6 +182,16 @@ export const getStoryReplayViewer = createAsyncThunk('replay/getStoryReplayViewe
     }
 })
 
+export const getStoryReplayViewerJson = createAsyncThunk('replay/getStoryReplayViewerJson', async (payload: string, thunkApi) => {
+    try {
+        const response = await SeasonService.getStoryReplayViewerJson(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
 export const likeStory = createAsyncThunk('replay/likeStory', async (payload: IStoryLikeRequest, thunkApi) => {
     try {
         const response = await SeasonService.likeStory(payload)

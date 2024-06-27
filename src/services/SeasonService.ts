@@ -1,5 +1,5 @@
 import $api from "../http";
-import { AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { IAdminStoryResponse } from "models/IAdminStoryResponse";
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest";
 import { IGameRequest } from "models/IGameRequest";
@@ -70,6 +70,13 @@ export default class SeasonService {
     }
     static async getStoryReplayViewer(data: IStoryReplayViewerRequest): Promise<AxiosResponse<any>> {
         return $api.post<IReplayViewerResponse>('api/replay/GetStoryReplayViewer', data);
+    }
+    static async getStoryReplayViewerJson(data: string): Promise<AxiosResponse<any>> {
+        return await axios({
+            url: data,
+            method: 'GET',
+            responseType: 'json',
+        })
     }
     static async likeStory(data: IStoryLikeRequest): Promise<AxiosResponse<any>> {
         return $api.post('api/replay/LikeStory', data);

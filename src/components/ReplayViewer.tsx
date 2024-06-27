@@ -1,10 +1,10 @@
 import { Button, Col, Popover, Row, Select, Slider, Tag, Tooltip, Typography, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getPatrol, getReplayChatMessages, getReplayGoals, getReplayHighlights, getReplayViewer, getReportViewer, getRules, getStoryReplayViewer, reportDecision } from "stores/season/async-actions";
+import { getPatrol, getReplayChatMessages, getReplayGoals, getReplayHighlights, getReplayViewer, getReportViewer, getRules, getStoryReplayViewer, getStoryReplayViewerJson, reportDecision } from "stores/season/async-actions";
 import styles from './ReplayViewer.module.css'
 import { CaretRightOutlined, PauseOutlined, UnorderedListOutlined, WechatWorkOutlined, BorderOutlined, LoadingOutlined, OrderedListOutlined, WarningOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import { IFragment, IReplayViewerResponse, PlayerInList, ReplayPlayer, ReplayPuck, ReplayTeam, ReplayTick } from "models/IReplayViewerResponse";
+import { IFragment, IReplayViewerResponse, PlayerInList, ReplayMessage, ReplayPlayer, ReplayPuck, ReplayTeam, ReplayTick } from "models/IReplayViewerResponse";
 import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 import * as THREE from "three";
 import { Font, FontLoader } from 'three/examples/jsm/loaders/FontLoader';
@@ -19,6 +19,9 @@ import { useSelector } from "react-redux";
 import { selectIsAuth } from "stores/auth";
 import ReportModal from "./ReportModal";
 import Stats from 'stats.js'
+import { selectStorageUrl } from "stores/season";
+import jQuery from "jquery";
+import axios from "axios";
 
 const excludedNames = ["Scene", "redupper", "blueupper", "redlower", "bluelower", "puck", "stick", "basebluegoal", "baseboardlower", "text", "baseboards", "basestick", "baseice", "baseredgoal"]
 
@@ -37,7 +40,9 @@ interface IProps {
 const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, reportId, onReady, onTickChanged }: IProps) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
     const isAuth = useSelector(selectIsAuth);
+    const storageUrl = useSelector(selectStorageUrl);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const [currentTick, setCurrentTick] = useState<number>(0);
@@ -91,6 +96,57 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
         // document.body.appendChild(stats.dom)
     }, []);
 
+    const transformKeys = (obj: any[]) => {
+        return obj.map(x => {
+            return {
+                packetNumber: x.pn,
+                redScore: x.rs,
+                blueScore: x.bs,
+                time: x.t,
+                period: x.p,
+                pucks: x.pc.map((pc: any) => {
+                    return {
+                        index: pc.i,
+                        posX: pc.x,
+                        posY: pc.y,
+                        posZ: pc.z,
+                        rotX: pc.rx,
+                        rotY: pc.ry,
+                        rotZ: pc.rz,
+                    } as ReplayPuck
+                }),
+                players: x.pl.map((pl: any) => {
+                    return {
+                        index: pl.i,
+                        posX: pl.x,
+                        posY: pl.y,
+                        posZ: pl.z,
+                        rotX: pl.rx,
+                        rotY: pl.ry,
+                        rotZ: pl.rz,
+                        stickPosX: pl.spx,
+                        stickPosY: pl.spy,
+                        stickPosZ: pl.spz,
+                        stickRotX: pl.srx,
+                        stickRotY: pl.sry,
+                        stickRotZ: pl.srz,
+                        headTurn: pl.ht,
+                        bodyLean: pl.bl
+                    } as ReplayPlayer
+                }),
+                messages: [] as ReplayMessage[],
+                playersInList: x.pil.map((pil: any) => {
+                    return {
+                        index: pil.i,
+                        name: pil.n,
+                        team: pil.t
+                    } as PlayerInList
+                }),
+            } as ReplayTick
+        })
+    }
+
+
     useEffect(() => {
         setDataReady(false);
         setSceneReady(false);
@@ -99,20 +155,37 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
             dispatch(getStoryReplayViewer({
                 id: externalId,
             })).unwrap().then((data: IReplayViewerResponse) => {
-                fragments.push(...data.data);
-                setFragments(fragments);
-                setLoadedIndexes([0])
+                const path = storageUrl + data.url;
+                jQuery.getJSON(path, function (data) {
+                    const renamed = transformKeys(data) as ReplayTick[];
+                    fragments.push(...renamed);
+                    setFragments(fragments);
+                    setLoadedIndexes([0])
 
-                setMin(data.fragments[0].min)
-                setMax(data.fragments[data.fragments.length - 1].max)
-                setCurrentTick(data.fragments[0].min);
-                setIndexes(data.fragments);
-                setLoading(false);
+                    setMin(renamed[0].packetNumber)
+                    setMax(renamed[renamed.length - 1].packetNumber)
+                    setCurrentTick(renamed[0].packetNumber);
+                    const f: IFragment[] = [];
+                    setIndexes(f);
+                    setLoading(false);
+                    initRenderer();
 
-                setCurrentTick(data.fragments[0].min);
-                initRenderer();
+                    setDataReady(true);
+                });
+                // fragments.push(...data.data);
+                // setFragments(fragments);
+                // setLoadedIndexes([0])
 
-                setDataReady(true);
+                // setMin(data.fragments[0].min)
+                // setMax(data.fragments[data.fragments.length - 1].max)
+                // setCurrentTick(data.fragments[0].min);
+                // setIndexes(data.fragments);
+                // setLoading(false);
+
+                // setCurrentTick(data.fragments[0].min);
+                // initRenderer();
+
+                // setDataReady(true);
             });
         } else if (reportId) {
             setCurrentId(reportId);

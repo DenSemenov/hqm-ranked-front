@@ -287,7 +287,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
 
                         renderer.render(scene, camera)
                         stats.end()
-                        console.log(stats);
                     }
                 }
             }
@@ -531,6 +530,45 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
         return object;
     }
 
+    const rectangleRounded = (w: number, h: number, r: number, s: number) => {
+        const pi2 = Math.PI * 2;
+        const n = (s + 1) * 4;
+        let indices = [];
+        let positions = [];
+        let uvs = [];
+        let qu, sgx, sgy, x, y;
+
+        for (let j = 1; j < n + 1; j++) indices.push(0, j, j + 1);
+        indices.push(0, n, 1);
+        positions.push(0, 0, 0);
+        uvs.push(0.5, 0.5);
+        for (let j = 0; j < n; j++) contour(j);
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(indices), 1));
+        geometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(new Float32Array(positions), 3)
+        );
+        geometry.setAttribute(
+            "uv",
+            new THREE.BufferAttribute(new Float32Array(uvs), 2)
+        );
+
+        return geometry;
+
+        function contour(j: number) {
+            qu = Math.trunc((4 * j) / n) + 1;
+            sgx = qu === 1 || qu === 4 ? 1 : -1;
+            sgy = qu < 3 ? 1 : -1;
+            x = sgx * (w / 2 - r) + r * Math.cos((pi2 * (j - qu + 1)) / (n - 4));
+            y = sgy * (h / 2 - r) + r * Math.sin((pi2 * (j - qu + 1)) / (n - 4));
+
+            positions.push(x, y, 0);
+            uvs.push(0.5 + x / w, 0.5 + y / h);
+        }
+    }
+
     const frameChange = (current: number, scene: THREE.Scene, camera: THREE.Camera, font: Font, selectedObject: string) => {
         const tickData = fragments.find(x => x.packetNumber === current);
         if (tickData) {
@@ -605,6 +643,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                 handlePlayerObject("stick", player, player.index, loadedObjects, scene, team);
                 const playerTextName = "text" + player.index.toString();
                 let playerText = scene.getObjectByName(playerTextName);
+                let playerTextPlane = scene.getObjectByName("base" + playerTextName);
 
                 if (selectedObject === name || externalPlayerName === name) {
                     const firstPuck = tickData.pucks[0];
@@ -633,15 +672,30 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
 
                     geometry.center();
 
-                    const mesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({ color: 0x000000 })]);
+                    const mesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({ color: 0xffffff })]);
                     mesh.position.set(player.posX, player.posY + 1, player.posZ)
                     mesh.name = playerTextName;
+
+                    const size = mesh.geometry.boundingBox;
+                    if (size) {
+                        const geometry = rectangleRounded(size.max.x - size.min.x + 0.2, 0.25, 0.1, 10);
+                        const material = new THREE.MeshBasicMaterial({ color: "#232323", side: THREE.FrontSide, transparent: true, opacity: 0.4 });
+                        const plane = new THREE.Mesh(geometry, material);
+                        plane.position.set(player.posX, player.posY + 1, player.posZ)
+                        plane.lookAt(camera.position)
+                        plane.name = "base" + playerTextName;
+                        scene.add(plane);
+                    }
                     scene.add(mesh);
                 } else {
                     if (playerText) {
                         playerText.position.set(player.posX, player.posY + 1, player.posZ);
                         playerText.lookAt(camera.position)
+                    }
 
+                    if (playerTextPlane) {
+                        playerTextPlane.position.set(player.posX, player.posY + 1, player.posZ);
+                        playerTextPlane.lookAt(camera.position)
                     }
                 }
 

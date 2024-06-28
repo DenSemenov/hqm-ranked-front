@@ -10,6 +10,7 @@ import { IPushTokenRequest } from "models/IPushTokenRequest";
 import { IPlayerNotificationsResponse } from "models/IPlayerNotificationsResponse";
 import { IWebsiteSettingsResponse } from "models/IWebsiteSettingsResponse";
 import { IDiscordAuthRequest } from "models/IDiscordAuthRequest";
+import { IPlayerWarningResponse } from "models/IPlayerWarningResponse";
 
 export default class AuthService {
     static async login(data: ILoginRequest): Promise<AxiosResponse<IAuthResponse>> {
@@ -57,5 +58,8 @@ export default class AuthService {
     }
     static async removeDiscord(): Promise<AxiosResponse> {
         return $api.post('api/player/RemoveDiscord');
+    }
+    static async getPlayerWarnings(): Promise<AxiosResponse<IPlayerWarningResponse[]>> {
+        return $api.post<IPlayerWarningResponse[]>('api/player/GetPlayerWarnings');
     }
 }

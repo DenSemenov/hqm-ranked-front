@@ -2,18 +2,18 @@ import './App.css';
 import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import HomePage from './components/HomePage';
 import Header from './components/Header';
-import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag, Flex, Layout } from 'antd';
+import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag, Flex, Layout, notification, Button } from 'antd';
 import { BrowserView, MobileView, isMobile } from 'react-device-detect';
 import PlayersTable from 'components/PlayersTable';
 import Games from 'components/Games';
 import { useContext, useEffect, useMemo } from 'react';
-import { getCurrentUser, getWebsiteSettings } from 'stores/auth/async-actions';
+import { getCurrentUser, getPlayerWarnings, getWebsiteSettings } from 'stores/auth/async-actions';
 import { getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores/season/async-actions';
 import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { selectCurrentMode, selectCurrentSeason, selectLoading } from 'stores/season';
-import { selectCurrentUser, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
+import { selectCurrentUser, selectIsAuth, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
 import Player from 'components/Player';
 import LoginModal from 'components/LoginModal';
 import RegisterModal from 'components/RegisterModal';
@@ -43,9 +43,11 @@ import TeamsGames from 'components/TeamsGames';
 import TeamsControl from 'components/TeamsControl';
 import { useTransition, animated, useSpring } from "react-spring";
 import DiscordLogin from 'components/DiscordLogin';
+import { IPlayerWarningResponse, WarningType } from 'models/IPlayerWarningResponse';
 
 function App() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const springProps = useSpring({ to: { opacity: 1 }, from: { opacity: 0 } });
 
@@ -53,6 +55,7 @@ function App() {
   const theme = useSelector(selectTheme);
   const loadingUser = useSelector(selectLoadingUser);
   const currentMode = useSelector(selectCurrentMode);
+  const isAuth = useSelector(selectIsAuth);
 
   const singnalR = new SignalrService();
 
@@ -106,6 +109,29 @@ function App() {
     dispatch(getActiveServers());
     dispatch(getStorage());
   }, [])
+
+  useEffect(() => {
+    if (isAuth) {
+      dispatch(getPlayerWarnings()).unwrap().then((data: IPlayerWarningResponse[]) => {
+        data.forEach(warning => {
+          let message = <div>{warning.message}</div>
+          switch (warning.type) {
+            case WarningType.DiscordNotConnected:
+              message = <div style={{ display: "flex", flexDirection: "column" }}>
+                <span>{warning.message}</span>
+                <Button type="primary" onClick={() => navigate("/profile")}>Go to profile</Button>
+              </div>
+              break;
+          }
+          notification.warning({
+            message: message,
+            placement: "bottomRight"
+          })
+        })
+      });
+
+    }
+  }, [isAuth])
 
   useEffect(() => {
     const theme = localStorage.getItem("theme") ?? "light";

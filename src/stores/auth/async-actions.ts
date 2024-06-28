@@ -167,3 +167,13 @@ export const removeDiscord = createAsyncThunk('auth/removeDiscord', async (paylo
         return thunkApi.rejectWithValue(e)
     }
 })
+
+export const getPlayerWarnings = createAsyncThunk('auth/getPlayerWarnings', async (payload: void, thunkApi) => {
+    try {
+        const response = await AuthService.getPlayerWarnings()
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})

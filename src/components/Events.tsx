@@ -1,5 +1,3 @@
-import { isMobile } from 'react-device-detect';
-import styles from './Events.module.css'
 import { Card, Col, List, Row, Typography } from 'antd';
 import { useEffect } from 'react';
 import { useAppDispatch } from 'hooks/useAppDispatch';

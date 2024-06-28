@@ -14,6 +14,7 @@ import { useAppDispatch } from "hooks/useAppDispatch"
 import { useNavigate } from "react-router-dom"
 import { leaveTeam, getTeamsState, createTeam } from "stores/teams/async-actions"
 import { selectLoading, setLoading } from "stores/season"
+import Budget from "./Budget"
 
 const { Text, Title } = Typography;
 
@@ -23,28 +24,6 @@ const TeamsActions = () => {
 
     const teamsState = useSelector(selectTeamsState);
     const loading = useSelector(selectLoading);
-
-    const getBudgetType = (historyItem: ITeamsStateCurrentTeamBudgetHistoryResponse) => {
-        switch (historyItem.type) {
-            case IBudgetType.Start:
-                return <span>Start budget</span>;
-            case IBudgetType.Invite:
-                return <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span>Invited player</span>
-                    <PlayerItem id={historyItem.invitedPlayerId as number} name={historyItem.invitedPlayerNickname as string} />
-                </div>;
-            case IBudgetType.Leave:
-                return <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <PlayerItem id={historyItem.invitedPlayerId as number} name={historyItem.invitedPlayerNickname as string} />
-                    <span>left the team</span>
-                </div>;
-            case IBudgetType.Sell:
-                return <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <PlayerItem id={historyItem.invitedPlayerId as number} name={historyItem.invitedPlayerNickname as string} />
-                    <span>sold</span>
-                </div>;
-        }
-    }
 
     const actions = useMemo(() => {
         let items: MenuProps['items'] = [];
@@ -101,17 +80,7 @@ const TeamsActions = () => {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <Popover
                         title={"Budget history"}
-                        content={<List
-                            style={{ width: 400 }}
-                            itemLayout="horizontal"
-                            dataSource={teamsState.team.budgetHistory}
-                            renderItem={(item, index) => (
-                                <List.Item className={styles.budgetHistoryItem}>
-                                    <span>{getBudgetType(item)}</span>
-                                    <Tag color={item.change > 0 ? "success" : "error"}>{item.change > 0 ? "+" + convertMoney(item.change) : convertMoney(item.change)}</Tag>
-                                </List.Item>
-                            )}
-                        />}
+                        content={<Budget items={teamsState.team.budgetHistory} />}
                     >
                         <Title level={4}>{convertMoney(teamsState.team.budget)}</Title>
                     </Popover>

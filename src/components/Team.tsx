@@ -6,11 +6,12 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { selectLoading, selectStorageUrl } from "stores/season";
 import styles from './Team.module.css'
 import { getTeam } from "stores/teams/async-actions";
-import { selectCurrentTeam } from "stores/teams";
+import { selectCurrentTeam, selectTeamsState } from "stores/teams";
 import PlayerItem, { PlayerItemType } from "shared/PlayerItem";
 import { convertMoney } from "shared/MoneyCoverter";
 import { ITeamBudgetHistoryItemResponse } from "models/ITeamResponse";
 import { IBudgetType } from "models/IBudgetType";
+import Budget from "./Budget";
 
 const { Text, Title } = Typography;
 
@@ -20,6 +21,7 @@ const Team = () => {
 
     const currentTeam = useSelector(selectCurrentTeam);
     const storageUrl = useSelector(selectStorageUrl);
+    const teamsState = useSelector(selectTeamsState);
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -31,28 +33,6 @@ const Team = () => {
             }));
         }
     }, [searchParams]);
-
-    const getBudgetType = (historyItem: ITeamBudgetHistoryItemResponse) => {
-        switch (historyItem.type) {
-            case IBudgetType.Start:
-                return <span>Start budget</span>;
-            case IBudgetType.Invite:
-                return <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span>Invited player</span>
-                    <PlayerItem id={historyItem.invitedPlayerId as number} name={historyItem.invitedPlayerNickname as string} />
-                </div>;
-            case IBudgetType.Leave:
-                return <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <PlayerItem id={historyItem.invitedPlayerId as number} name={historyItem.invitedPlayerNickname as string} />
-                    <span>left the team</span>
-                </div>;
-            case IBudgetType.Sell:
-                return <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <PlayerItem id={historyItem.invitedPlayerId as number} name={historyItem.invitedPlayerNickname as string} />
-                    <span>sold</span>
-                </div>;
-        }
-    }
 
     return currentTeam ? (
         <Row gutter={[32, 32]}>
@@ -83,7 +63,14 @@ const Team = () => {
                 </div>
             </Col>
             <Col sm={8} xs={24} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                <Title level={5}>PLAYERS</Title>
+                <Row>
+                    <Col span={12}>
+                        <Title level={5}>PLAYERS</Title>
+                    </Col>
+                    <Col span={12} className="right-align">
+                        <Title level={5} type="secondary">{currentTeam.players.length + "/" + teamsState.teamsMaxPlayers}</Title>
+                    </Col>
+                </Row>
                 <List
                     itemLayout="horizontal"
                     dataSource={currentTeam.players}
@@ -100,18 +87,16 @@ const Team = () => {
                         </List.Item>
                     )}
                 />
-                <Title level={5} style={{ marginTop: 16 }}>BUDGET</Title>
-                <List
-                    itemLayout="horizontal"
-                    bordered
-                    dataSource={currentTeam.budgetHistory}
-                    renderItem={(item, index) => (
-                        <List.Item className={styles.budgetHistoryItem}>
-                            <span>{getBudgetType(item)}</span>
-                            <Tag color={item.change > 0 ? "success" : "error"}>{item.change > 0 ? "+" + convertMoney(item.change) : convertMoney(item.change)}</Tag>
-                        </List.Item>
-                    )}
-                />
+                <Row>
+                    <Col span={12}>
+                        <Title level={5} style={{ marginTop: 16 }}>BUDGET</Title>
+                    </Col>
+                    <Col span={12} className="right-align">
+                        <Title level={5} type="secondary" style={{ marginTop: 16 }}>{convertMoney(currentTeam.budgetHistory.map(x => x.change).reduce((partialSum, a) => partialSum + a, 0))}</Title>
+                    </Col>
+                </Row>
+
+                <Budget items={currentTeam.budgetHistory} />
             </Col>
         </Row >
     ) : <div />

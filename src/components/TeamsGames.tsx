@@ -1,4 +1,4 @@
-import { Avatar, Button, Col, DatePicker, Form, List, Modal, Popover, Progress, Row, Space, Tag, Tooltip, Typography, notification } from "antd";
+import { Avatar, Button, Col, DatePicker, Form, InputNumber, List, Modal, Popover, Progress, Row, Slider, Space, Tag, Tooltip, Typography, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { selectGameInvites, selectTeamsState } from "stores/teams";
@@ -56,7 +56,8 @@ const TeamsGames = () => {
 
     const onCreateGameInvite = (values: any) => {
         dispatch(createGameInvite({
-            date: values.date
+            date: values.date,
+            countGames: values.countGames
         })).unwrap().then((message: string) => {
             if (message.length !== 0) {
                 notification.info({
@@ -123,7 +124,12 @@ const TeamsGames = () => {
                                         minuteStep={30}
                                     />
                                 </Form.Item>
-
+                                <Form.Item
+                                    label={"Games count"}
+                                    name="countGames"
+                                >
+                                    <Slider min={1} max={4} />
+                                </Form.Item>
                                 <Form.Item >
                                     <Button type="primary" htmlType="submit">
                                         Create
@@ -148,11 +154,13 @@ const TeamsGames = () => {
                                         {!x.isCurrentTeam &&
                                             <>
                                                 <QuestionCircleOutlined style={{ fontSize: 24, opacity: 0.7 }} />
-
                                             </>
                                         }
-                                        <Text>{convertFullDate(x.date)}</Text>
                                         <Text type="secondary">{convertDate(x.date)}</Text>
+                                    </div>
+                                    <div className={styles.timeTitle}>
+                                        <Tag>{x.gamesCount + " games"}</Tag>
+                                        <Text>{convertFullDate(x.date)}</Text>
                                     </div>
                                     <div className={styles.actions}>
                                         {teamsState.team &&

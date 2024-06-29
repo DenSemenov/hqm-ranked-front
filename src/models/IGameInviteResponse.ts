@@ -3,6 +3,7 @@ export interface IGameInviteResponse {
     isCurrentTeam: boolean;
     date: Date;
     votes: IGameInviteVoteResponse[]
+    gamesCount: number;
 }
 
 export interface IGameInviteVoteResponse {

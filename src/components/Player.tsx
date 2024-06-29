@@ -13,6 +13,8 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { convertMoney } from "shared/MoneyCoverter";
 import { IInstanceType } from "models/IInstanceType";
 import TeamItem from "shared/TeamItem";
+import { Line } from '@ant-design/plots';
+import { selectTheme } from "stores/auth";
 
 const { Text, Title } = Typography;
 
@@ -23,6 +25,7 @@ const Player = () => {
     const currentPlayerData = useSelector(selectCurrentPlayerData);
     const storageUrl = useSelector(selectStorageUrl);
     const loading = useSelector(selectLoading);
+    const theme = useSelector(selectTheme);
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -87,6 +90,23 @@ const Player = () => {
             </Col>
             <Col sm={10} xs={24}>
                 <div className={styles.playerCenter}>
+                    <div className={styles.playerCenterGames}>
+                        <Line
+                            data={currentPlayerData.playerPoints.map((point, index) => {
+                                return {
+                                    game: index,
+                                    elo: point
+                                }
+                            })}
+                            xField='game'
+                            yField='elo'
+                            axis={{
+                                x: false
+                            }}
+                            height={200}
+                            theme={theme}
+                        />
+                    </div>
                     <div className={styles.playerCenterGames}>
                         {currentPlayerData.lastGames.map(game => {
                             return <div className={styles.playerCenterGamesItem} onClick={() => navigate("/game?id=" + game.gameId)}>

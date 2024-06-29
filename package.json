@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/plots": "^2.2.4",
     "@firebase/messaging": "^0.12.9",
     "@microsoft/signalr": "^8.0.0",
     "@react-spring/web": "^9.7.3",

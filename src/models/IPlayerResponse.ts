@@ -13,6 +13,7 @@ export interface IPlayerResponse {
     lastGames: PlayerLastGamesViewModel[];
     lastSeasons: PlayerSeasonsViewModel[];
     calcData: PlayerCalcDataViewModel;
+    playerPoints: number[];
     oldNicknames: string[];
 }
 

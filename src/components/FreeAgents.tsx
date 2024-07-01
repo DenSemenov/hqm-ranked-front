@@ -4,7 +4,7 @@ import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useMemo, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 import { convertMoney } from "shared/MoneyCoverter";
 import { selectStorageUrl } from "stores/season";
 import { selectFreeAgents, selectTeamsState } from "stores/teams";
@@ -20,12 +20,27 @@ const FreeAgents = () => {
     const storageUrl = useSelector(selectStorageUrl);
     const teamsState = useSelector(selectTeamsState);
 
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const [search, setSearch] = useState("");
 
     useEffect(() => {
+        if (searchParams.has("s")) {
+            const s = searchParams.get("s");
+            if (s) {
+                setSearch(s)
+            }
+        }
+
         dispatch(getFreeAgents())
         dispatch(getTeamsState())
     }, [])
+
+    useEffect(() => {
+        setSearchParams(
+            createSearchParams({ s: search })
+        )
+    }, [search])
 
     const filtered = useMemo(() => {
         return freeAgents.filter(x => x.name.toLowerCase().includes(search.toLowerCase()))
@@ -56,6 +71,7 @@ const FreeAgents = () => {
                     size={"large"}
                     placeholder="Search"
                     allowClear
+                    onChange={(e) => setSearch(e.target.value)}
                     onSearch={(value) => setSearch(value)}
                 />
             </Col>

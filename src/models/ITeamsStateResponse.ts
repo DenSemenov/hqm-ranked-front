@@ -7,6 +7,7 @@ export interface ITeamsStateResponse {
     captainId?: number;
     assistantId?: number;
     teamsMaxPlayers: number;
+    cost: number;
     team?: ITeamsStateCurrentTeamResponse;
 
 }

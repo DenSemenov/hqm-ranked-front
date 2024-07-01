@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import TeamsService from "services/TeamsService"
-import { setCurrentTeam, setFreeAgents, setGameInvites, setPlayerInvites, setTeamsState, setTeamsStats } from ".";
+import { setCurrentTeam, setFreeAgents, setGameInvites, setPlayerInvites, setTeamsState, setTeamsStats, setTransferMarkets } from ".";
 import { ICreateTeamRequest } from "models/ICreateTeamRequest";
 import { IInvitePlayerRequest } from "models/IInvitePlayerRequest";
 import { ICancelPlayerInviteRequest } from "models/ICancelPlayerInviteRequest";
@@ -12,6 +12,9 @@ import { IRemoveGameInviteRequest } from "models/IRemoveGameInviteRequest";
 import { IVoteGameInviteRequest } from "models/IVoteGameInviteRequest";
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest";
 import { setLoading } from "stores/season";
+import { ITransferMarketRequest } from "models/ITransferMarketRequest";
+import { IRemoveTransferMarketRequest } from "models/IRemoveTransferMarketRequest";
+import { IAskToJoinTeamRequest } from "models/IAskToJoinTeamRequest";
 
 export const getTeamsState = createAsyncThunk('teams/getTeamsState', async (payload: void, thunkApi) => {
     try {
@@ -204,6 +207,48 @@ export const getTeamsStats = createAsyncThunk('teams/getTeamsStats', async (payl
         const response = await TeamsService.getTeamsStats(payload);
 
         thunkApi.dispatch(setTeamsStats(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const createTransferMarket = createAsyncThunk('teams/createTransferMarket', async (payload: ITransferMarketRequest, thunkApi) => {
+    try {
+        const response = await TeamsService.createTransferMarket(payload);
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const removeTransferMarket = createAsyncThunk('teams/removeTransferMarket', async (payload: IRemoveTransferMarketRequest, thunkApi) => {
+    try {
+        const response = await TeamsService.removeTransferMarket(payload);
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const getTransferMarket = createAsyncThunk('teams/getTransferMarket', async (payload: void, thunkApi) => {
+    try {
+        const response = await TeamsService.getTransferMarket();
+
+        thunkApi.dispatch(setTransferMarkets(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const askToJoinTeam = createAsyncThunk('teams/askToJoinTeam', async (payload: IAskToJoinTeamRequest, thunkApi) => {
+    try {
+        const response = await TeamsService.askToJoinTeam(payload);
 
         return response.data
     } catch (e: any) {

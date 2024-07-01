@@ -6,7 +6,7 @@ import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag, Flex, Lay
 import { BrowserView, MobileView, isMobile } from 'react-device-detect';
 import PlayersTable from 'components/PlayersTable';
 import Games from 'components/Games';
-import { useContext, useEffect, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { getCurrentUser, getPlayerWarnings, getWebsiteSettings } from 'stores/auth/async-actions';
 import { getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores/season/async-actions';
 import { getActiveServers } from 'stores/server/async-actions';
@@ -44,6 +44,8 @@ import TeamsControl from 'components/TeamsControl';
 import { useTransition, animated, useSpring } from "react-spring";
 import DiscordLogin from 'components/DiscordLogin';
 import { IPlayerWarningResponse, WarningType } from 'models/IPlayerWarningResponse';
+import TransferMarket from 'components/TransferMarket';
+import { getTeamsState } from 'stores/teams/async-actions';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -56,6 +58,8 @@ function App() {
   const loadingUser = useSelector(selectLoadingUser);
   const currentMode = useSelector(selectCurrentMode);
   const isAuth = useSelector(selectIsAuth);
+
+  const [logInWarningShown, setLogInWarningShown] = useState<boolean>(false);
 
   const singnalR = new SignalrService();
 
@@ -104,6 +108,17 @@ function App() {
       dispatch(getCurrentUser());
     } else {
       dispatch(setLoadingUser(false))
+
+      if (!logInWarningShown) {
+        notification.warning({
+          message: <div style={{ display: "flex", flexDirection: "column" }}>
+            <span>{"Please log in to access all the features of the site"}</span>
+            <Button type="primary" onClick={() => navigate("/login")}>Go to log in</Button>
+          </div>,
+          placement: "bottomRight"
+        })
+        setLogInWarningShown(true)
+      }
     }
     dispatch(getSeasons());
     dispatch(getActiveServers());
@@ -129,6 +144,8 @@ function App() {
           })
         })
       });
+
+      dispatch(getTeamsState())
 
     }
   }, [isAuth])
@@ -193,6 +210,7 @@ function App() {
         <Route path="/team" element={<Team />} />
         <Route path="/team-settings" element={<TeamSettings />} />
         <Route path="/discordlogin" element={<DiscordLogin />} />
+        <Route path="/transfer-market" element={<TransferMarket />} />
 
       </Routes>
     }
@@ -217,6 +235,7 @@ function App() {
         <Route path="/team" element={<Team />} />
         <Route path="/team-settings" element={<TeamSettings />} />
         <Route path="/discordlogin" element={<DiscordLogin />} />
+        <Route path="/transfer-market" element={<TransferMarket />} />
       </Routes>
     }
   }, [currentMode])

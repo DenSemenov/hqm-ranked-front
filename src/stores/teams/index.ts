@@ -6,6 +6,7 @@ import { IPlayerInviteResponse } from "models/IPlayerInviteResponse";
 import { ITeamResponse } from "models/ITeamResponse";
 import { ITeamsStateResponse } from "models/ITeamsStateResponse";
 import { ITeamsStatsResponse } from "models/ITeamsStatsResponse";
+import { ITransferMarketResponse } from "models/ITransferMarketResponse";
 import { RootState } from "stores"
 
 export interface ITeamsState {
@@ -15,6 +16,7 @@ export interface ITeamsState {
     currentTeam: ITeamResponse | undefined
     gameInvites: IGameInviteResponse[]
     teamsStats: ITeamsStatsResponse[]
+    transferMarkets: ITransferMarketResponse[];
 }
 
 const initialState: ITeamsState = {
@@ -23,13 +25,15 @@ const initialState: ITeamsState = {
         isCaptain: false,
         isAssistant: false,
         team: undefined,
-        teamsMaxPlayers: 4
+        teamsMaxPlayers: 4,
+        cost: 0
     },
     freeAgents: [],
     invites: [],
     currentTeam: undefined,
     gameInvites: [],
-    teamsStats: []
+    teamsStats: [],
+    transferMarkets: []
 }
 
 export const teamsSlicer = createSlice({
@@ -54,6 +58,9 @@ export const teamsSlicer = createSlice({
         setTeamsStats: (state: ITeamsState, action: PayloadAction<ITeamsStatsResponse[]>) => {
             state.teamsStats = action.payload;
         },
+        setTransferMarkets: (state: ITeamsState, action: PayloadAction<ITransferMarketResponse[]>) => {
+            state.transferMarkets = action.payload;
+        },
     },
 })
 
@@ -63,7 +70,8 @@ export const {
     setPlayerInvites,
     setCurrentTeam,
     setGameInvites,
-    setTeamsStats
+    setTeamsStats,
+    setTransferMarkets
 } =
     teamsSlicer.actions
 
@@ -74,5 +82,6 @@ export const selectPlayerInvites = (state: RootState) => state.teams.invites;
 export const selectCurrentTeam = (state: RootState) => state.teams.currentTeam;
 export const selectGameInvites = (state: RootState) => state.teams.gameInvites;
 export const selectTeamsStats = (state: RootState) => state.teams.teamsStats;
+export const selectTransferMarkets = (state: RootState) => state.teams.transferMarkets;
 
 export default teamsSlicer.reducer

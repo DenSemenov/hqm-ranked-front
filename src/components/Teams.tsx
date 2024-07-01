@@ -1,27 +1,18 @@
 import { useEffect, useMemo } from "react";
 import { isMobile } from "react-device-detect";
 import TeamsTable from "./TeamsTable";
-import { Button, Card, Col, Dropdown, Form, Input, List, MenuProps, Modal, Popover, Row, Tag, Typography } from "antd";
+import { Card, Col, Modal, Row } from "antd";
 import Servers from "./Servers";
 import Actions from "./Actions";
 import StoriesComponent from "./Stories";
-import { UsergroupAddOutlined, MoreOutlined } from "@ant-design/icons";
-import styles from './Teams.module.css'
-import { convertMoney } from "shared/MoneyCoverter";
 import { useAppDispatch } from "hooks/useAppDispatch";
-import { createTeam, getTeamsState, getTeamsStats, leaveTeam } from "stores/teams/async-actions";
+import { getTeamsState, getTeamsStats, getTransferMarket } from "stores/teams/async-actions";
 import { selectTeamsState } from "stores/teams";
 import { useSelector } from "react-redux";
-import TeamItem from "shared/TeamItem";
-import { ITeamsStateCurrentTeamBudgetHistoryResponse } from "models/ITeamsStateResponse";
-import { IBudgetType } from "models/IBudgetType";
-import PlayerItem from "shared/PlayerItem";
 import { useNavigate } from "react-router-dom";
 import TeamsGames from "./TeamsGames";
 import { selectCurrentSeason } from "stores/season";
 import TeamsActions from "./TeamsActions";
-
-const { Text, Title } = Typography;
 
 const Teams = () => {
     const dispatch = useAppDispatch();
@@ -34,6 +25,7 @@ const Teams = () => {
 
     useEffect(() => {
         dispatch(getTeamsState())
+        dispatch(getTransferMarket())
         if (currentSeason) {
             dispatch(getTeamsStats({
                 offset: 0,

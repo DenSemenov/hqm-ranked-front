@@ -16,6 +16,10 @@ import { IRemoveGameInviteRequest } from "models/IRemoveGameInviteRequest";
 import { IVoteGameInviteRequest } from "models/IVoteGameInviteRequest";
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest";
 import { ITeamsStatsResponse } from "models/ITeamsStatsResponse";
+import { ITransferMarketRequest } from "models/ITransferMarketRequest";
+import { ITransferMarketResponse } from "models/ITransferMarketResponse";
+import { IRemoveTransferMarketRequest } from "models/IRemoveTransferMarketRequest";
+import { IAskToJoinTeamRequest } from "models/IAskToJoinTeamRequest";
 
 export default class TeamsService {
     static async getTeamsState(): Promise<AxiosResponse<ITeamsStateResponse>> {
@@ -71,5 +75,17 @@ export default class TeamsService {
     }
     static async getTeamsStats(data: ICurrentSeasonStatsRequest): Promise<AxiosResponse<ITeamsStatsResponse[]>> {
         return $api.post<ITeamsStatsResponse[]>('api/teams/GetTeamsStats', data);
+    }
+    static async createTransferMarket(data: ITransferMarketRequest): Promise<AxiosResponse> {
+        return $api.post('api/teams/CreateTransferMarket', data);
+    }
+    static async removeTransferMarket(data: IRemoveTransferMarketRequest): Promise<AxiosResponse> {
+        return $api.post('api/teams/RemoveTransferMarket', data);
+    }
+    static async getTransferMarket(): Promise<AxiosResponse<ITransferMarketResponse[]>> {
+        return $api.post<ITransferMarketResponse[]>('api/teams/GetTransferMarket');
+    }
+    static async askToJoinTeam(data: IAskToJoinTeamRequest): Promise<AxiosResponse> {
+        return $api.post('api/teams/AskToJoinTeam', data);
     }
 }

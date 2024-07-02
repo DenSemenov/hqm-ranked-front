@@ -15,6 +15,25 @@ export interface IPlayerResponse {
     calcData: PlayerCalcDataViewModel;
     playerPoints: number[];
     oldNicknames: string[];
+    awards: PlayerAwardViewModel[]
+}
+
+export interface PlayerAwardViewModel {
+    date: Date;
+    awardType: AwardType;
+    count: number;
+    seasonName: string;
+}
+
+export enum AwardType {
+    FirstPlace,
+    SecondPlace,
+    ThirdPlace,
+    BestGoaleador,
+    BestAssistant,
+    GamesPlayed,
+    Goals,
+    Assists
 }
 
 export interface PlayerLastSeasonViewModel {

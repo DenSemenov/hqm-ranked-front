@@ -126,3 +126,25 @@
     align-items: center;
     justify-content: right;
 }
+
+.playerCenterAwards {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.award {
+    padding: 8px 16px;
+    border-radius: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border: 2px solid rgba(138, 138, 138, 0.2);
+}
+
+.awardTitle {
+    display: flex;
+    flex-direction: column;
+}

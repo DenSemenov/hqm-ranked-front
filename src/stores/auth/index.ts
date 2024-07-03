@@ -18,7 +18,8 @@ const initialState: IAuthState = {
     currentUser: null,
     theme: null,
     websiteSettings: {
-        discordAppClientId: ""
+        discordAppClientId: "",
+        discordJoinLink: ""
     }
 }
 

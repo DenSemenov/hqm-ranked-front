@@ -5,6 +5,8 @@ export default class SignalrService {
     connection: signalR.HubConnection | null = null;
 
     onHeartbeat: ((data: IHeartbeatResponse) => void) | undefined;
+    onGamesChange: (() => void) | undefined;
+    onInvitesChange: (() => void) | undefined;
 
     async invoke(methodName: string, ...params: any[]) {
         if (this.connection && this.connection.state === signalR.HubConnectionState.Connected) {
@@ -37,6 +39,8 @@ export default class SignalrService {
         connection.serverTimeoutInMilliseconds = 1000000;
 
         connection.on("onHeartbeat", this.onHeartbeatEvent);
+        connection.on("onGamesChange", this.onGamesChangeEvent);
+        connection.on("onInvitesChange", this.onInvitesChangeEvent);
 
         connection.onclose((e) => {
             console.log(e);
@@ -53,6 +57,18 @@ export default class SignalrService {
     onHeartbeatEvent = (data: IHeartbeatResponse) => {
         if (this.onHeartbeat) {
             this.onHeartbeat(data);
+        }
+    }
+
+    onGamesChangeEvent = () => {
+        if (this.onGamesChange) {
+            this.onGamesChange();
+        }
+    }
+
+    onInvitesChangeEvent = () => {
+        if (this.onInvitesChange) {
+            this.onInvitesChange();
         }
     }
 }

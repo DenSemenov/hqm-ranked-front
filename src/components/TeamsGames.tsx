@@ -16,7 +16,6 @@ import { useNavigate } from "react-router-dom";
 import { IInstanceType } from "models/IInstanceType";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { isMobile } from "react-device-detect";
-import { getSeasonsGames } from "stores/season/async-actions";
 
 const { Text, Title } = Typography;
 
@@ -64,7 +63,6 @@ const TeamsGames = () => {
                     message: message
                 })
             }
-            dispatch(getGameInvites())
         })
     }
 
@@ -76,9 +74,7 @@ const TeamsGames = () => {
         if (confirmed) {
             dispatch(removeGameInvite({
                 inviteId: inviteId
-            })).unwrap().then(() => {
-                dispatch(getGameInvites())
-            })
+            }))
         }
     }
 
@@ -86,13 +82,7 @@ const TeamsGames = () => {
         if (currentSeason) {
             dispatch(voteGameInvite({
                 inviteId: inviteId
-            })).unwrap().then(() => {
-                dispatch(getGameInvites())
-                dispatch(getSeasonsGames({
-                    seasonId: currentSeason,
-                    offset: 0,
-                }));
-            })
+            }))
         }
     }
 

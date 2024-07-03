@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import HomePage from './components/HomePage';
 import Header from './components/Header';
 import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag, Flex, Layout, notification, Button } from 'antd';
@@ -12,7 +12,7 @@ import { getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores
 import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
-import { selectCurrentMode, selectCurrentSeason, selectLoading } from 'stores/season';
+import { selectCurrentGameData, selectCurrentMode, selectCurrentPlayerData, selectCurrentSeason, selectLoading } from 'stores/season';
 import { selectCurrentUser, selectIsAuth, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
 import Player from 'components/Player';
 import LoginModal from 'components/LoginModal';
@@ -45,7 +45,8 @@ import { useTransition, animated, useSpring } from "react-spring";
 import DiscordLogin from 'components/DiscordLogin';
 import { IPlayerWarningResponse, WarningType } from 'models/IPlayerWarningResponse';
 import TransferMarket from 'components/TransferMarket';
-import { getTeamsState } from 'stores/teams/async-actions';
+import { getGameInvites, getTeamsState } from 'stores/teams/async-actions';
+import { selectCurrentTeam } from 'stores/teams';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -58,15 +59,68 @@ function App() {
   const loadingUser = useSelector(selectLoadingUser);
   const currentMode = useSelector(selectCurrentMode);
   const isAuth = useSelector(selectIsAuth);
+  const currentPlayerData = useSelector(selectCurrentPlayerData);
+  const currentGameData = useSelector(selectCurrentGameData);
+  const currentTeamData = useSelector(selectCurrentTeam);
 
   const [logInWarningShown, setLogInWarningShown] = useState<boolean>(false);
 
   const singnalR = new SignalrService();
 
+  const concatTitle = (name: string) => {
+    if (name) {
+      return "Ranked | " + name;
+    } else {
+      return "Ranked";
+    }
+
+  }
+
+  const getTitle = (pathname: string) => {
+    switch (pathname) {
+      case "":
+        return currentMode === IInstanceType.Ranked ? concatTitle("") : concatTitle("Teams");
+      case "player":
+        return currentPlayerData ? concatTitle(currentPlayerData.name) : concatTitle("")
+      case "game":
+        return currentGameData ? concatTitle("Game " + currentGameData.id) : concatTitle("")
+      case "team":
+        return currentTeamData ? concatTitle(currentTeamData.name) : concatTitle("")
+      case "login":
+        return concatTitle("Login")
+      case "registration":
+        return concatTitle("Registration")
+      case "admin":
+        return concatTitle("Admin")
+      case "profile":
+        return concatTitle("Profile")
+      case "notifications":
+        return concatTitle("Notifications settings")
+      case "rules":
+        return concatTitle("Rules acception")
+      case "top":
+        return concatTitle("Top stats")
+      case "patrol":
+        return concatTitle("Patrol")
+      case "free-agents":
+        return concatTitle("Free agents")
+      case "team-settings":
+        return concatTitle("Team settings")
+      case "transfer-market":
+        return concatTitle("Transfer market")
+      default:
+        return concatTitle("");
+    }
+  }
+
   useEffect(() => {
     springProps.opacity.reset();
     springProps.opacity.start();
-  }, [location.pathname]);
+  }, [location.pathname, currentMode]);
+
+  useEffect(() => {
+    window.document.title = getTitle(location.pathname.replace("/", ""))
+  }, [location.pathname, currentMode, currentPlayerData, currentGameData, currentTeamData]);
 
   const contentStyle: React.CSSProperties = {
     height: isMobile ? "calc(-124px + 100vh)" : "calc(-48px + 100vh)",
@@ -113,7 +167,9 @@ function App() {
         notification.warning({
           message: <div style={{ display: "flex", flexDirection: "column" }}>
             <span>{"Please log in to access all the features of the site"}</span>
-            <Button type="primary" onClick={() => navigate("/login")}>Go to log in</Button>
+            <Link to={"/login"} >
+              <Button type="primary" >Go to log in</Button>
+            </Link>
           </div>,
           placement: "bottomRight"
         })
@@ -158,6 +214,8 @@ function App() {
   useEffect(() => {
     singnalR.connect();
     singnalR.onHeartbeat = onHeartbeat;
+    singnalR.onGamesChange = onGamesChange;
+    singnalR.onInvitesChange = onInvitesChange;
   }, []);
 
   useEffect(() => {
@@ -185,6 +243,19 @@ function App() {
 
   const onHeartbeat = (data: IHeartbeatResponse) => {
     dispatch(setUpdatedServer(data));
+  }
+
+  const onGamesChange = () => {
+    if (currentSeason) {
+      dispatch(getSeasonsGames({
+        seasonId: currentSeason,
+        offset: 0,
+      }));
+    }
+  }
+
+  const onInvitesChange = () => {
+    dispatch(getGameInvites());
   }
 
   const routes = useMemo(() => {

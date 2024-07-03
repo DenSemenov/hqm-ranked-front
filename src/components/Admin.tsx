@@ -317,6 +317,12 @@ const Admin = () => {
                 <Card bordered={false} title="Discord" >
                     <div style={{ padding: 16 }}>
                         <Form.Item
+                            label="Discord join link"
+                            name="discordJoinLink"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
                             label="Discord notifications webhook"
                             name="discordNotificationWebhook"
                         >
@@ -327,6 +333,20 @@ const Admin = () => {
                             name="webhookCount"
                         >
                             <InputNumber />
+                        </Form.Item>
+                        <Form.Item
+                            label="Discord ClientId"
+                            tooltip={"For Discord auth"}
+                            name="discordAppClientId"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Discord news webhook"
+                            tooltip={"For achievements, nickname changes, and teams notifications"}
+                            name="discordNewsWebhook"
+                        >
+                            <Input />
                         </Form.Item>
                         <Form.Item
                             label="Discord ClientId"

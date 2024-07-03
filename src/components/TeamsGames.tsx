@@ -158,24 +158,30 @@ const TeamsGames = () => {
                                                 <Popover
                                                     placement="bottom"
                                                     content={
-                                                        <List
-                                                            size="small"
-                                                            itemLayout="horizontal"
-                                                            dataSource={teamsState.team.players}
-                                                            renderItem={(item, index) => (
-                                                                <List.Item>
-                                                                    <div className={styles.voteStatus}>
-                                                                        <PlayerItem id={item.id} name={item.name} />
-                                                                        {x.votes.findIndex(x => x.id === item.id) !== -1 &&
-                                                                            <CheckOutlined style={{ color: "green" }} />
-                                                                        }
-                                                                        {x.votes.findIndex(x => x.id === item.id) === -1 &&
-                                                                            <CloseOutlined style={{ color: "red" }} />
-                                                                        }
-                                                                    </div>
-                                                                </List.Item>
-                                                            )}
-                                                        />
+                                                        <div style={{ display: "flex", gap: 16, flexDirection: "column" }}>
+                                                            <Title level={5}>Your team</Title>
+                                                            {teamsState.team.players.map(item => {
+                                                                return <div className={styles.voteStatus}>
+                                                                    <PlayerItem id={item.id} name={item.name} />
+                                                                    {x.votes.findIndex(x => x.id === item.id) !== -1 &&
+                                                                        <CheckOutlined style={{ color: "green" }} />
+                                                                    }
+                                                                    {x.votes.findIndex(x => x.id === item.id) === -1 &&
+                                                                        <CloseOutlined style={{ color: "red" }} />
+                                                                    }
+                                                                </div>
+                                                            })}
+                                                            {x.otherTeams.length !== 0 &&
+                                                                <Title level={5}>Other teams</Title>
+                                                            }
+                                                            {x.otherTeams.map(t => {
+                                                                return <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                                                    <span>{t.name}</span>
+                                                                    <Progress steps={teamsState.teamsMaxPlayers} percent={t.votes / teamsState.teamsMaxPlayers * 100} />
+                                                                </div>
+                                                            })}
+
+                                                        </div>
                                                     }
                                                 >
                                                     <Progress percent={x.votes.length / teamsState.teamsMaxPlayers * 100} />

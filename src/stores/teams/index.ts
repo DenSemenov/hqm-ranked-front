@@ -15,7 +15,7 @@ export interface ITeamsState {
     invites: IPlayerInviteResponse[],
     currentTeam: ITeamResponse | undefined
     gameInvites: IGameInviteResponse[]
-    teamsStats: ITeamsStatsResponse[]
+    teamsStats: ITeamsStatsResponse
     transferMarkets: ITransferMarketResponse[];
 }
 
@@ -32,7 +32,10 @@ const initialState: ITeamsState = {
     invites: [],
     currentTeam: undefined,
     gameInvites: [],
-    teamsStats: [],
+    teamsStats: {
+        teams: [],
+        players: []
+    },
     transferMarkets: []
 }
 
@@ -55,7 +58,7 @@ export const teamsSlicer = createSlice({
         setGameInvites: (state: ITeamsState, action: PayloadAction<IGameInviteResponse[]>) => {
             state.gameInvites = action.payload;
         },
-        setTeamsStats: (state: ITeamsState, action: PayloadAction<ITeamsStatsResponse[]>) => {
+        setTeamsStats: (state: ITeamsState, action: PayloadAction<ITeamsStatsResponse>) => {
             state.teamsStats = action.payload;
         },
         setTransferMarkets: (state: ITeamsState, action: PayloadAction<ITransferMarketResponse[]>) => {

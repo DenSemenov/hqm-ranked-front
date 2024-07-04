@@ -20,7 +20,7 @@ const PlayersTable = () => {
     const setTableHeightAction = () => {
         const playerCard = document.getElementById("playerCard");
         if (playerCard) {
-            let h = playerCard.clientHeight - 76;
+            let h = playerCard.clientHeight - 54;
             setHeight(h);
         }
 
@@ -139,7 +139,7 @@ const PlayersTable = () => {
 
                     {
                         title: "MVP %",
-                        width: 70,
+                        width: 100,
                         align: "right",
                         dataIndex: "gpg",
                         sorter: (a, b) => (Math.floor(a.mvp / (a.win + a.lose) * 100)) - Math.floor(b.mvp / (b.win + b.lose) * 100),

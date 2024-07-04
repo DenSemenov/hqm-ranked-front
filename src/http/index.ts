@@ -26,7 +26,7 @@ $api.interceptors.response.use(
         return config
     },
     async (error) => {
-        if (error.config.url === "api/player/GetCurrentUser") {
+        if (error.config.url.endsWith("api/player/GetCurrentUser")) {
             localStorage.removeItem("token");
             window.location.reload();
         }

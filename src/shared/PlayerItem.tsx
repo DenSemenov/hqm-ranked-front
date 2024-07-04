@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './PlayerItem.module.css'
 import { Avatar, Tooltip } from 'antd';
 import { useMemo } from 'react';
@@ -41,20 +41,21 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both }: IProps) =
     }, [clearImageCache])
 
     return (
-        <div
-            className={styles.playerItem + " " + (isCurrent ? styles.currentUserTextStyle : undefined)}
-            key={key}
-            onClick={() => navigate("/player?id=" + id)}
-        >
-            {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
-                <Tooltip title={type === PlayerItemType.Avatar ? name : undefined}>
-                    <Avatar className={isCurrent ? styles.currentUserStyle : undefined} shape='square' src={storageUrl + "images/" + id + ".png" + "?t=" + query}>{avatarName}</Avatar>
-                </Tooltip>
-            }
-            {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&
-                name
-            }
-        </div>
+        <Link to={"/player?id=" + id}>
+            <div
+                className={styles.playerItem + " " + (isCurrent ? styles.currentUserTextStyle : undefined)}
+                key={key}
+            >
+                {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
+                    <Tooltip title={type === PlayerItemType.Avatar ? name : undefined}>
+                        <Avatar className={isCurrent ? styles.currentUserStyle : undefined} shape='square' src={storageUrl + "images/" + id + ".png" + "?t=" + query}>{avatarName}</Avatar>
+                    </Tooltip>
+                }
+                {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&
+                    name
+                }
+            </div>
+        </Link>
     )
 }
 

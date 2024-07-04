@@ -73,8 +73,8 @@ export default class TeamsService {
     static async voteGameInvite(data: IVoteGameInviteRequest): Promise<AxiosResponse> {
         return $api.post('api/teams/VoteGameInvite', data);
     }
-    static async getTeamsStats(data: ICurrentSeasonStatsRequest): Promise<AxiosResponse<ITeamsStatsResponse[]>> {
-        return $api.post<ITeamsStatsResponse[]>('api/teams/GetTeamsStats', data);
+    static async getTeamsStats(data: ICurrentSeasonStatsRequest): Promise<AxiosResponse<ITeamsStatsResponse>> {
+        return $api.post<ITeamsStatsResponse>('api/teams/GetTeamsStats', data);
     }
     static async createTransferMarket(data: ITransferMarketRequest): Promise<AxiosResponse> {
         return $api.post('api/teams/CreateTransferMarket', data);

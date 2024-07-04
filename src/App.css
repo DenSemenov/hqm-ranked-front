@@ -217,7 +217,7 @@ ul.slick-dots.slick-dots-bottom {
   height: 100%;
 }
 
-.ant-btn-icon {
+.ant-btn-lg .ant-btn-icon {
   width: 16px;
   height: 16px;
 }
@@ -245,4 +245,12 @@ div {
 
 .ant-table-wrapper .ant-table {
   border-radius: 16px;
+}
+
+.ant-tabs-nav {
+  margin: 0 !important;
+}
+
+a {
+  color: rgba(255, 255, 255, 0.85);
 }

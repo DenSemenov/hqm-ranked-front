@@ -11,6 +11,7 @@ import { IPlayerNotificationsResponse } from "models/IPlayerNotificationsRespons
 import { IWebsiteSettingsResponse } from "models/IWebsiteSettingsResponse";
 import { IDiscordAuthRequest } from "models/IDiscordAuthRequest";
 import { IPlayerWarningResponse } from "models/IPlayerWarningResponse";
+import { ICurrentUserInfoRequest } from "models/ICurrentUserInfoRequest";
 
 export default class AuthService {
     static async login(data: ILoginRequest): Promise<AxiosResponse<IAuthResponse>> {
@@ -24,8 +25,8 @@ export default class AuthService {
         return $api.post<IAuthResponse>('api/player/register', data);
     }
 
-    static async getCurrentUser(): Promise<AxiosResponse<ICurrentUserResponse>> {
-        return $api.post<ICurrentUserResponse>('api/player/GetCurrentUser');
+    static async getCurrentUser(data: ICurrentUserInfoRequest): Promise<AxiosResponse<ICurrentUserResponse>> {
+        return $api.post<ICurrentUserResponse>('api/player/GetCurrentUser', data);
     }
 
     static async changePassword(data: IChangePasswordRequest): Promise<AxiosResponse> {

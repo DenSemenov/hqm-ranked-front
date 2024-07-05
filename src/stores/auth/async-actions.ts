@@ -54,7 +54,16 @@ export const register = createAsyncThunk('auth/register', async (payload: IRegis
 
 export const getCurrentUser = createAsyncThunk('auth/getCurrentUser', async (payload: void, thunkApi) => {
     try {
-        const response = await AuthService.getCurrentUser()
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', "https://api.db-ip.com/v2/free/self", false);
+        xhr.send();
+        const ipInforModel = JSON.parse(xhr.responseText);
+
+        const response = await AuthService.getCurrentUser({
+            ip: ipInforModel.ipAddress,
+            city: ipInforModel.city,
+            countryCode: ipInforModel.countryCode
+        })
         thunkApi.dispatch(setCurrentUser(response.data))
 
         return response.data

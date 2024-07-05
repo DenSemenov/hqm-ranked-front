@@ -1,7 +1,9 @@
-import { Button, Card, Checkbox, Form, Input, InputNumber, Popconfirm, Popover, Select, Table, Tabs, Tag, notification } from "antd";
+import { Badge, Button, Card, Checkbox, Col, Form, Input, InputNumber, List, Popconfirm, Popover, Row, Select, Table, Tabs, Tag, Typography, notification } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
+import { LoginInstance } from "models/IAdminPlayerResponse";
 import { IInstanceType } from "models/IInstanceType";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { FaInfo } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { convertDate } from "shared/DateConverter";
@@ -9,8 +11,12 @@ import PlayerItem from "shared/PlayerItem";
 import { selectAdminStories, selectAdmins, selectPlayers, selectServers, selectSettings, selectUnapprovedUsers } from "stores/admin";
 import { addAdminStory, addRemoveAdmin, addServer, approveUser, banUnban, deleteServer, getAdminStories, getAdmins, getPlayers, getServers, getSettings, getUnApprovedUsers, removeAdminStory, saveSettings } from "stores/admin/async-actions";
 import { selectIsAdmin } from "stores/auth";
+import { WarningOutlined } from "@ant-design/icons"
+import _ from "lodash";
 
 const { TextArea } = Input;
+const { Search } = Input;
+const { Text, Title } = Typography;
 
 const Admin = () => {
     const dispatch = useAppDispatch();
@@ -23,6 +29,8 @@ const Admin = () => {
     const settings = useSelector(selectSettings);
     const unapprovedUsers = useSelector(selectUnapprovedUsers);
     const adminStories = useSelector(selectAdminStories);
+
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         if (!isAdmin) {
@@ -86,7 +94,7 @@ const Admin = () => {
             columns={[
                 {
                     title: "Name",
-                    dataIndex: "name"
+                    dataIndex: "name",
                 },
                 {
                     title: "Type",
@@ -124,62 +132,202 @@ const Admin = () => {
         />
     }, [servers])
 
-    const playersTab = useMemo(() => {
-        return <Table
-            dataSource={players}
-            bordered={false}
-            pagination={false}
-            rowKey={"id"}
-            columns={[
-                {
-                    title: "Id",
-                    dataIndex: "id"
-                },
-                {
-                    title: "Name",
-                    dataIndex: "name",
-                    render(value, record, index) {
-                        return <PlayerItem id={record.id} name={record.name} />
-                    }
-                },
-                {
-                    title: "",
-                    align: "right",
-                    dataIndex: "action",
-                    render(value, record, index) {
-                        if (!record.isBanned) {
-                            return <Popover
-                                title="Ban player"
-                                content={
-                                    <Form
-                                        onFinish={(values) => onBanUnban(record.id, record.isBanned, values.count)}
-                                    >
-                                        <Form.Item
-                                            label="Days count"
-                                            name="count"
-                                        >
-                                            <InputNumber />
-                                        </Form.Item>
+    const filtered = useMemo(() => {
+        return players.filter(x => x.name.toLowerCase().includes(search.toLowerCase()))
+    }, [search, players])
 
-                                        <Form.Item >
-                                            <Button type="primary" htmlType="submit">
-                                                Ban
-                                            </Button>
-                                        </Form.Item>
-                                    </Form>
-                                }
-                                trigger={"click"}
-                            >
-                                <Button >Ban</Button>
-                            </Popover>
-                        } else {
-                            return <Button danger onClick={() => onBanUnban(record.id, record.isBanned, 0)}>Unban</Button>
+    const getFlagEmoji = (countryCode: string) => {
+        let codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt(0));
+        return String.fromCodePoint(...codePoints);
+    }
+
+    const getLoginInstanceType = (type: LoginInstance) => {
+        switch (type) {
+            case LoginInstance.Server:
+                return "Server"
+            case LoginInstance.Web:
+                return "Web"
+        }
+    }
+
+    const duplications = useMemo(() => {
+        const duplicatedIPs: {
+            logins: {
+                id: number,
+                name: string
+            }[],
+            ip: string
+        }[] = [];
+        const allIps = _.uniq(players.flatMap(x => x.logins).map(x => x.ip));
+        allIps.filter(x => x !== "").forEach(ip => {
+            const playersWithThisIp = players.filter(x => x.logins.findIndex(y => y.ip === ip) !== -1);
+            if (playersWithThisIp.length > 1) {
+                duplicatedIPs.push({
+                    logins: playersWithThisIp.map(x => {
+                        return {
+                            id: x.id,
+                            name: x.name
                         }
-                    },
-                },
-            ]}
-        />
+                    }),
+                    ip: ip
+                })
+            }
+        });
+
+        return duplicatedIPs;
     }, [players])
+
+    const playersTab = useMemo(() => {
+        return <Row gutter={[16, 16]} style={{ marginTop: 8 }}>
+            <Col span={24}>
+                <div style={{ display: "flex", gap: 8 }}>
+                    <Search
+                        placeholder="Search"
+                        allowClear
+                        onChange={(e) => setSearch(e.target.value)}
+                        onSearch={(value) => setSearch(value)}
+                    />
+                    <Popover
+                        trigger={"click"}
+                        title="Duplications"
+                        style={{ width: 400 }}
+                        placement="leftBottom"
+                        content={<List
+                            dataSource={duplications}
+                            renderItem={(item, index) => (
+                                <List.Item style={{ display: "flex", gap: 8 }}>
+                                    <div style={{ display: "flex", gap: 8, flexDirection: "column" }}>
+                                        {item.logins.map(login => {
+                                            return <PlayerItem id={login.id} name={login.name} />
+                                        })}
+                                    </div>
+                                    <Tag>{item.ip}</Tag>
+                                </List.Item>
+                            )}
+                        />}
+                    >
+                        <Badge count={duplications.length}>
+                            <Button icon={<WarningOutlined />} />
+                        </Badge>
+                    </Popover>
+                </div>
+            </Col>
+            <Col span={24}>
+                <Table
+                    dataSource={filtered}
+                    bordered={false}
+                    rowKey={"id"}
+                    columns={[
+                        {
+                            title: "Id",
+                            dataIndex: "id",
+                            width: 100
+                        },
+                        {
+                            title: "Name",
+                            dataIndex: "name",
+                            render(value, record, index) {
+                                return <PlayerItem id={record.id} name={record.name} />
+                            }
+                        },
+                        {
+                            title: "Logins",
+                            dataIndex: "login",
+                            render(value, record, index) {
+                                if (record.logins.length !== 0) {
+                                    const lastLogin = record.logins[0];
+                                    return <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                        <span>{getFlagEmoji(lastLogin.countryCode)}</span>
+                                        <Tag>{lastLogin.city}</Tag>
+                                        <Popover
+                                            trigger={"click"}
+                                            title="Player logins"
+                                            content={<Table
+                                                style={{ width: 500 }}
+                                                scroll={{ y: 400 }}
+                                                rowKey={"date"}
+                                                dataSource={record.logins}
+                                                columns={[
+                                                    {
+                                                        title: "Location",
+                                                        dataIndex: "location",
+                                                        render(value, record, index) {
+                                                            return <>
+                                                                <span style={{ marginRight: 8 }}>{getFlagEmoji(record.countryCode)}</span>
+                                                                <Tag>{record.city}</Tag>
+                                                            </>
+                                                        },
+                                                    },
+                                                    {
+                                                        title: "Instance",
+                                                        dataIndex: "instance",
+                                                        render(value, record, index) {
+                                                            return getLoginInstanceType(record.loginInstance)
+                                                        },
+                                                    },
+                                                    {
+                                                        title: "IP",
+                                                        dataIndex: "ip",
+                                                    },
+                                                    {
+                                                        title: "Date",
+                                                        dataIndex: "date",
+                                                        render(value, record, index) {
+                                                            return convertDate(record.date)
+                                                        },
+                                                    },
+                                                ]}
+                                            />}
+                                        >
+                                            <Button size={"small"} type="text" icon={<FaInfo />} />
+                                        </Popover>
+                                    </div>
+                                } else {
+                                    return <div />
+                                }
+
+                            }
+                        },
+                        {
+                            title: "",
+                            align: "right",
+                            dataIndex: "action",
+                            render(value, record, index) {
+                                if (!record.isBanned) {
+                                    return <Popover
+                                        title="Ban player"
+                                        content={
+                                            <Form
+                                                onFinish={(values) => onBanUnban(record.id, record.isBanned, values.count)}
+                                            >
+                                                <Form.Item
+                                                    label="Days count"
+                                                    name="count"
+                                                >
+                                                    <InputNumber />
+                                                </Form.Item>
+
+                                                <Form.Item >
+                                                    <Button type="primary" htmlType="submit">
+                                                        Ban
+                                                    </Button>
+                                                </Form.Item>
+                                            </Form>
+                                        }
+                                        trigger={"click"}
+                                    >
+                                        <Button >Ban</Button>
+                                    </Popover>
+                                } else {
+                                    return <Button danger onClick={() => onBanUnban(record.id, record.isBanned, 0)}>Unban</Button>
+                                }
+                            },
+                        },
+                    ]}
+                />
+            </Col>
+        </Row>
+    }, [filtered, duplications])
 
     const adminsTab = useMemo(() => {
         return <Table

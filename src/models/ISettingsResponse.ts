@@ -18,4 +18,5 @@ export interface ISettingsResponse {
     spotifyPlaylist: string;
     teamsMaxPlayer: number;
     discordAppClientId: number;
+    discordApprove: boolean;
 }

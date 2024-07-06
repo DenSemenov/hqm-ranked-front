@@ -465,6 +465,13 @@ const Admin = () => {
                 <Card bordered={false} title="Discord" >
                     <div style={{ padding: 16 }}>
                         <Form.Item
+                            label="Discord connect required"
+                            name="discordApprove"
+                            valuePropName="checked"
+                        >
+                            <Checkbox />
+                        </Form.Item>
+                        <Form.Item
                             label="Discord join link"
                             name="discordJoinLink"
                         >

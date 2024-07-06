@@ -54,15 +54,26 @@ export const register = createAsyncThunk('auth/register', async (payload: IRegis
 
 export const getCurrentUser = createAsyncThunk('auth/getCurrentUser', async (payload: void, thunkApi) => {
     try {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', "https://api.db-ip.com/v2/free/self", false);
-        xhr.send();
-        const ipInforModel = JSON.parse(xhr.responseText);
-
+        let info = {
+            ipAddress: "",
+            city: "",
+            countryCode: ""
+        }
+        try {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', "https://api.db-ip.com/v2/free/self", false);
+            xhr.send();
+            info = JSON.parse(xhr.responseText);
+        }
+        catch {
+            notification.error({
+                message: "Disable ad blocker"
+            })
+        }
         const response = await AuthService.getCurrentUser({
-            ip: ipInforModel.ipAddress,
-            city: ipInforModel.city,
-            countryCode: ipInforModel.countryCode
+            ip: info.ipAddress,
+            city: info.city,
+            countryCode: info.countryCode
         })
         thunkApi.dispatch(setCurrentUser(response.data))
 

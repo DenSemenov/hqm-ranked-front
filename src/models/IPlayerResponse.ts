@@ -16,6 +16,16 @@ export interface IPlayerResponse {
     playerPoints: number[];
     oldNicknames: string[];
     awards: PlayerAwardViewModel[]
+    calcStats: PlayerCalcStatsViewModel;
+}
+
+export interface PlayerCalcStatsViewModel {
+    mvp: number;
+    winrate: number;
+    goals: number;
+    assists: number;
+    shots: number;
+    saves: number;
 }
 
 export interface PlayerAwardViewModel {

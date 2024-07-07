@@ -251,6 +251,14 @@ div {
   margin: 0 !important;
 }
 
-a {
+.dark a {
   color: rgba(255, 255, 255, 0.85);
+}
+
+.light a {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.apexcharts-toolbar {
+  display: none !important;
 }

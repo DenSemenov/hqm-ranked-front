@@ -13,9 +13,10 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { convertMoney } from "shared/MoneyCoverter";
 import { IInstanceType } from "models/IInstanceType";
 import TeamItem from "shared/TeamItem";
-import { Line } from '@ant-design/plots';
+import { Line, Radar } from '@ant-design/plots';
 import { selectTheme } from "stores/auth";
 import { AwardType, PlayerAwardViewModel } from "models/IPlayerResponse";
+import Chart from 'react-apexcharts';
 
 const { Text, Title } = Typography;
 
@@ -133,6 +134,54 @@ const Player = () => {
                         </Title>
                     </Dropdown>
                     <Title level={3}>{convertMoney(currentPlayerData.cost)}</Title>
+                    <div>
+                        <Chart
+                            options={{
+                                xaxis: {
+                                    categories: Object.keys(currentPlayerData.calcStats)
+                                },
+                                yaxis: {
+                                    stepSize: 25,
+                                    show: false,
+                                    max: 100,
+                                    min: 0,
+                                    crosshairs: {
+                                        show: false
+                                    }
+                                },
+                                stroke: {
+                                    width: 4,
+                                },
+                                markers: {
+                                    strokeWidth: 0
+                                },
+                                fill: {
+                                    opacity: 0.5
+                                },
+                                tooltip: {
+                                    theme: theme as string
+                                },
+                                plotOptions: {
+                                    radar: {
+                                        polygons: {
+                                            fill: {
+                                                colors: ['#8585850f', '#8585851a']
+                                            },
+                                            strokeColors: "8585850f",
+                                            connectorColors: "8585850f"
+                                        },
+
+                                    }
+                                }
+                            }}
+                            series={[{
+                                name: "",
+                                data: Object.keys(currentPlayerData.calcStats).map(key => (currentPlayerData.calcStats as any)[key]),
+                            }]}
+                            type="radar"
+                            height={350}
+                        />
+                    </div>
                     <div className={styles.playerLeftStats}>
                         <Row>
                             <Col span={8}>
@@ -163,20 +212,53 @@ const Player = () => {
                         })}
                     </div>
                     <div className={styles.playerCenterGames}>
-                        <Line
-                            data={currentPlayerData.playerPoints.map((point, index) => {
-                                return {
-                                    game: index,
-                                    elo: point
+                        <Chart
+                            type="area"
+                            options={{
+                                xaxis: {
+                                    categories: currentPlayerData.playerPoints.map((point, index) => { return index }),
+                                    labels: {
+                                        show: false,
+                                    },
+                                    axisTicks: {
+                                        show: false
+                                    },
+                                    crosshairs: {
+                                        show: false
+                                    }
+                                },
+                                yaxis: {
+                                    show: false
+                                },
+                                markers: {
+                                    shape: "circle"
+                                },
+                                stroke: {
+                                    width: 4,
+                                },
+                                fill: {
+                                    opacity: 0.5
+                                },
+                                tooltip: {
+                                    theme: theme as string
+                                },
+                                legend: {
+                                    show: false
+                                },
+                                dataLabels: {
+                                    enabled: false
+                                },
+                                plotOptions: {
+                                    area: {
+
+                                    }
                                 }
-                            })}
-                            xField='game'
-                            yField='elo'
-                            axis={{
-                                x: false
                             }}
-                            height={200}
-                            theme={theme}
+                            height={250}
+                            series={[{
+                                name: "",
+                                data: currentPlayerData.playerPoints,
+                            }]}
                         />
                     </div>
                     <div className={styles.playerCenterGames}>

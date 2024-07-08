@@ -5,6 +5,7 @@ import { selectCurrentSeasonStats } from "stores/season";
 import { isMobile } from "react-device-detect";
 import PlayerItem from "shared/PlayerItem";
 import StoriesComponent from "./Stories";
+import { CaretUpOutlined, CaretDownOutlined, MinusOutlined } from "@ant-design/icons"
 
 
 const PlayersTable = () => {
@@ -24,6 +25,16 @@ const PlayersTable = () => {
             setHeight(h);
         }
 
+    }
+
+    const getChange = (change: number) => {
+        if (change > 0) {
+            return <CaretUpOutlined style={{ color: "#58ef7b" }} />
+        } else if (change < 0) {
+            return <CaretDownOutlined style={{ color: "#e95c5c" }} />
+        } else if (change === 0) {
+            return <MinusOutlined style={{ opacity: 0.2 }} />
+        }
     }
 
     return (
@@ -48,7 +59,10 @@ const PlayersTable = () => {
                         dataIndex: "place",
                         sorter: (a, b) => a.place - b.place,
                         render(value, record, index) {
-                            return value
+                            return <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                {getChange(record.change)}
+                                {value}
+                            </div>
                         },
                     },
                     {

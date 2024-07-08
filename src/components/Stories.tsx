@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { cloneDeep, orderBy } from "lodash";
 import { HeartFilled, HeartOutlined, LinkOutlined } from '@ant-design/icons';
 import { selectCurrentUser } from "stores/auth";
+import { RiVolumeMuteFill, RiVolumeUpFill } from "react-icons/ri";
 
 const { Text, Title } = Typography;
 
@@ -38,8 +39,13 @@ const StoriesComponent = () => {
     const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [currentTrack, setCurrentTrack] = useState<string | undefined>(undefined);
+    const [isMuted, setIsMuted] = useState<boolean>(false);
 
     useEffect(() => {
+        const isMutedValue = localStorage.getItem("isStoriesMuted");
+        if (isMutedValue !== null) {
+            setIsMuted(JSON.parse(isMutedValue))
+        }
         dispatch(getStories());
         dispatch(getMainStories());
     }, []);
@@ -54,7 +60,16 @@ const StoriesComponent = () => {
         const audioItem = document.getElementById("stories-audio") as any;
 
         if (audioItem) {
-            audioItem.volume = 0.2;
+            localStorage.setItem("isStoriesMuted", JSON.stringify(isMuted))
+            audioItem.volume = isMuted ? 0 : 0.2;
+        }
+    }, [isMuted]);
+
+    useEffect(() => {
+        const audioItem = document.getElementById("stories-audio") as any;
+
+        if (audioItem) {
+            audioItem.volume = isMuted ? 0 : 0.2;
         }
         setPlay(false);
         setCurrentTick(0);
@@ -221,6 +236,10 @@ const StoriesComponent = () => {
                                 <div style={{ display: "flex", flexDirection: "column", width: 360 }}>
                                     <span>{player.name}</span>
                                     <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                                        <Button style={{ zIndex: 21 }} size="small" type="text" icon={isMuted ? <RiVolumeMuteFill /> : <RiVolumeUpFill />} onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsMuted(!isMuted);
+                                        }} />
                                         <Avatar shape="square" size={16} src={player.goals[currentStoryIndex].music.imageUrl} />
                                         <Text type="secondary" style={{ whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden", width: "calc(-64px + 100%)" }}>{player.goals[currentStoryIndex].music.title + " - " + player.goals[currentStoryIndex].music.name}</Text>
                                     </div>
@@ -290,7 +309,7 @@ const StoriesComponent = () => {
                 )
             }
         }
-    }, [stories, currentUser, currentStoryIndex, selectedPlayer, isLiked, play, mainStories, onReady, setCurrentTick])
+    }, [stories, currentUser, currentStoryIndex, selectedPlayer, isLiked, play, mainStories, isMuted, onReady, setCurrentTick])
 
     const size = useMemo(() => {
         if (isMobile) {

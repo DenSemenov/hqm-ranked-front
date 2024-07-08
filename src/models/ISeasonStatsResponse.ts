@@ -8,4 +8,5 @@ export interface ISeasonStatsResponse {
     assists: number;
     mvp: number;
     rating: number;
+    change: number;
 }

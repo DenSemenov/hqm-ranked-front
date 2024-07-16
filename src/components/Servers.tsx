@@ -1,4 +1,5 @@
 import { Card, Carousel, Col, Row, Tag, Typography } from "antd";
+import _ from "lodash";
 import { IActiveServerResponse } from "models/IActiveServerResponse";
 import { IInstanceType } from "models/IInstanceType";
 import { useMemo } from "react";
@@ -83,7 +84,7 @@ const Servers = () => {
     }
 
     const filteredServers = useMemo(() => {
-        return servers.filter(x => x.instanceType === currentMode)
+        return _.orderBy(servers.filter(x => x.instanceType === currentMode), "loggedIn")
     }, [servers, currentMode])
 
     return (

@@ -4,6 +4,7 @@ import { IAdminStoryResponse } from "models/IAdminStoryResponse";
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest";
 import { IGameRequest } from "models/IGameRequest";
 import { IGameResponse } from "models/IGameResponse";
+import { IHomeStatsResponse } from "models/IHomeStatsResponse";
 import { IPartolResponse } from "models/IPartolResponse";
 import { IPlayerRequest } from "models/IPlayerRequest";
 import { IPlayerResponse } from "models/IPlayerResponse";
@@ -95,5 +96,8 @@ export default class SeasonService {
     }
     static async reportDecision(data: IReportReportCancelRequest): Promise<AxiosResponse> {
         return $api.post('api/seasons/ReportDecision', data);
+    }
+    static async getHomeStats(): Promise<AxiosResponse<IHomeStatsResponse>> {
+        return $api.post<IHomeStatsResponse>('api/seasons/GetHomeStats');
     }
 }

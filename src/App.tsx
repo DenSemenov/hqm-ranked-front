@@ -8,7 +8,7 @@ import PlayersTable from 'components/PlayersTable';
 import Games from 'components/Games';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { getCurrentUser, getPlayerWarnings, getWebsiteSettings } from 'stores/auth/async-actions';
-import { getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores/season/async-actions';
+import { getHomeStats, getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores/season/async-actions';
 import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
@@ -126,9 +126,9 @@ function App() {
   const contentStyle: React.CSSProperties = {
     height: isMobile ? "calc(-124px + 100vh)" : "calc(-48px + 100vh)",
     padding: isMobile ? 0 : 16,
+    marginBottom: isMobile ? 68 : 0,
     width: "100vw",
-    overflow: "auto",
-    paddingBottom: isMobile ? 68 : 0
+    overflow: "auto"
   };
 
   const headerStyle: React.CSSProperties = {
@@ -180,6 +180,7 @@ function App() {
     dispatch(getSeasons());
     dispatch(getActiveServers());
     dispatch(getStorage());
+    dispatch(getHomeStats());
   }, [])
 
   useEffect(() => {

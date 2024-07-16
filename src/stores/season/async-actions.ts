@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import SeasonService from "services/SeasonService"
-import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setMainStories, setPatrols, setRules, setSeasons, setStorageUrl, setStories, setTopStats } from "."
+import { setCurrentGameData, setCurrentPlayerData, setCurrentSeasonGames, setCurrentSeasonStats, setHomeStats, setMainStories, setPatrols, setRules, setSeasons, setStorageUrl, setStories, setTopStats } from "."
 import { ICurrentSeasonStatsRequest } from "models/ICurrentSeasonStatsRequest"
 import { IPlayerRequest } from "models/IPlayerRequest"
 import { IGameRequest } from "models/IGameRequest"
@@ -255,3 +255,16 @@ export const getReportViewer = createAsyncThunk('replay/getReportViewer', async 
         return thunkApi.rejectWithValue(e)
     }
 })
+
+export const getHomeStats = createAsyncThunk('replay/getHomeStats', async (payload: void, thunkApi) => {
+    try {
+        const response = await SeasonService.getHomeStats()
+
+        thunkApi.dispatch(setHomeStats(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+

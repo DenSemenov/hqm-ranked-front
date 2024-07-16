@@ -1,4 +1,4 @@
-import { Card, Col, Flex, Row } from "antd";
+import { Card, Carousel, Col, Flex, Row } from "antd";
 import PlayersTable from "./PlayersTable";
 import Games from "./Games";
 import { useMemo } from "react";
@@ -7,6 +7,8 @@ import Events from "./Events";
 import Servers from "./Servers";
 import Actions from "./Actions";
 import StoriesComponent from "./Stories";
+import DailyStats from "./DailyStats";
+import WeekyStats from "./WeeklyStats";
 
 const HomePage = () => {
 
@@ -48,8 +50,12 @@ const HomePage = () => {
                             </Card>
                         </Col>
                         <Col span={24} style={{ height: "calc(-16px + 30%)" }} >
-                            <Card style={{ height: "100%", padding: 16 }}>
-                                <Events />
+                            <Card style={{ height: "100%", padding: 16 }} id="stats-container">
+                                <Carousel style={{ height: "100%", padding: isMobile ? 16 : 0 }} fade waitForAnimate autoplay>
+                                    <Events />
+                                    <DailyStats />
+                                    <WeekyStats />
+                                </Carousel>
                             </Card>
                         </Col>
                     </Row>

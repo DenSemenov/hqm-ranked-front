@@ -12,11 +12,13 @@ const root = createRoot(container);
 
 
 root.render(
-  <Provider store={store}>
+  <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </BrowserRouter>
-  </Provider>
+  </React.StrictMode>
 );
 
 reportWebVitals();

@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { IAdminStoryResponse } from "models/IAdminStoryResponse";
 import { IGameResponse } from "models/IGameResponse";
+import { IHomeStatsResponse } from "models/IHomeStatsResponse";
 import { IInstanceType } from "models/IInstanceType";
 import { IPartolResponse } from "models/IPartolResponse";
 import { IPlayerResponse } from "models/IPlayerResponse";
@@ -35,6 +36,8 @@ export interface ISeasonState {
     currentMode: IInstanceType;
 
     clearImageCache: Date | undefined;
+
+    homeStats: IHomeStatsResponse
 }
 
 const initialState: ISeasonState = {
@@ -63,7 +66,12 @@ const initialState: ISeasonState = {
 
     currentMode: IInstanceType.Ranked,
 
-    clearImageCache: undefined
+    clearImageCache: undefined,
+
+    homeStats: {
+        daily: [],
+        weekly: []
+    }
 }
 
 export const seasonSlicer = createSlice({
@@ -127,6 +135,9 @@ export const seasonSlicer = createSlice({
         setClearImageCache: (state: ISeasonState, action: PayloadAction<Date>) => {
             state.clearImageCache = action.payload;
         },
+        setHomeStats: (state: ISeasonState, action: PayloadAction<IHomeStatsResponse>) => {
+            state.homeStats = action.payload;
+        },
     },
 })
 
@@ -145,7 +156,8 @@ export const {
     setPatrols,
     setCurrentMode,
     setClearImageCache,
-    setLoading
+    setLoading,
+    setHomeStats
 } =
     seasonSlicer.actions
 
@@ -179,5 +191,6 @@ export const selectTopStats = (state: RootState) => state.season.topStats;
 export const selectPatrols = (state: RootState) => state.season.patrols;
 export const selectCurrentMode = (state: RootState) => state.season.currentMode;
 export const selectClearImageCache = (state: RootState) => state.season.clearImageCache;
+export const selectHomeStats = (state: RootState) => state.season.homeStats;
 
 export default seasonSlicer.reducer

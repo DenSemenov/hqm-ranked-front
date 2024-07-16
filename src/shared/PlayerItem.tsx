@@ -17,9 +17,11 @@ interface IProps {
     key?: number;
     name: string;
     type?: PlayerItemType,
+    size?: number
+    bordered?: boolean
 }
 
-const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both }: IProps) => {
+const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, bordered = false }: IProps) => {
     const navigate = useNavigate();
 
     const storageUrl = useSelector(selectStorageUrl);
@@ -47,8 +49,16 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both }: IProps) =
                 key={key}
             >
                 {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
-                    <Tooltip title={type === PlayerItemType.Avatar ? name : undefined}>
-                        <Avatar className={isCurrent ? styles.currentUserStyle : undefined} shape='square' src={storageUrl + "images/" + id + ".png" + "?t=" + query}>{avatarName}</Avatar>
+                    <Tooltip zIndex={10001} title={type === PlayerItemType.Avatar ? name : undefined}>
+                        <Avatar
+                            style={{ border: bordered ? "2px solid black" : undefined }}
+                            size={size}
+                            className={isCurrent ? styles.currentUserStyle : undefined}
+                            shape='circle'
+                            src={storageUrl + "images/" + id + ".png" + "?t=" + query}
+                        >
+                            {avatarName}
+                        </Avatar>
                     </Tooltip>
                 }
                 {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&

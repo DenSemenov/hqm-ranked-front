@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import AuthService from "../../services/AuthService"
 import { ILoginRequest } from "../../models/ILoginRequest"
-import { setCurrentUser, setIsAuth, setWebsiteSettings } from "."
+import { setCurrentUser, setIsAuth, setPlayerMap, setWebsiteSettings } from "."
 import { IChangePasswordRequest } from "models/IChangePasswordRequest"
 import { IRegisterRequest } from "models/IRegisterRequest"
 import { notification } from "antd"
@@ -9,6 +9,7 @@ import { IChangeNicknameRequest } from "models/IChangeNicknameRequest"
 import { IPushTokenRequest } from "models/IPushTokenRequest"
 import { IPlayerNotificationsResponse } from "models/IPlayerNotificationsResponse"
 import { IDiscordAuthRequest } from "models/IDiscordAuthRequest"
+import { ISetShowLocationRequest } from "models/ISetShowLocationRequest"
 
 export const login = createAsyncThunk('auth/login', async (payload: ILoginRequest, thunkApi) => {
     try {
@@ -54,27 +55,8 @@ export const register = createAsyncThunk('auth/register', async (payload: IRegis
 
 export const getCurrentUser = createAsyncThunk('auth/getCurrentUser', async (payload: void, thunkApi) => {
     try {
-        let info = {
-            ipAddress: "",
-            city: "",
-            countryCode: ""
-        }
-        try {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', "https://api.db-ip.com/v2/free/self", false);
-            xhr.send();
-            info = JSON.parse(xhr.responseText);
-        }
-        catch {
-            notification.error({
-                message: "Disable ad blocker"
-            })
-        }
-        const response = await AuthService.getCurrentUser({
-            ip: info.ipAddress,
-            city: info.city,
-            countryCode: info.countryCode
-        })
+
+        const response = await AuthService.getCurrentUser()
         thunkApi.dispatch(setCurrentUser(response.data))
 
         return response.data
@@ -191,6 +173,29 @@ export const removeDiscord = createAsyncThunk('auth/removeDiscord', async (paylo
 export const getPlayerWarnings = createAsyncThunk('auth/getPlayerWarnings', async (payload: void, thunkApi) => {
     try {
         const response = await AuthService.getPlayerWarnings()
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const setShowLocation = createAsyncThunk('auth/setShowLocation', async (payload: ISetShowLocationRequest, thunkApi) => {
+    try {
+        const response = await AuthService.setShowLocation(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+
+export const getMap = createAsyncThunk('auth/getMap', async (payload: void, thunkApi) => {
+    try {
+        const response = await AuthService.getMap()
+
+        thunkApi.dispatch(setPlayerMap(response.data))
 
         return response.data
     } catch (e: any) {

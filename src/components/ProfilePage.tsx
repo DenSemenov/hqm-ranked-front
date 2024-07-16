@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Row, Upload, UploadFile, UploadProps } from "antd";
+import { Button, Col, Divider, Row, Switch, Tooltip, Upload, UploadFile, UploadProps } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useState } from "react";
 import { selectCurrentUser, selectIsAdmin, selectIsAuth, selectWebsiteSettings, setCurrentUser, setIsAuth } from "stores/auth";
@@ -10,9 +10,11 @@ import { useNavigate } from "react-router-dom";
 import ChangeNicknameModal from "./ChangeNicknameModal";
 import { isMobile } from "react-device-detect";
 import { setClearImageCache } from "stores/season";
-import { EditOutlined, KeyOutlined, NotificationOutlined, LogoutOutlined, CloseOutlined } from "@ant-design/icons";
+import { EditOutlined, KeyOutlined, NotificationOutlined, LogoutOutlined, CloseOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { TbBrandDiscord } from "react-icons/tb";
-import { getCurrentUser, removeDiscord } from "stores/auth/async-actions";
+import { getCurrentUser, removeDiscord, setShowLocation } from "stores/auth/async-actions";
+import { FaLocationDot } from "react-icons/fa6";
+import { IoIosInformationCircle } from "react-icons/io";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -78,7 +80,14 @@ const ProfilePage = () => {
     const onDisconnectDiscord = () => {
         dispatch(removeDiscord()).unwrap().then(() => {
             dispatch(getCurrentUser());
+        })
+    }
 
+    const onSetShowLocation = (value: boolean) => {
+        dispatch(setShowLocation({
+            showLocation: value
+        })).unwrap().then(() => {
+            dispatch(getCurrentUser());
         })
     }
 
@@ -115,9 +124,16 @@ const ProfilePage = () => {
                             <Button icon={<CloseOutlined />} onClick={onDisconnectDiscord} />
                         </div>
                     }
+                    <Button icon={<FaLocationDot />} onClick={() => navigate("/notifications")}>{currentUser?.showLocation ? "Hide my location" : "Show my location"}</Button>
+                    <div style={{ display: "flex", gap: 8, justifyContent: "space-between", alignItems: "center" }}>
+                        <Switch style={{ width: "calc(-32px + 100%)" }} checkedChildren={"Hide my location"} unCheckedChildren="Show my location" checked={currentUser?.showLocation} onChange={(e) => onSetShowLocation(e)} />
+                        <Tooltip title="Your country and city will be displayed on the player map and in your profile">
+                            <Button shape="circle" icon={<InfoCircleOutlined />} size="small" type="text" />
+                        </Tooltip>
+                    </div>
+
                     <Divider />
                     <Button icon={<LogoutOutlined />} danger onClick={onLogout}>Log out</Button>
-
                     {isAdmin &&
                         <>
                             <Divider />

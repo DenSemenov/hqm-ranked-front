@@ -262,3 +262,19 @@ div {
 .apexcharts-toolbar {
   display: none !important;
 }
+
+.leaflet-bottom.leaflet-right {
+  display: none;
+}
+
+.leaflet-div-icon {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 100%;
+}
+
+.leaflet-div-icon-user {
+  background-color: transparent !important;
+  border: 2px solid red !important;
+  border-radius: 100%;
+}

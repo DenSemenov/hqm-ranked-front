@@ -12,6 +12,8 @@ import { IWebsiteSettingsResponse } from "models/IWebsiteSettingsResponse";
 import { IDiscordAuthRequest } from "models/IDiscordAuthRequest";
 import { IPlayerWarningResponse } from "models/IPlayerWarningResponse";
 import { ICurrentUserInfoRequest } from "models/ICurrentUserInfoRequest";
+import { IPlayerMapResponse } from "models/IPlayerMapResponse";
+import { ISetShowLocationRequest } from "models/ISetShowLocationRequest";
 
 export default class AuthService {
     static async login(data: ILoginRequest): Promise<AxiosResponse<IAuthResponse>> {
@@ -25,8 +27,8 @@ export default class AuthService {
         return $api.post<IAuthResponse>('api/player/register', data);
     }
 
-    static async getCurrentUser(data: ICurrentUserInfoRequest): Promise<AxiosResponse<ICurrentUserResponse>> {
-        return $api.post<ICurrentUserResponse>('api/player/GetCurrentUser', data);
+    static async getCurrentUser(): Promise<AxiosResponse<ICurrentUserResponse>> {
+        return $api.post<ICurrentUserResponse>('api/player/GetCurrentUser');
     }
 
     static async changePassword(data: IChangePasswordRequest): Promise<AxiosResponse> {
@@ -62,5 +64,11 @@ export default class AuthService {
     }
     static async getPlayerWarnings(): Promise<AxiosResponse<IPlayerWarningResponse[]>> {
         return $api.post<IPlayerWarningResponse[]>('api/player/GetPlayerWarnings');
+    }
+    static async setShowLocation(data: ISetShowLocationRequest): Promise<AxiosResponse> {
+        return $api.post('api/player/SetShowLocation', data);
+    }
+    static async getMap(): Promise<AxiosResponse<IPlayerMapResponse[]>> {
+        return $api.post<IPlayerMapResponse[]>('api/player/GetMap');
     }
 }

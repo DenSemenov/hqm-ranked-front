@@ -1,0 +1,15 @@
+.viewerContainer {
+    width: 100%;
+    height: calc(-16px + 100%);
+    border-radius: 16px;
+}
+
+.viewerContainerMobile {
+    width: 100%;
+    height: 100%;
+}
+
+.point {
+    position: absolute;
+    z-index: 10000;
+}

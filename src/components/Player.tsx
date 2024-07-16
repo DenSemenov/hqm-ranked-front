@@ -13,7 +13,6 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { convertMoney } from "shared/MoneyCoverter";
 import { IInstanceType } from "models/IInstanceType";
 import TeamItem from "shared/TeamItem";
-import { Line, Radar } from '@ant-design/plots';
 import { selectTheme } from "stores/auth";
 import { AwardType, PlayerAwardViewModel } from "models/IPlayerResponse";
 import Chart from 'react-apexcharts';

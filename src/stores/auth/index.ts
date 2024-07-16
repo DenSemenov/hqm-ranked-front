@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { IAuthResponse } from "models/IAuthResponse"
 import { ICurrentUserResponse } from "models/ICurrentUserResponse";
+import { IPlayerMapResponse } from "models/IPlayerMapResponse";
 import { IWebsiteSettingsResponse } from "models/IWebsiteSettingsResponse";
 import { RootState } from "stores"
 
@@ -10,6 +11,7 @@ export interface IAuthState {
     currentUser: ICurrentUserResponse | null;
     theme: string | null
     websiteSettings: IWebsiteSettingsResponse
+    playerMap: IPlayerMapResponse[]
 }
 
 const initialState: IAuthState = {
@@ -20,7 +22,8 @@ const initialState: IAuthState = {
     websiteSettings: {
         discordAppClientId: "",
         discordJoinLink: ""
-    }
+    },
+    playerMap: []
 }
 
 export const authSlicer = createSlice({
@@ -62,6 +65,9 @@ export const authSlicer = createSlice({
         setWebsiteSettings: (state: IAuthState, action: PayloadAction<IWebsiteSettingsResponse>) => {
             state.websiteSettings = action.payload;
         },
+        setPlayerMap: (state: IAuthState, action: PayloadAction<IPlayerMapResponse[]>) => {
+            state.playerMap = action.payload;
+        },
     },
 })
 
@@ -71,7 +77,8 @@ export const {
     setTheme,
     setLoadingUser,
     setCurrentUserAcceptedRules,
-    setWebsiteSettings
+    setWebsiteSettings,
+    setPlayerMap
 } =
     authSlicer.actions
 
@@ -81,5 +88,6 @@ export const selectCurrentUser = (state: RootState) => state.auth.currentUser;
 export const selectTheme = (state: RootState) => state.auth.theme;
 export const selectIsAdmin = (state: RootState) => state.auth.currentUser ? state.auth.currentUser.role === "admin" : false;
 export const selectWebsiteSettings = (state: RootState) => state.auth.websiteSettings;
+export const selectPlayerMap = (state: RootState) => state.auth.playerMap;
 
 export default authSlicer.reducer

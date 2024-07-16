@@ -47,6 +47,7 @@ import { IPlayerWarningResponse, WarningType } from 'models/IPlayerWarningRespon
 import TransferMarket from 'components/TransferMarket';
 import { getGameInvites, getTeamsState } from 'stores/teams/async-actions';
 import { selectCurrentTeam } from 'stores/teams';
+import PlayersMap from 'components/PlayersMap';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -282,6 +283,7 @@ function App() {
         <Route path="/team-settings" element={<TeamSettings />} />
         <Route path="/discordlogin" element={<DiscordLogin />} />
         <Route path="/transfer-market" element={<TransferMarket />} />
+        <Route path="/map" element={<PlayersMap />} />
 
       </Routes>
     }
@@ -307,6 +309,7 @@ function App() {
         <Route path="/team-settings" element={<TeamSettings />} />
         <Route path="/discordlogin" element={<DiscordLogin />} />
         <Route path="/transfer-market" element={<TransferMarket />} />
+        <Route path="/map" element={<PlayersMap />} />
       </Routes>
     }
   }, [currentMode])

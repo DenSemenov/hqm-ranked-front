@@ -124,7 +124,6 @@ const ProfilePage = () => {
                             <Button icon={<CloseOutlined />} onClick={onDisconnectDiscord} />
                         </div>
                     }
-                    <Button icon={<FaLocationDot />} onClick={() => navigate("/notifications")}>{currentUser?.showLocation ? "Hide my location" : "Show my location"}</Button>
                     <div style={{ display: "flex", gap: 8, justifyContent: "space-between", alignItems: "center" }}>
                         <Switch style={{ width: "calc(-32px + 100%)" }} checkedChildren={"Hide my location"} unCheckedChildren="Show my location" checked={currentUser?.showLocation} onChange={(e) => onSetShowLocation(e)} />
                         <Tooltip title="Your country and city will be displayed on the player map and in your profile">

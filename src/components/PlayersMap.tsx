@@ -10,8 +10,9 @@ import { useSelector } from 'react-redux';
 import L from 'leaflet';
 import { selectStorageUrl } from 'stores/season';
 import PlayerItem, { PlayerItemType } from 'shared/PlayerItem';
-import { Avatar, Popover } from 'antd';
+import { Avatar, Badge, Popover } from 'antd';
 import { QuestionOutlined } from "@ant-design/icons";
+import _ from 'lodash';
 
 const MapComponent = () => {
     const playersMap = useSelector(selectPlayerMap);
@@ -86,7 +87,7 @@ const MapComponent = () => {
                 return <div className={styles.point} style={{ top: point.y, left: point.x }}>
                     {p.players.length > 1 && zoomLevel < 7 &&
                         <Popover zIndex={10001} content={<div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                            {p.players.map(pl => {
+                            {_.orderBy(p.players, "isHidden").map((pl, index) => {
                                 if (pl.isHidden) {
                                     return <Avatar style={{ color: "white", background: "black" }} size={24} shape='circle' ><QuestionOutlined /></Avatar>
                                 } else {
@@ -95,7 +96,14 @@ const MapComponent = () => {
 
                             })}
                         </div>}>
-                            <Avatar style={{ color: "white", background: "black" }} size={diff * 24} shape='circle' >{p.players.length}</Avatar>
+                            {_.orderBy(p.players, "isHidden")[0].isHidden &&
+                                <Avatar style={{ color: "white", background: "black" }} size={diff * 24} shape='circle' >{p.players.length}</Avatar>
+                            }
+                            {!_.orderBy(p.players, "isHidden")[0].isHidden &&
+                                <Badge count={"+" + (p.players.length - 1)} style={{ backgroundColor: 'black', color: "white" }}>
+                                    <PlayerItem size={diff * 24} id={_.orderBy(p.players, "isHidden")[0].playerId} name={_.orderBy(p.players, "isHidden")[0].playerName} bordered type={PlayerItemType.Avatar} />
+                                </Badge>
+                            }
                         </Popover>
                     }
                     {p.players.length > 1 && zoomLevel >= 7 &&

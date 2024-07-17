@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Row, Switch, Tooltip, Upload, UploadFile, UploadProps } from "antd";
+import { Button, Col, Divider, Row, Select, Switch, Tooltip, Upload, UploadFile, UploadProps } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useState } from "react";
 import { selectCurrentUser, selectIsAdmin, selectIsAuth, selectWebsiteSettings, setCurrentUser, setIsAuth } from "stores/auth";
@@ -12,9 +12,10 @@ import { isMobile } from "react-device-detect";
 import { setClearImageCache } from "stores/season";
 import { EditOutlined, KeyOutlined, NotificationOutlined, LogoutOutlined, CloseOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { TbBrandDiscord } from "react-icons/tb";
-import { getCurrentUser, removeDiscord, setShowLocation } from "stores/auth/async-actions";
+import { changeLimitType, getCurrentUser, removeDiscord, setShowLocation } from "stores/auth/async-actions";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoIosInformationCircle } from "react-icons/io";
+import { LimitType } from "models/ICurrentUserResponse";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -91,6 +92,14 @@ const ProfilePage = () => {
         })
     }
 
+    const onChangeLimitType = (value: LimitType) => {
+        dispatch(changeLimitType({
+            limitType: value
+        })).unwrap().then(() => {
+            dispatch(getCurrentUser());
+        })
+    }
+
     return (
         <Row style={{ padding: isMobile ? 16 : 0 }}>
             <Col sm={7} xs={0} />
@@ -130,7 +139,22 @@ const ProfilePage = () => {
                             <Button shape="circle" icon={<InfoCircleOutlined />} size="small" type="text" />
                         </Tooltip>
                     </div>
+                    <div style={{ display: "flex", gap: 8, justifyContent: "space-between", alignItems: "center" }}>
+                        <Select
+                            style={{ width: "calc(-32px + 100%)" }}
+                            onChange={onChangeLimitType}
+                            options={[
+                                { value: LimitType.Default, label: 'Default (from 2011)' },
+                                { value: LimitType.New, label: 'New (from 2023)' },
+                                { value: LimitType.None, label: 'No limits' },
+                            ]}
+                            value={currentUser?.limitType}
 
+                        />
+                        <Tooltip title="Stick limit type (relogin on server to apply)">
+                            <Button shape="circle" icon={<InfoCircleOutlined />} size="small" type="text" />
+                        </Tooltip>
+                    </div>
                     <Divider />
                     <Button icon={<LogoutOutlined />} danger onClick={onLogout}>Log out</Button>
                     {isAdmin &&

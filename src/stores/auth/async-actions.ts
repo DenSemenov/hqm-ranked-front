@@ -10,6 +10,7 @@ import { IPushTokenRequest } from "models/IPushTokenRequest"
 import { IPlayerNotificationsResponse } from "models/IPlayerNotificationsResponse"
 import { IDiscordAuthRequest } from "models/IDiscordAuthRequest"
 import { ISetShowLocationRequest } from "models/ISetShowLocationRequest"
+import { IChangeLimitTypeRequest } from "models/IChangeLimitTypeRequest"
 
 export const login = createAsyncThunk('auth/login', async (payload: ILoginRequest, thunkApi) => {
     try {
@@ -196,6 +197,16 @@ export const getMap = createAsyncThunk('auth/getMap', async (payload: void, thun
         const response = await AuthService.getMap()
 
         thunkApi.dispatch(setPlayerMap(response.data))
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+
+export const changeLimitType = createAsyncThunk('auth/changeLimitType', async (payload: IChangeLimitTypeRequest, thunkApi) => {
+    try {
+        const response = await AuthService.changeLimitType(payload)
 
         return response.data
     } catch (e: any) {

@@ -14,6 +14,7 @@ import { IPlayerWarningResponse } from "models/IPlayerWarningResponse";
 import { ICurrentUserInfoRequest } from "models/ICurrentUserInfoRequest";
 import { IPlayerMapResponse } from "models/IPlayerMapResponse";
 import { ISetShowLocationRequest } from "models/ISetShowLocationRequest";
+import { IChangeLimitTypeRequest } from "models/IChangeLimitTypeRequest";
 
 export default class AuthService {
     static async login(data: ILoginRequest): Promise<AxiosResponse<IAuthResponse>> {
@@ -70,5 +71,8 @@ export default class AuthService {
     }
     static async getMap(): Promise<AxiosResponse<IPlayerMapResponse[]>> {
         return $api.post<IPlayerMapResponse[]>('api/player/GetMap');
+    }
+    static async changeLimitType(data: IChangeLimitTypeRequest): Promise<AxiosResponse> {
+        return $api.post('api/player/ChangeLimitType', data);
     }
 }

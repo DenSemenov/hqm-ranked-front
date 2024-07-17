@@ -22,3 +22,41 @@
 .filteredLogo {
     filter: grayscale();
 }
+
+.contactCard {
+    width: 86px;
+    height: 150px;
+    border-radius: 16px;
+    padding: 8px;
+    position: relative;
+    cursor: pointer;
+}
+
+.contactCard:hover {
+    background-color: red;
+}
+
+.contractContainer {
+    width: 336px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    list-style: none;
+    height: 400px;
+    overflow: auto;
+}
+
+.contactCardText {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.contactCardPoints {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: calc(-16px + 100%);
+    position: absolute;
+    bottom: 8px;
+}

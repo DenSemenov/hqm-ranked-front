@@ -6,6 +6,7 @@ import server from "./server";
 import admin from "./admin";
 import events from "./events";
 import teams from "./teams";
+import contract from "./contract";
 
 export const store = configureStore({
     reducer: {
@@ -14,7 +15,8 @@ export const store = configureStore({
         server,
         admin,
         events,
-        teams
+        teams,
+        contract
     },
     preloadedState: loadState(),
 });

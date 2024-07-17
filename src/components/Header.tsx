@@ -19,6 +19,9 @@ import { IInstanceType } from 'models/IInstanceType';
 import { selectPlayerInvites, selectTeamsState } from 'stores/teams';
 import { applyPlayerInvite, cancelInvite, declinePlayerInvite, getInvites, getTeamsState } from 'stores/teams/async-actions';
 import TeamItem from 'shared/TeamItem';
+import { selectContracts } from 'stores/contract';
+import { FaCoins } from "react-icons/fa";
+import { ContractType, IContractResponse } from 'models/IContractResponse';
 
 const { Text, Title } = Typography;
 
@@ -37,6 +40,7 @@ const Header = () => {
     const playerInvites = useSelector(selectPlayerInvites);
     const teamsState = useSelector(selectTeamsState);
     const clearImageCache = useSelector(selectClearImageCache);
+    const contracts = useSelector(selectContracts);
 
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
 
@@ -211,11 +215,68 @@ const Header = () => {
                         }}
                     />
                 </Card>}>
-                    <Tag color="#108ee9" style={{ height: 20, marginLeft: 16 }}>{leftDays + " days left"}</Tag>
+                    <Tag style={{ height: 20, marginLeft: 16 }}>{leftDays + " days left"}</Tag>
                 </Popover>
             }
         }
     }, [currentSeason, seasons])
+
+
+    const getContractItem = (item: IContractResponse) => {
+        let text = "";
+        let color = "";
+        switch (item.contractType) {
+            case ContractType.Assists:
+                text = `Do ${item.count} assists`;
+                color = "linear-gradient(to top, #b92b27, #1565c0)";
+                break;
+            case ContractType.WinWith800Elo:
+                text = `Win ${item.count} games with a player less than 800 elo`;
+                color = "linear-gradient(to top, #aa4b6b, #6b6b83, #3b8d99)";
+                break;
+            case ContractType.Saves:
+                text = `Do ${item.count} saves`;
+                color = "linear-gradient(to top, #c31432, #240b36)";
+                break;
+            case ContractType.WinWith20Possesion:
+                text = `Win ${item.count} games with possession lower than 20%`;
+                color = "linear-gradient(to top, #333333, #dd1818)";
+                break;
+            case ContractType.Winstreak:
+                text = `Win ${item.count} games in a row`;
+                color = "linear-gradient(to top, #000046, #1cb5e0)";
+                break;
+            case ContractType.RiseInRanking:
+                text = `Climb ${item.count} positions`;
+                color = "linear-gradient(to top, #43c6ac, #191654)";
+                break;
+        }
+        return <div className={styles.contactCard} style={{ background: color }}>
+            <div className={styles.contactCardPoints}><FaCoins color={"gold"} />{item.points}</div>
+            <div className={styles.contactCardText}>{text}</div>
+        </div>
+    }
+
+    const contractsContent = useMemo(() => {
+        return <Popover
+            trigger={"click"}
+            content={
+                <div style={{ display: "flex", gap: 16, flexDirection: "column" }}>
+                    <Title level={5}>Select contracts</Title>
+                    <div className={styles.contractContainer}>
+
+                        {contracts.map(c => {
+                            return getContractItem(c);
+                        })}
+                    </div>
+                </div>
+            }
+        >
+            <Button style={{ background: 'linear-gradient(135deg, #6253E1, #04BEFE)' }} size="small">
+                <Text>CONTRACTS</Text>
+            </Button>
+        </Popover>
+    }, [contracts])
 
     const onChangeMode = (mode: IInstanceType) => {
         dispatch(setCurrentMode(mode))
@@ -237,6 +298,7 @@ const Header = () => {
                 {endsIn}
             </div>
             <div className={styles.headerContainerLogin}>
+                {/* {contractsContent} */}
                 <ThemeButton />
                 {playerInvitesNotify}
                 {patrolsButton}

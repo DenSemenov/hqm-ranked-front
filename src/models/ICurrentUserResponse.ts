@@ -8,4 +8,11 @@ export interface ICurrentUserResponse {
     isAcceptedRules: boolean;
     discordLogin: string;
     showLocation: boolean;
+    limitType: LimitType
+}
+
+export enum LimitType {
+    Default,
+    New,
+    None
 }

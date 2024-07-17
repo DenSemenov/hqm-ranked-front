@@ -48,6 +48,7 @@ import TransferMarket from 'components/TransferMarket';
 import { getGameInvites, getTeamsState } from 'stores/teams/async-actions';
 import { selectCurrentTeam } from 'stores/teams';
 import PlayersMap from 'components/PlayersMap';
+import { getContracts } from 'stores/contract/async-actions';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -181,6 +182,7 @@ function App() {
     dispatch(getActiveServers());
     dispatch(getStorage());
     dispatch(getHomeStats());
+    dispatch(getContracts());
   }, [])
 
   useEffect(() => {

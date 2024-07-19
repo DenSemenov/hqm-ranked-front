@@ -4,6 +4,7 @@ import { IGameResponse } from "models/IGameResponse";
 import { IHomeStatsResponse } from "models/IHomeStatsResponse";
 import { IInstanceType } from "models/IInstanceType";
 import { IPartolResponse } from "models/IPartolResponse";
+import { IPlayerLiteDataResponse } from "models/IPlayerLiteDataResponse";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { IRulesResponse } from "models/IRulesResponse";
 import { ISeasonGameResponse } from "models/ISeasonGameResponse";
@@ -20,6 +21,7 @@ export interface ISeasonState {
     currentSeasonGames: ISeasonGameResponse[];
 
     currentPlayerData: IPlayerResponse | null;
+    currentPlayerLiteData: IPlayerLiteDataResponse | null;
     currentGameData: IGameResponse | null;
     rules: IRulesResponse;
 
@@ -47,6 +49,7 @@ const initialState: ISeasonState = {
     currentSeasonGames: [],
 
     currentPlayerData: null,
+    currentPlayerLiteData: null,
     currentGameData: null,
     rules: {
         text: "",
@@ -100,6 +103,14 @@ export const seasonSlicer = createSlice({
                 state.loading = true
             }
         },
+        setCurrentPlayerLiteData: (state: ISeasonState, action: PayloadAction<IPlayerLiteDataResponse | null>) => {
+            state.currentPlayerLiteData = action.payload;
+            if (action.payload) {
+                state.loading = false
+            } else {
+                state.loading = true
+            }
+        },
         setCurrentGameData: (state: ISeasonState, action: PayloadAction<IGameResponse | null>) => {
             state.currentGameData = action.payload;
             if (action.payload) {
@@ -147,6 +158,7 @@ export const {
     setCurrentSeasonStats,
     setCurrentSeasonGames,
     setCurrentPlayerData,
+    setCurrentPlayerLiteData,
     setCurrentGameData,
     setRules,
     setStorageUrl,
@@ -167,6 +179,7 @@ export const selectCurrentSeason = (state: RootState) => state.season.currentSea
 export const selectCurrentSeasonStats = (state: RootState) => state.season.currentSeasonStats;
 export const selectCurrentSeasonGames = (state: RootState) => state.season.currentSeasonGames;
 export const selectCurrentPlayerData = (state: RootState) => state.season.currentPlayerData;
+export const selectCurrentPlayerLiteData = (state: RootState) => state.season.currentPlayerLiteData;
 export const selectCurrentGameData = (state: RootState) => state.season.currentGameData;
 export const selectRules = (state: RootState) => state.season.rules;
 export const selectStorageUrl = (state: RootState) => state.season.storageUrl;

@@ -6,6 +6,7 @@ import { IGameRequest } from "models/IGameRequest";
 import { IGameResponse } from "models/IGameResponse";
 import { IHomeStatsResponse } from "models/IHomeStatsResponse";
 import { IPartolResponse } from "models/IPartolResponse";
+import { IPlayerLiteDataResponse } from "models/IPlayerLiteDataResponse";
 import { IPlayerRequest } from "models/IPlayerRequest";
 import { IPlayerResponse } from "models/IPlayerResponse";
 import { IReplayChatMessage } from "models/IReplayChatMessage";
@@ -38,6 +39,9 @@ export default class SeasonService {
     }
     static async getPlayerData(data: IPlayerRequest): Promise<AxiosResponse<IPlayerResponse>> {
         return $api.post<IPlayerResponse>('api/seasons/GetPlayerData', data);
+    }
+    static async getPlayerLiteData(data: IPlayerRequest): Promise<AxiosResponse<IPlayerLiteDataResponse>> {
+        return $api.post<IPlayerLiteDataResponse>('api/seasons/GetPlayerLiteData', data);
     }
     static async getGameData(data: IGameRequest): Promise<AxiosResponse<IGameResponse>> {
         return $api.post<IGameResponse>('api/seasons/GetGameData', data);

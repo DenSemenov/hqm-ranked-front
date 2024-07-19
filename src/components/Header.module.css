@@ -37,13 +37,14 @@
 }
 
 .contractContainer {
-    width: 336px;
+    width: 346px;
     display: flex;
-    gap: 8px;
+    gap: 16px;
     flex-wrap: wrap;
     list-style: none;
     height: 400px;
     overflow: auto;
+    padding: 4px;
 }
 
 .contactCardText {
@@ -53,6 +54,15 @@
 }
 
 .contactCardPoints {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: calc(-16px + 100%);
+    position: absolute;
+    bottom: 8px;
+}
+
+.contactCardDate {
     display: flex;
     gap: 8px;
     align-items: center;

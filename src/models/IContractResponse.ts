@@ -1,8 +1,11 @@
 export interface IContractResponse {
+    id: string;
     contractType: ContractType;
     count: number;
     points: number;
-    canSelect: boolean;
+    isSelected: boolean;
+    isHidden: boolean;
+    selectedDate: Date
 }
 
 export enum ContractType {

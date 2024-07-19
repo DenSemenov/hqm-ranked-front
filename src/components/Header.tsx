@@ -1,5 +1,5 @@
 
-import { Avatar, Badge, Button, Card, Col, List, Popover, Row, Select, Space, Tag, Typography } from 'antd';
+import { Avatar, Badge, Button, Card, Col, List, notification, Popover, Row, Select, Space, Tag, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import styles from './Header.module.css'
 import { useEffect, useMemo, useState } from 'react';
@@ -13,15 +13,17 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ThemeButton from './ThemeButton';
 import { isMobile } from 'react-device-detect';
 import { getPatrol } from 'stores/season/async-actions';
-import { convertDate } from 'shared/DateConverter';
+import { convertDate, getWeekEnd } from 'shared/DateConverter';
 import { CaretRightOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { IInstanceType } from 'models/IInstanceType';
 import { selectPlayerInvites, selectTeamsState } from 'stores/teams';
 import { applyPlayerInvite, cancelInvite, declinePlayerInvite, getInvites, getTeamsState } from 'stores/teams/async-actions';
 import TeamItem from 'shared/TeamItem';
-import { selectContracts } from 'stores/contract';
+import { selectCoins, selectContracts } from 'stores/contract';
 import { FaCoins } from "react-icons/fa";
 import { ContractType, IContractResponse } from 'models/IContractResponse';
+import { getContracts, selectContract } from 'stores/contract/async-actions';
+import { FaCheck } from "react-icons/fa";
 
 const { Text, Title } = Typography;
 
@@ -41,6 +43,7 @@ const Header = () => {
     const teamsState = useSelector(selectTeamsState);
     const clearImageCache = useSelector(selectClearImageCache);
     const contracts = useSelector(selectContracts);
+    const coins = useSelector(selectCoins);
 
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
 
@@ -222,6 +225,26 @@ const Header = () => {
     }, [currentSeason, seasons])
 
 
+    const onSelectContract = (item: IContractResponse) => {
+        if (contracts.filter(x => x.isSelected).length < 2) {
+            if (!item.isSelected) {
+                if (!isAuth) {
+                    navigate("/login")
+                } else {
+                    dispatch(selectContract({
+                        id: item.id
+                    })).unwrap().then(() => {
+                        dispatch(getContracts())
+                    })
+                }
+            }
+        } else {
+            notification.info({
+                message: "You can select only two contracts"
+            })
+        }
+    }
+
     const getContractItem = (item: IContractResponse) => {
         let text = "";
         let color = "";
@@ -251,9 +274,15 @@ const Header = () => {
                 color = "linear-gradient(to top, #43c6ac, #191654)";
                 break;
         }
-        return <div className={styles.contactCard} style={{ background: color }}>
-            <div className={styles.contactCardPoints}><FaCoins color={"gold"} />{item.points}</div>
-            <div className={styles.contactCardText}>{text}</div>
+        const date = new Date(item.selectedDate);
+        date.setDate(date.getDate() + 7);
+        const leftDays = Math.round((new Date(date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        return <div className={styles.contactCard} style={{ background: color, filter: item.isHidden ? "grayscale()" : undefined, outline: item.isSelected ? "4px solid #1c40af" : undefined }} onClick={() => onSelectContract(item)}>
+            <div className={styles.contactCardPoints} style={{ bottom: item.isSelected ? 32 : 8 }}><FaCoins color={"gold"} />{item.points}</div>
+            {item.isSelected &&
+                <Tag className={styles.contactCardDate}>{leftDays + " days left"}</Tag>
+            }
+            <div className={styles.contactCardText} >{text}</div>
         </div>
     }
 
@@ -262,9 +291,16 @@ const Header = () => {
             trigger={"click"}
             content={
                 <div style={{ display: "flex", gap: 16, flexDirection: "column" }}>
-                    <Title level={5}>Select contracts</Title>
-                    <div className={styles.contractContainer}>
+                    <Row>
+                        <Col span={18} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                            <Title level={5}>Select 2 contracts</Title>
+                        </Col>
+                        <Col span={6} className='right-align' style={{ display: "flex", gap: 8, alignItems: "center", justifyContent: "end" }}>
+                            <FaCoins color={"gold"} />{coins}
+                        </Col>
+                    </Row>
 
+                    <div className={styles.contractContainer}>
                         {contracts.map(c => {
                             return getContractItem(c);
                         })}
@@ -276,7 +312,7 @@ const Header = () => {
                 <Text>CONTRACTS</Text>
             </Button>
         </Popover>
-    }, [contracts])
+    }, [contracts, isAuth, coins])
 
     const onChangeMode = (mode: IInstanceType) => {
         dispatch(setCurrentMode(mode))
@@ -298,7 +334,7 @@ const Header = () => {
                 {endsIn}
             </div>
             <div className={styles.headerContainerLogin}>
-                {/* {contractsContent} */}
+                {contractsContent}
                 <ThemeButton />
                 {playerInvitesNotify}
                 {patrolsButton}

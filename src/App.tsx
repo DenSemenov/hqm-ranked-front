@@ -13,7 +13,7 @@ import { getActiveServers } from 'stores/server/async-actions';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { selectCurrentGameData, selectCurrentMode, selectCurrentPlayerData, selectCurrentSeason, selectLoading } from 'stores/season';
-import { selectCurrentUser, selectIsAuth, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
+import { selectCurrentUser, selectHoveredPosition, selectIsAuth, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
 import Player from 'components/Player';
 import LoginModal from 'components/LoginModal';
 import RegisterModal from 'components/RegisterModal';
@@ -49,6 +49,7 @@ import { getGameInvites, getTeamsState } from 'stores/teams/async-actions';
 import { selectCurrentTeam } from 'stores/teams';
 import PlayersMap from 'components/PlayersMap';
 import { getCoins, getContracts } from 'stores/contract/async-actions';
+import HoveredPlayerItem from 'shared/HoveredPlayerItem';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -64,6 +65,7 @@ function App() {
   const currentPlayerData = useSelector(selectCurrentPlayerData);
   const currentGameData = useSelector(selectCurrentGameData);
   const currentTeamData = useSelector(selectCurrentTeam);
+  const hoveredPosition = useSelector(selectHoveredPosition);
 
   const [logInWarningShown, setLogInWarningShown] = useState<boolean>(false);
 
@@ -337,6 +339,9 @@ function App() {
                 <Layout.Footer style={footerStyle}>
                   <Footer />
                 </Layout.Footer>
+              }
+              {hoveredPosition &&
+                <HoveredPlayerItem position={hoveredPosition} />
               }
             </>
           }

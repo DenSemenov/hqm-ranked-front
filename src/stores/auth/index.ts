@@ -12,6 +12,10 @@ export interface IAuthState {
     theme: string | null
     websiteSettings: IWebsiteSettingsResponse
     playerMap: IPlayerMapResponse[]
+    hoveredPosition: {
+        x: number,
+        y: number
+    } | undefined
 }
 
 const initialState: IAuthState = {
@@ -23,7 +27,8 @@ const initialState: IAuthState = {
         discordAppClientId: "",
         discordJoinLink: ""
     },
-    playerMap: []
+    playerMap: [],
+    hoveredPosition: undefined
 }
 
 export const authSlicer = createSlice({
@@ -68,6 +73,9 @@ export const authSlicer = createSlice({
         setPlayerMap: (state: IAuthState, action: PayloadAction<IPlayerMapResponse[]>) => {
             state.playerMap = action.payload;
         },
+        setHoveredPosition: (state: IAuthState, action: PayloadAction<{ x: number, y: number } | undefined>) => {
+            state.hoveredPosition = action.payload;
+        },
     },
 })
 
@@ -78,7 +86,8 @@ export const {
     setLoadingUser,
     setCurrentUserAcceptedRules,
     setWebsiteSettings,
-    setPlayerMap
+    setPlayerMap,
+    setHoveredPosition
 } =
     authSlicer.actions
 
@@ -89,5 +98,6 @@ export const selectTheme = (state: RootState) => state.auth.theme;
 export const selectIsAdmin = (state: RootState) => state.auth.currentUser ? state.auth.currentUser.role === "admin" : false;
 export const selectWebsiteSettings = (state: RootState) => state.auth.websiteSettings;
 export const selectPlayerMap = (state: RootState) => state.auth.playerMap;
+export const selectHoveredPosition = (state: RootState) => state.auth.hoveredPosition;
 
 export default authSlicer.reducer

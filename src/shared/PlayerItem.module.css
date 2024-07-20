@@ -16,8 +16,12 @@
 }
 
 .liteData {
+    z-index: 100;
+    position: absolute;
     height: 68px;
     display: flex;
     gap: 16px;
     align-items: center;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 16px;
 }

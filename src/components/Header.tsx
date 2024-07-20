@@ -277,13 +277,24 @@ const Header = () => {
         const date = new Date(item.selectedDate);
         date.setDate(date.getDate() + 7);
         const leftDays = Math.round((new Date(date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-        return <div className={styles.contactCard} style={{ background: color, filter: item.isHidden ? "grayscale()" : undefined, outline: item.isSelected ? "4px solid #1c40af" : undefined }} onClick={() => onSelectContract(item)}>
-            <div className={styles.contactCardPoints} style={{ bottom: item.isSelected ? 32 : 8 }}><FaCoins color={"gold"} />{item.points}</div>
-            {item.isSelected &&
-                <Tag className={styles.contactCardDate}>{leftDays + " days left"}</Tag>
-            }
-            <div className={styles.contactCardText} >{text}</div>
-        </div>
+        let current = <span />;
+        if (item.isPassed) {
+            current = <CheckOutlined />
+        } else {
+            current = <span>{item.currentCount + "/" + item.count}</span>
+        }
+        return <Badge.Ribbon text={current} placement="end" style={{ top: "calc(-54px + 100%)", display: item.isSelected ? undefined : "none" }}>
+            <div className={styles.contactCard} style={{ background: color, filter: item.isHidden ? "grayscale()" : undefined, outline: item.isSelected ? "4px solid #1c40af" : undefined }} onClick={() => onSelectContract(item)}>
+                <div className={styles.contactCardPoints} style={{ bottom: item.isSelected ? 32 : 8 }}><FaCoins color={"gold"} />{item.points}</div>
+                {item.isSelected &&
+                    <Tag className={styles.contactCardDate}>{leftDays + " days left"}</Tag>
+                }
+
+                <div className={styles.contactCardText} >
+                    {text}
+                </div>
+            </div>
+        </Badge.Ribbon>
     }
 
     const contractsContent = useMemo(() => {

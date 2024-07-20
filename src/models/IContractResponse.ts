@@ -5,7 +5,10 @@ export interface IContractResponse {
     points: number;
     isSelected: boolean;
     isHidden: boolean;
-    selectedDate: Date
+    isPassed: boolean;
+    selectedDate: Date;
+    currentCount: number;
+
 }
 
 export enum ContractType {

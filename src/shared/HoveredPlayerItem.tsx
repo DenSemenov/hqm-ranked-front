@@ -6,15 +6,8 @@ import styles from './PlayerItem.module.css'
 
 const { Text, Title } = Typography;
 
-interface IProps {
-    position: {
-        x: number,
-        y: number
-    }
-}
 
-
-const HoveredPlayerItem = ({ position }: IProps) => {
+const HoveredPlayerItem = () => {
     const playerLiteData = useSelector(selectCurrentPlayerLiteData);
     const storageUrl = useSelector(selectStorageUrl);
 
@@ -28,7 +21,7 @@ const HoveredPlayerItem = ({ position }: IProps) => {
 
     const content = useMemo(() => {
         if (playerLiteData) {
-            return <div className={styles.liteData} style={{ left: position.x, top: position.y }}>
+            return <div className={styles.liteData} >
                 <Avatar
                     size={68}
                     shape='square'

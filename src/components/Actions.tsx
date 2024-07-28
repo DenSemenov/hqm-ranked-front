@@ -47,7 +47,7 @@ const Actions = () => {
             <Link to={"/map"}  >
                 <Button size="large" >Map</Button>
             </Link>
-            {websiteSettings.discordJoinLink &&
+            {websiteSettings && websiteSettings.discordJoinLink &&
                 <Link to={websiteSettings.discordJoinLink} target="_blank" rel="noopener noreferrer" >
                     <Button size="large" type="dashed" icon={<FaDiscord />} >Discord</Button>
                 </Link>

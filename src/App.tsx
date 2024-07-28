@@ -323,7 +323,7 @@ function App() {
     <ConfigProvider
       theme={getTheme(theme === "dark")}
     >
-      <Flex gap="middle" className='main-layoutr'>
+      <Flex gap="middle" className='main-layoutr' >
         <Layout style={{ height: "100vh" }}>
           {!loadingUser &&
             <>
@@ -339,9 +339,6 @@ function App() {
                 <Layout.Footer style={footerStyle}>
                   <Footer />
                 </Layout.Footer>
-              }
-              {hoveredPosition &&
-                <HoveredPlayerItem position={hoveredPosition} />
               }
             </>
           }

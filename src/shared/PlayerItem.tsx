@@ -1,12 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './PlayerItem.module.css'
-import { Avatar, Col, Popover, Row, Typography } from 'antd';
+import { Avatar, Col, Popover, Row, Tooltip, Typography } from 'antd';
 import { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectClearImageCache, selectCurrentPlayerLiteData, selectStorageUrl } from 'stores/season';
 import { selectCurrentUser, selectTheme, setHoveredPosition } from 'stores/auth';
 import { useAppDispatch } from 'hooks/useAppDispatch';
 import { getPlayerLiteData } from 'stores/season/async-actions';
+import HoveredPlayerItem from './HoveredPlayerItem';
 
 export enum PlayerItemType {
     Both,
@@ -52,41 +53,34 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
     const onGetLiteData = (e: any) => {
         dispatch(getPlayerLiteData({
             id: id
-        })).unwrap().then(() => {
-            dispatch(setHoveredPosition({
-                x: e.clientX,
-                y: e.clientY
-            }))
-        })
-    }
-
-    const onLeave = () => {
-        dispatch(setHoveredPosition(undefined))
+        }))
     }
 
     return (
-        <Link to={"/player?id=" + id}>
-            <div
-                onMouseEnter={onGetLiteData}
-                onMouseLeave={onLeave}
-                className={styles.playerItem + " " + (isCurrent ? styles.currentUserTextStyle : undefined)}
-                key={key}
-            >
-                {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
-                    <Avatar
-                        style={{ border: bordered ? "2px solid black" : undefined }}
-                        size={size}
-                        className={isCurrent ? styles.currentUserStyle : undefined}
-                        shape='circle'
-                        src={storageUrl + "images/" + id + ".png" + "?t=" + query}
-                    >
-                        {avatarName}
-                    </Avatar>
-                }
-                {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&
-                    name
-                }
-            </div>
+        <Link to={"/player?id=" + id} >
+            <Tooltip arrow={false} overlayInnerStyle={{ background: "transparent" }} placement="topRight" title={<HoveredPlayerItem />}>
+                <div
+                    className={styles.playerItem + " " + (isCurrent ? styles.currentUserTextStyle : undefined)}
+                    key={key}
+                    onMouseOver={onGetLiteData}
+                >
+                    {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
+                        <Avatar
+                            style={{ border: bordered ? "2px solid black" : undefined }}
+                            size={size}
+                            className={(isCurrent ? styles.currentUserStyle : "")}
+                            shape='circle'
+                            src={storageUrl + "images/" + id + ".png" + "?t=" + query}
+                            rootClassName='player-item'
+                        >
+                            {avatarName}
+                        </Avatar>
+                    }
+                    {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&
+                        name
+                    }
+                </div>
+            </Tooltip>
         </Link>
     )
 }

@@ -105,11 +105,6 @@ export const seasonSlicer = createSlice({
         },
         setCurrentPlayerLiteData: (state: ISeasonState, action: PayloadAction<IPlayerLiteDataResponse | null>) => {
             state.currentPlayerLiteData = action.payload;
-            if (action.payload) {
-                state.loading = false
-            } else {
-                state.loading = true
-            }
         },
         setCurrentGameData: (state: ISeasonState, action: PayloadAction<IGameResponse | null>) => {
             state.currentGameData = action.payload;

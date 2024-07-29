@@ -9,4 +9,5 @@ export interface ISeasonStatsResponse {
     mvp: number;
     rating: number;
     change: number;
+    isCalculated: boolean;
 }

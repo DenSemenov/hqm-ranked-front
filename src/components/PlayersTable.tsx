@@ -6,7 +6,7 @@ import { isMobile } from "react-device-detect";
 import PlayerItem from "shared/PlayerItem";
 import StoriesComponent from "./Stories";
 import { CaretUpOutlined, CaretDownOutlined, MinusOutlined } from "@ant-design/icons"
-
+import { TbProgressHelp } from "react-icons/tb";
 
 const PlayersTable = () => {
     const currentSeasonStats = useSelector(selectCurrentSeasonStats);
@@ -59,10 +59,17 @@ const PlayersTable = () => {
                         dataIndex: "place",
                         sorter: (a, b) => a.place - b.place,
                         render(value, record, index) {
-                            return <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                                {getChange(record.change)}
-                                {value}
-                            </div>
+                            if (record.isCalculated) {
+                                return <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                    {getChange(record.change)}
+                                    {value}
+                                </div>
+                            } else {
+                                return <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                    {getChange(0)}
+                                    <TbProgressHelp />
+                                </div>
+                            }
                         },
                     },
                     {

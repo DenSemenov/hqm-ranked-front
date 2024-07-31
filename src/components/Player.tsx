@@ -1,6 +1,6 @@
 import { Avatar, Col, Dropdown, Row, Space, Tag, Typography } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { selectCurrentPlayerData, selectLoading, selectStorageUrl } from "stores/season";
@@ -16,6 +16,9 @@ import TeamItem from "shared/TeamItem";
 import { selectTheme } from "stores/auth";
 import { AwardType, PlayerAwardViewModel } from "models/IPlayerResponse";
 import Chart from 'react-apexcharts';
+import { isMobile } from "react-device-detect";
+import { ShopItemGroup, ShopItemType } from "models/IShopItemResponse";
+import { selectShopSelects } from "stores/shop";
 
 const { Text, Title } = Typography;
 
@@ -27,6 +30,7 @@ const Player = () => {
     const storageUrl = useSelector(selectStorageUrl);
     const loading = useSelector(selectLoading);
     const theme = useSelector(selectTheme);
+    const shopSelects = useSelector(selectShopSelects);
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -105,12 +109,48 @@ const Player = () => {
         </div>;
     }
 
+    const getBackgroundClass = (previewType: ShopItemType) => {
+        if (previewType) {
+            switch (previewType) {
+                case ShopItemType.City:
+                    return "bgCity";
+                case ShopItemType.Solar:
+                    return "bgSolar";
+                case ShopItemType.SunAndSea:
+                    return "bgSun";
+                case ShopItemType.DarkSun:
+                    return "bgDarkSun";
+                case ShopItemType.Solar2:
+                    return "bgSolar2";
+                case ShopItemType.Tree:
+                    return "bgTree";
+                default:
+                    return "";
+            }
+        } else {
+            return "";
+        }
+    }
+
+    const bg = useMemo(() => {
+        if (currentPlayerData) {
+            const selected = shopSelects.find(x => x.playerId === currentPlayerData.id && x.shopItemGroup === ShopItemGroup.Background)
+            if (selected) {
+                return getBackgroundClass(selected.shopItemType)
+            } else {
+                return ""
+            }
+        } else {
+            return "";
+        }
+    }, [currentPlayerData, shopSelects])
 
     return currentPlayerData && !loading ? (
         <Row gutter={[32, 32]}>
+            <div className={(isMobile ? styles.playerBgMobile : styles.playerBg) + " " + bg} />
             <Col sm={8} xs={24}>
                 <div className={styles.playerLeft}>
-                    <Avatar size={190} shape="square" src={storageUrl + "images/" + currentPlayerData.id + ".png"}>{currentPlayerData.name}</Avatar>
+                    <Avatar size={190} shape="square" style={{ borderRadius: 16 }} src={storageUrl + "images/" + currentPlayerData.id + ".png"}>{currentPlayerData.name}</Avatar>
                     <Dropdown
                         menu={{
                             items: currentPlayerData.oldNicknames.map(n => {

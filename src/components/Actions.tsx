@@ -29,6 +29,9 @@ const Actions = () => {
     return (
         <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "center", height: "100%", flexWrap: "wrap", alignContent: "center" }}>
             <Button size="large" type="primary" onClick={() => setRulesOpen(true)}>Rules</Button>
+            <Link to={"/shop"}  >
+                <Button size="large" style={{ background: "linear-gradient(145deg, #1a2a6c, #b21f1f, #fdbb2d)" }}>Shop</Button>
+            </Link>
             {currentMode === IInstanceType.Teams &&
                 <Link to={"/free-agents"}  >
                     <Button size="large" type="primary" >Free agents</Button>

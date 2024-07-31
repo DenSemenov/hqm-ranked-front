@@ -278,3 +278,62 @@ div {
   border: 2px solid red !important;
   border-radius: 100%;
 }
+
+.ant-menu {
+  background-color: transparent !important;
+}
+
+.bgCity {
+  background-image: url('/public/assets/shop/city.gif');
+  background-size: cover;
+}
+
+.bgSolar {
+  background-image: url('/public/assets/shop/solarsystem.gif');
+  background-size: cover;
+}
+
+.bgSun {
+  background-image: url('/public/assets/shop/sunandsea.gif');
+  background-size: cover;
+}
+
+.bgDarkSun {
+  background-image: url('/public/assets/shop/darksun.gif');
+  background-size: cover;
+}
+
+.bgSolar2 {
+  background-image: url('/public/assets/shop/solar2.gif');
+  background-size: cover;
+}
+
+.bgTree {
+  background-image: url('/public/assets/shop/tree.gif');
+  background-size: cover;
+}
+
+.brLightning {
+  background-image: url('/public/assets/shop/lightning.gif') !important;
+  background-size: cover;
+}
+
+.brRain {
+  background-image: url('/public/assets/shop/rain.gif') !important;
+  background-size: cover;
+}
+
+.brSphere {
+  background-image: url('/public/assets/shop/sphere.gif') !important;
+  background-size: cover;
+}
+
+.brTriangles {
+  background-image: url('/public/assets/shop/triangles.gif') !important;
+  background-size: cover;
+}
+
+.brCircle {
+  background-image: url('/public/assets/shop/circle.gif') !important;
+  background-size: cover;
+}

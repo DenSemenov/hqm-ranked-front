@@ -43,7 +43,7 @@ const Footer = () => {
                 setCurrentPage("auth")
             }}
             >
-                <Avatar shape='square' style={{ cursor: "pointer", borderColor: currentPage === "auth" ? "#1677FF" : "transparent" }} src={storageUrl + "images/" + currentUser.id + ".png" + "?t=" + query} >{avatarName}</Avatar>
+                <Avatar shape='square' style={{ cursor: "pointer", borderColor: currentPage === "auth" ? "#1677FF" : "transparent", borderRadius: 16 }} src={storageUrl + "images/" + currentUser.id + ".png" + "?t=" + query} >{avatarName}</Avatar>
             </div>
         } else {
             return <div className={styles.footerButton} onClick={() => {

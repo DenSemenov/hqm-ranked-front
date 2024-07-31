@@ -50,6 +50,9 @@ import { selectCurrentTeam } from 'stores/teams';
 import PlayersMap from 'components/PlayersMap';
 import { getCoins, getContracts } from 'stores/contract/async-actions';
 import HoveredPlayerItem from 'shared/HoveredPlayerItem';
+import AvatarShapes from 'shared/AvatarShapes';
+import Shop from 'components/Shop';
+import { getShopSelects } from 'stores/shop/async-actions';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -65,7 +68,6 @@ function App() {
   const currentPlayerData = useSelector(selectCurrentPlayerData);
   const currentGameData = useSelector(selectCurrentGameData);
   const currentTeamData = useSelector(selectCurrentTeam);
-  const hoveredPosition = useSelector(selectHoveredPosition);
 
   const [logInWarningShown, setLogInWarningShown] = useState<boolean>(false);
 
@@ -185,6 +187,7 @@ function App() {
     dispatch(getStorage());
     dispatch(getHomeStats());
     dispatch(getContracts());
+    dispatch(getShopSelects());
   }, [])
 
   useEffect(() => {
@@ -213,7 +216,7 @@ function App() {
   }, [isAuth])
 
   useEffect(() => {
-    const theme = localStorage.getItem("theme") ?? "light";
+    const theme = "dark";
     dispatch(setTheme(theme));
   }, []);
 
@@ -289,6 +292,7 @@ function App() {
         <Route path="/discordlogin" element={<DiscordLogin />} />
         <Route path="/transfer-market" element={<TransferMarket />} />
         <Route path="/map" element={<PlayersMap />} />
+        <Route path="/shop" element={<Shop />} />
 
       </Routes>
     }
@@ -315,13 +319,14 @@ function App() {
         <Route path="/discordlogin" element={<DiscordLogin />} />
         <Route path="/transfer-market" element={<TransferMarket />} />
         <Route path="/map" element={<PlayersMap />} />
+        <Route path="/shop" element={<Shop />} />
       </Routes>
     }
   }, [currentMode])
 
   return (
     <ConfigProvider
-      theme={getTheme(theme === "dark")}
+      theme={getTheme(true)}
     >
       <Flex gap="middle" className='main-layoutr' >
         <Layout style={{ height: "100vh" }}>
@@ -340,6 +345,7 @@ function App() {
                   <Footer />
                 </Layout.Footer>
               }
+              <AvatarShapes />
             </>
           }
           {loadingUser &&
@@ -347,9 +353,9 @@ function App() {
               <LoadingOutlined style={{ fontSize: 64 }} />
             </div>
           }
-
         </Layout>
       </Flex>
+
     </ConfigProvider>
   );
 }

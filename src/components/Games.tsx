@@ -1,7 +1,7 @@
 import styles from './Games.module.css'
 import { useSelector } from "react-redux";
 import { selectCurrentSeason, selectCurrentSeasonGames } from "stores/season";
-import { Avatar, Button, Card, Col, List, Row, Tag } from "antd";
+import { Avatar, Button, Card, Col, List, Row, Tag, Typography } from "antd";
 import { convertDate } from "shared/DateConverter";
 import { useEffect, useMemo, useState } from "react";
 import { isMobile } from "react-device-detect";
@@ -13,6 +13,7 @@ import { CaretRightOutlined } from "@ant-design/icons";
 import { IInstanceType } from 'models/IInstanceType';
 import { IGamePlayerItem, ISeasonGameResponse } from 'models/ISeasonGameResponse';
 import VirtualList from 'rc-virtual-list';
+const { Text, Title } = Typography;
 
 const Games = () => {
     const dispatch = useAppDispatch();
@@ -82,7 +83,7 @@ const Games = () => {
                                     </div>
                                 </Col>
                                 <Col span={8} className={styles.gameContent} >
-                                    {game.redScore + " - " + game.blueScore}
+                                    <Title level={5}>{game.redScore + " - " + game.blueScore}</Title>
                                 </Col>
                             </Row>
                         </div>

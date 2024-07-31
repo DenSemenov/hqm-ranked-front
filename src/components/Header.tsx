@@ -98,7 +98,7 @@ const Header = () => {
         if (!isMobile) {
             if (userName && currentUser && isAuth) {
                 return <Badge count={currentUser.isBanned ? "BAN" : undefined} offset={[-16, 16]}>
-                    <Avatar shape='square' style={{ cursor: "pointer" }} src={storageUrl + "images/" + currentUser.id + ".png" + "?t=" + query} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
+                    <Avatar shape='square' style={{ cursor: "pointer", borderRadius: 16 }} src={storageUrl + "images/" + currentUser.id + ".png" + "?t=" + query} onClick={() => navigate("/profile")}>{avatarName}</Avatar>
                 </Badge>
             } else {
                 return <Button icon={<UserOutlined />} onClick={loginPage} />
@@ -346,7 +346,7 @@ const Header = () => {
             </div>
             <div className={styles.headerContainerLogin}>
                 {contractsContent}
-                <ThemeButton />
+                {/* <ThemeButton /> */}
                 {playerInvitesNotify}
                 {patrolsButton}
                 {loginButton}

@@ -8,6 +8,11 @@ export const getTheme = (dark: boolean) => {
             borderRadius: 16,
             boxShadow: "4px 4px 8px 0px rgba(34, 60, 80, 0.2)"
         },
+        components: {
+            Avatar: {
+                borderRadius: 0
+            }
+        },
         algorithm: [(dark ? AntdTheme.darkAlgorithm : AntdTheme.defaultAlgorithm)],
     } as ThemeConfig
 }

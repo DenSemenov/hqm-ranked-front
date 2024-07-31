@@ -56,7 +56,7 @@ const TeamItem = ({ id, name, key = 0, type = PlayerItemType.Both }: IProps) => 
         >
             {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
                 <Tooltip title={type === PlayerItemType.Avatar ? name : undefined}>
-                    <Avatar className={isCurrent ? styles.currentUserStyle : undefined} shape='square' src={storageUrl + "images/" + id + ".png" + "?t=" + query}>{avatarName}</Avatar>
+                    <Avatar style={{ borderRadius: 8 }} className={isCurrent ? styles.currentUserStyle : undefined} shape='square' src={storageUrl + "images/" + id + ".png" + "?t=" + query}>{avatarName}</Avatar>
                 </Tooltip>
             }
             {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&

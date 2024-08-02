@@ -380,12 +380,18 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
             canvas: canvasRef.current as HTMLCanvasElement,
         })
 
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
+
         const camera = new THREE.PerspectiveCamera(
             60,
             w / h,
             0.1,
             100
         )
+
+
+
         camera.rotateY(90);
         camera.position.set(30, 10, 30.5);
 
@@ -567,8 +573,8 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                     newObject.rotateOnAxis(new THREE.Vector3(0, 1, 0), -player.headTurn);
                 }
 
-
                 newObject.name = objectName;
+                newObject.castShadow = true;
 
                 if (objectType === "stick") {
                     if (team !== ReplayTeam.Spectator) {
@@ -745,14 +751,14 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
 
                     geometry.center();
 
-                    const mesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({ color: 0xffffff })]);
+                    const mesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({ color: 0x000 })]);
                     mesh.position.set(player.posX, player.posY + 1, player.posZ)
                     mesh.name = playerTextName;
 
                     const size = mesh.geometry.boundingBox;
                     if (size) {
                         const geometry = rectangleRounded(size.max.x - size.min.x + 0.2, 0.25, 0.1, 10);
-                        const material = new THREE.MeshBasicMaterial({ color: "#232323", side: THREE.FrontSide, transparent: true, opacity: 0.4 });
+                        const material = new THREE.MeshBasicMaterial({ color: "#9c9c9c", side: THREE.FrontSide, transparent: true, opacity: 0.4 });
                         const plane = new THREE.Mesh(geometry, material);
                         plane.position.set(player.posX, player.posY + 1, player.posZ)
                         plane.lookAt(camera.position)

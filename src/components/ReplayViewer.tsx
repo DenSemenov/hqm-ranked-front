@@ -21,9 +21,9 @@ import ReportModal from "./ReportModal";
 import Stats from 'stats.js'
 import { selectStorageUrl } from "stores/season";
 import jQuery from "jquery";
-import axios from "axios";
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 
-const excludedNames = ["Scene", "redupper", "blueupper", "redlower", "bluelower", "puck", "stick", "basebluegoal", "baseboardlower", "text", "baseboards", "basestick", "baseice", "baseredgoal"]
+const excludedNames = ["basearena", "Scene", "redupper", "blueupper", "redlower", "bluelower", "puck", "stick", "basebluegoal", "baseboardlower", "text", "baseboards", "basestick", "baseice", "baseredgoal"]
 
 const { Text, Title } = Typography;
 
@@ -33,11 +33,12 @@ interface IProps {
     pause?: boolean;
     externalScene?: THREE.Scene;
     reportId?: string;
+    externalFragments?: ReplayTick[]
     onReady?: (startTick: number, currentId: string) => void;
     onTickChanged?: (tick: number) => void;
 }
 
-const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, reportId, onReady, onTickChanged }: IProps) => {
+const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, reportId, externalFragments, onReady, onTickChanged }: IProps) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -150,7 +151,23 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
     useEffect(() => {
         setDataReady(false);
         setSceneReady(false);
-        if (externalId) {
+
+        if (externalFragments) {
+            setLoadedIndexes([0])
+            setCurrentTick(externalFragments[0].packetNumber);
+            setFragments(externalFragments);
+            setMin(externalFragments[0].packetNumber)
+            setMax(externalFragments[externalFragments.length - 1].packetNumber)
+
+
+            const f: IFragment[] = [];
+            setIndexes(f);
+            setLoading(false);
+
+            setDataReady(true);
+            initRenderer();
+        }
+        else if (externalId) {
             setCurrentId(externalId);
             dispatch(getStoryReplayViewer({
                 id: externalId,
@@ -169,23 +186,8 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                     setIndexes(f);
                     setLoading(false);
                     initRenderer();
-
                     setDataReady(true);
                 });
-                // fragments.push(...data.data);
-                // setFragments(fragments);
-                // setLoadedIndexes([0])
-
-                // setMin(data.fragments[0].min)
-                // setMax(data.fragments[data.fragments.length - 1].max)
-                // setCurrentTick(data.fragments[0].min);
-                // setIndexes(data.fragments);
-                // setLoading(false);
-
-                // setCurrentTick(data.fragments[0].min);
-                // initRenderer();
-
-                // setDataReady(true);
             });
         } else if (reportId) {
             setCurrentId(reportId);
@@ -262,7 +264,13 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                 });
             }
         }
-    }, [externalId]);
+    }, [externalId, externalFragments]);
+
+    useEffect(() => {
+        if (externalFragments) {
+            initRenderer();
+        }
+    }, [fragments])
 
     useEffect(() => {
         if (dataReady && sceneReady && onReady) {
@@ -315,8 +323,9 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
         if (!paused && !loading) {
             interval = setInterval(() => {
                 let newTick = currentTick;
-                if (currentTick + 2 <= max) {
-                    newTick = currentTick + 2;
+                if (currentTick <= max) {
+
+                    newTick = currentTick + 1;
                 } else {
                     newTick = min;
                 }
@@ -325,12 +334,12 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                     onTickChanged(newTick)
                 }
                 setCurrentTick(newTick);
-                if (newTick % 10 === 0 && !externalId) {
+                if (newTick % 500 === 0 && !externalId) {
                     setSearchParams(
                         createSearchParams({ id: searchParams.get("id") as string, t: newTick.toString() })
                     )
                 }
-            }, 40 * speed);
+            }, 1);
 
         } else if (paused && currentTick !== 0 && interval) {
             clearInterval(interval);
@@ -390,10 +399,8 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
             100
         )
 
-
-
         camera.rotateY(90);
-        camera.position.set(30, 10, 30.5);
+        camera.position.set(0, 10, 30.5);
 
         cameraRef.current = camera;
 
@@ -432,7 +439,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
         const r = rendererRef.current;
         r.setAnimationLoop(() => renderLoop(font))
 
-    }, [currentTick])
+    }, [currentTick, externalId, fragments])
 
     const onPlayPause = () => {
         setPaused(!paused);
@@ -540,17 +547,25 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
 
             if (objectType === "upper") {
                 if (team === ReplayTeam.Red) {
-                    objectToClone = "redupper"
+                    objectToClone = "baseredupper"
                 } else {
-                    objectToClone = "blueupper"
+                    objectToClone = "baseblueupper"
                 }
             }
 
             if (objectType === "lower") {
                 if (team === ReplayTeam.Red) {
-                    objectToClone = "redlower"
+                    objectToClone = "baseredlower"
                 } else {
-                    objectToClone = "bluelower"
+                    objectToClone = "basebluelower"
+                }
+            }
+
+            if (objectType === "stick") {
+                if (team === ReplayTeam.Red) {
+                    objectToClone = "basestick"
+                } else {
+                    objectToClone = "basestick"
                 }
             }
 
@@ -562,15 +577,15 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
 
                 if (objectType === "stick") {
                     newObject.position.set(player.stickPosX, player.stickPosY, player.stickPosZ);
-                    newObject.rotation.set(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ);
+                    newObject.rotation.set(player.stickRotX, -player.stickRotY, player.stickRotZ);
                 } else {
                     newObject.position.set(player.posX, player.posY, player.posZ);
-                    newObject.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ);
+                    newObject.rotation.set(player.rotX, -player.rotY, player.rotZ);
                 }
 
                 if (objectType === "upper") {
                     newObject.rotateOnAxis(new THREE.Vector3(1, 0, 0), -player.bodyLean);
-                    newObject.rotateOnAxis(new THREE.Vector3(0, 1, 0), -player.headTurn);
+                    newObject.rotateOnAxis(new THREE.Vector3(0, 1, 0), player.headTurn);
                 }
 
                 newObject.name = objectName;
@@ -593,14 +608,14 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
             if (object) {
                 if (objectType === "stick") {
                     object.position.set(player.stickPosX, player.stickPosY, player.stickPosZ);
-                    object.rotation.set(Math.PI * 2 - player.stickRotX, player.stickRotY, player.stickRotZ);
+                    object.rotation.set(player.stickRotX, -player.stickRotY, player.stickRotZ);
                 } else {
                     object.position.set(player.posX, player.posY, player.posZ);
-                    object.rotation.set(Math.PI * 2 - player.rotX, player.rotY, player.rotZ);
+                    object.rotation.set(player.rotX, -player.rotY, player.rotZ);
 
                     if (objectType === "upper") {
                         object.rotateOnAxis(new THREE.Vector3(1, 0, 0), -player.bodyLean);
-                        object.rotateOnAxis(new THREE.Vector3(0, 1, 0), -player.headTurn);
+                        object.rotateOnAxis(new THREE.Vector3(0, 1, 0), player.headTurn);
                     }
                 }
             }
@@ -678,27 +693,27 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                 const name = "puck" + puck.index.toString();
                 let puckObject = scene.getObjectByName(name);
                 if (!loadedObjects.includes(name) || !puckObject) {
-                    const puckTemp = scene.getObjectByName("puck");
+                    const puckTemp = scene.getObjectByName("basepuck");
                     if (puckTemp) {
                         loadedObjects.push(name);
                         setLoadedObjects(loadedObjects);
                         const newPuck = puckTemp.clone();
                         newPuck.position.set(puck.posX, puck.posY, puck.posZ)
-                        newPuck.rotation.set(Math.PI * 2 - puck.rotX, puck.rotY, puck.rotZ)
+                        newPuck.rotation.set(puck.rotX, -puck.rotY, puck.rotZ)
                         newPuck.name = name;
                         scene.add(newPuck);
                     }
                 } else {
                     if (puckObject) {
                         puckObject.position.set(puck.posX, puck.posY, puck.posZ)
-                        puckObject.rotation.set(Math.PI * 2 - puck.rotX, puck.rotY, puck.rotZ)
+                        puckObject.rotation.set(puck.rotX, -puck.rotY, puck.rotZ)
 
                         if (!externalPlayerName) {
                             if (selectedObject === "Puck " + puck.index) {
-                                const howLongFromCenter = puck.posZ - 30.5;
+                                const howLongFromCenter = puck.posX + 30.5;
                                 const x = puck.posX * 0.5;
                                 camera.position.setZ(30.5 + howLongFromCenter * 0.2);
-                                camera.position.setY(2 + (0.1 * puck.posX));
+                                camera.position.setY(2 + (0.1 * puck.posZ));
                                 camera.position.setX(x);
                                 camera.lookAt(puckObject.position)
                             }
@@ -777,9 +792,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                         playerTextPlane.lookAt(camera.position)
                     }
                 }
-
-
-
             });
         }
     }

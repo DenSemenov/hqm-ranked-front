@@ -332,15 +332,15 @@ const Header = () => {
 
     return (
         <>
-            <div style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
-                <svg height="36" width="36" onClick={() => onChangeMode(IInstanceType.Ranked)} className={currentMode !== IInstanceType.Ranked ? styles.filteredLogo : undefined}>
+            <div style={{ display: "flex", gap: 4, alignItems: "center", cursor: "pointer" }}>
+                <svg height="36" width={currentMode === IInstanceType.Ranked ? 36 : 12} onClick={() => onChangeMode(IInstanceType.Ranked)} className={currentMode !== IInstanceType.Ranked ? styles.filteredLogo : undefined}>
                     <image href="/icons/logo.svg" height="36" width="36" />
                 </svg>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M13.2939 7.17041L11.9998 12L10.7058 16.8297" stroke="#4d4d4d" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
                 <div className={styles.teamsLogo + " " + (currentMode !== IInstanceType.Teams ? styles.filteredLogo : undefined)} onClick={() => onChangeMode(IInstanceType.Teams)}>
-                    TEAMS
+                    {currentMode === IInstanceType.Teams ? "TEAMS" : "T"}
                 </div>
                 {endsIn}
             </div>

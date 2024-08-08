@@ -1,4 +1,4 @@
-import { Button, Col, Divider, Row, Select, Switch, Tooltip, Upload, UploadFile, UploadProps } from "antd";
+import { Button, Col, Divider, InputNumber, InputNumberProps, Row, Select, Slider, SliderSingleProps, Switch, Tooltip, Upload, UploadFile, UploadProps } from "antd";
 import { useAppDispatch } from "hooks/useAppDispatch";
 import { useEffect, useState } from "react";
 import { selectCurrentUser, selectIsAdmin, selectIsAuth, selectWebsiteSettings, setCurrentUser, setIsAuth } from "stores/auth";
@@ -13,9 +13,6 @@ import { setClearImageCache } from "stores/season";
 import { EditOutlined, KeyOutlined, NotificationOutlined, LogoutOutlined, CloseOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { TbBrandDiscord } from "react-icons/tb";
 import { changeLimitType, getCurrentUser, removeDiscord, setShowLocation } from "stores/auth/async-actions";
-import { FaLocationDot } from "react-icons/fa6";
-import { IoIosInformationCircle } from "react-icons/io";
-import { LimitType } from "models/ICurrentUserResponse";
 
 const ProfilePage = () => {
     const dispatch = useAppDispatch();
@@ -29,12 +26,19 @@ const ProfilePage = () => {
     const [changePasswordModalOpen, setChangePasswordModalOpen] = useState<boolean>(false);
     const [changeNicknameModalOpen, setChangeNicknameModalOpen] = useState<boolean>(false);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [changeLimitValue, setChangeLimitValue] = useState<number>(0);
 
     useEffect(() => {
         if (!isAuth) {
             navigate("/")
         }
     }, [!isAuth])
+
+    useEffect(() => {
+        if (currentUser) {
+            setChangeLimitValue(currentUser.limitTypeValue)
+        }
+    }, [currentUser])
 
     const onLogout = () => {
         dispatch(setCurrentUser(null));
@@ -92,13 +96,30 @@ const ProfilePage = () => {
         })
     }
 
-    const onChangeLimitType = (value: LimitType) => {
-        dispatch(changeLimitType({
-            limitType: value
-        })).unwrap().then(() => {
-            dispatch(getCurrentUser());
-        })
+    const onChangeLimitTypeValue: InputNumberProps['onChange'] = (newValue: any) => {
+        if (newValue as number != undefined) {
+            setChangeLimitValue(newValue as number);
+            dispatch(changeLimitType({
+                limitTypeValue: newValue
+            }));
+        }
+    };
+
+    const onChangeLimitTypeValueComplete: InputNumberProps['onChange'] = (newValue: any) => {
+        if (newValue as number != undefined) {
+            dispatch(changeLimitType({
+                limitTypeValue: newValue
+            })).unwrap().then(() => {
+                dispatch(getCurrentUser());
+            })
+        }
     }
+
+    const marks: SliderSingleProps['marks'] = {
+        0.0088888891: "old",
+        0.01: "new",
+        0: "no limit"
+    };
 
     return (
         <Row style={{ padding: isMobile ? 16 : 0 }}>
@@ -140,7 +161,28 @@ const ProfilePage = () => {
                         </Tooltip>
                     </div>
                     <div style={{ display: "flex", gap: 8, justifyContent: "space-between", alignItems: "center" }}>
-                        <Select
+                        <Slider
+                            style={{ width: "calc(-32px + 100%)" }}
+                            min={0}
+                            max={0.02}
+                            onChange={onChangeLimitTypeValue}
+                            onChangeComplete={onChangeLimitTypeValueComplete}
+                            value={typeof changeLimitValue === 'number' ? changeLimitValue : 0}
+                            step={0.00001}
+                            marks={marks}
+                        />
+                        <InputNumber
+                            min={0}
+                            max={1}
+                            style={{ margin: '0 16px', width: 150 }}
+                            value={changeLimitValue}
+                            onChange={(e) => {
+                                onChangeLimitTypeValue(e);
+                                onChangeLimitTypeValueComplete(e);
+                            }}
+                            step={0.00001}
+                        />
+                        {/* <Select
                             style={{ width: "calc(-32px + 100%)" }}
                             onChange={onChangeLimitType}
                             options={[
@@ -150,7 +192,7 @@ const ProfilePage = () => {
                             ]}
                             value={currentUser?.limitType}
 
-                        />
+                        /> */}
                         <Tooltip title="Stick limit type (relogin on server to apply)">
                             <Button shape="circle" icon={<InfoCircleOutlined />} size="small" type="text" />
                         </Tooltip>

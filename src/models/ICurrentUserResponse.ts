@@ -9,6 +9,7 @@ export interface ICurrentUserResponse {
     discordLogin: string;
     showLocation: boolean;
     limitType: LimitType
+    limitTypeValue: number;
 }
 
 export enum LimitType {

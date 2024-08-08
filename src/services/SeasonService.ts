@@ -104,4 +104,7 @@ export default class SeasonService {
     static async getHomeStats(): Promise<AxiosResponse<IHomeStatsResponse>> {
         return $api.post<IHomeStatsResponse>('api/seasons/GetHomeStats');
     }
+    static async processHrpLocal(data: any): Promise<AxiosResponse> {
+        return $api.post('api/replay/ProcessHrpLocal', data);
+    }
 }

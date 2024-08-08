@@ -281,3 +281,14 @@ export const getHomeStats = createAsyncThunk('replay/getHomeStats', async (paylo
     }
 })
 
+
+export const processHrpLocal = createAsyncThunk('replay/processHrpLocal', async (payload: any, thunkApi) => {
+    try {
+        const response = await SeasonService.processHrpLocal(payload)
+
+        return response.data
+    } catch (e: any) {
+        return thunkApi.rejectWithValue(e)
+    }
+})
+

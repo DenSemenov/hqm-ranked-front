@@ -53,6 +53,7 @@ import HoveredPlayerItem from 'shared/HoveredPlayerItem';
 import AvatarShapes from 'shared/AvatarShapes';
 import Shop from 'components/Shop';
 import { getShopSelects } from 'stores/shop/async-actions';
+import ReplayTesting from 'components/ReplayTesting';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -293,6 +294,7 @@ function App() {
         <Route path="/transfer-market" element={<TransferMarket />} />
         <Route path="/map" element={<PlayersMap />} />
         <Route path="/shop" element={<Shop />} />
+        <Route path="/replay-testing" element={<ReplayTesting />} />
 
       </Routes>
     }
@@ -320,6 +322,7 @@ function App() {
         <Route path="/transfer-market" element={<TransferMarket />} />
         <Route path="/map" element={<PlayersMap />} />
         <Route path="/shop" element={<Shop />} />
+        <Route path="/replay-testing" element={<ReplayTesting />} />
       </Routes>
     }
   }, [currentMode])

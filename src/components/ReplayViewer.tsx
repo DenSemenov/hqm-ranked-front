@@ -339,7 +339,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                         createSearchParams({ id: searchParams.get("id") as string, t: newTick.toString() })
                     )
                 }
-            }, 1);
+            }, 10);
 
         } else if (paused && currentTick !== 0 && interval) {
             clearInterval(interval);
@@ -943,17 +943,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                     value={currentTick}
                     marks={toObject(goals)}
                     onChange={onChange}
-                />
-                <Select
-                    style={{ width: 70 }}
-                    value={speed}
-                    options={[
-                        { value: 2, label: '0.5x' },
-                        { value: 1, label: '1x' },
-                        { value: 0.5, label: '2x' },
-                        { value: 0.2, label: '5x' },
-                    ]}
-                    onChange={setSpeed}
                 />
 
                 <Select

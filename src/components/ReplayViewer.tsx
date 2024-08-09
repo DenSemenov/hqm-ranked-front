@@ -400,7 +400,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
         )
 
         camera.rotateY(90);
-        camera.position.set(0, 10, 30.5);
+        camera.position.set(30, 10, 30.5);
 
         cameraRef.current = camera;
 
@@ -710,10 +710,10 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
 
                         if (!externalPlayerName) {
                             if (selectedObject === "Puck " + puck.index) {
-                                const howLongFromCenter = puck.posX + 30.5;
+                                const howLongFromCenter = puck.posZ - 30.5;
                                 const x = puck.posX * 0.5;
                                 camera.position.setZ(30.5 + howLongFromCenter * 0.2);
-                                camera.position.setY(2 + (0.1 * puck.posZ));
+                                camera.position.setY(2 + (0.1 * puck.posX));
                                 camera.position.setX(x);
                                 camera.lookAt(puckObject.position)
                             }

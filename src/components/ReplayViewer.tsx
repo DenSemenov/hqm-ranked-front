@@ -18,10 +18,8 @@ import { uniqBy } from "lodash";
 import { useSelector } from "react-redux";
 import { selectIsAuth } from "stores/auth";
 import ReportModal from "./ReportModal";
-import Stats from 'stats.js'
 import { selectStorageUrl } from "stores/season";
 import jQuery from "jquery";
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 
 const excludedNames = ["basearena", "Scene", "redupper", "blueupper", "redlower", "bluelower", "puck", "stick", "basebluegoal", "baseboardlower", "text", "baseboards", "basestick", "baseice", "baseredgoal"]
 
@@ -34,11 +32,14 @@ interface IProps {
     externalScene?: THREE.Scene;
     reportId?: string;
     externalFragments?: ReplayTick[]
+    externalChats?: IReplayChatMessage[];
+    externalHighlights?: IReplayHighlight[];
+    externalGoals?: IReplayGoalResponse[];
     onReady?: (startTick: number, currentId: string) => void;
     onTickChanged?: (tick: number) => void;
 }
 
-const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, reportId, externalFragments, onReady, onTickChanged }: IProps) => {
+const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, reportId, externalFragments, externalChats, externalHighlights, externalGoals, onReady, onTickChanged }: IProps) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -69,7 +70,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
     const [selectedObject, setSelectedObject] = useState<string>("Puck 0");
     const [reportModalOpen, setReportModalOpen] = useState<boolean>(false);
     const [gameId, setGameId] = useState<string>("");
-    const [stats, setStats] = useState<Stats>(new Stats());
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const rendererRef = useRef<any>();
     const cameraRef = useRef<any>();
@@ -93,8 +93,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
 
     useEffect(() => {
         dispatch(getRules());
-        // stats.showPanel(0)
-        // document.body.appendChild(stats.dom)
     }, []);
 
     const transformKeys = (obj: any[]) => {
@@ -159,6 +157,17 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
             setMin(externalFragments[0].packetNumber)
             setMax(externalFragments[externalFragments.length - 1].packetNumber)
 
+            if (externalChats) {
+                setMessages(externalChats)
+            }
+
+            if (externalHighlights) {
+                setHighlights(externalHighlights)
+            }
+
+            if (externalGoals) {
+                setGoals(externalGoals)
+            }
 
             const f: IFragment[] = [];
             setIndexes(f);
@@ -358,8 +367,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                 if (osVal) {
                     const selected = osVal.innerHTML;
                     if (rendererRef.current && cameraRef.current && sceneRef.current && t) {
-
-                        stats.begin()
                         let tick = t ? +t : 0;
 
                         const renderer = rendererRef.current;
@@ -368,7 +375,6 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                         frameChange(tick, scene, camera, f, selected);
 
                         renderer.render(scene, camera)
-                        stats.end()
                     }
                 }
             }
@@ -387,16 +393,16 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
 
         const renderer = new THREE.WebGLRenderer({
             canvas: canvasRef.current as HTMLCanvasElement,
+            antialias: true
         })
 
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFShadowMap;
 
         const camera = new THREE.PerspectiveCamera(
-            60,
+            75,
             w / h,
             0.1,
-            100
+            3000
         )
 
         camera.rotateY(90);
@@ -701,6 +707,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                         newPuck.position.set(puck.posX, puck.posY, puck.posZ)
                         newPuck.rotation.set(puck.rotX, -puck.rotY, puck.rotZ)
                         newPuck.name = name;
+                        newPuck.castShadow = true;
                         scene.add(newPuck);
                     }
                 } else {
@@ -845,12 +852,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
     }
 
     const chatContent = useMemo(() => {
-        const currentMessages = messages.filter(x => x.packet <= currentTick && x.packet > currentTick - 500);
-        return <>
-            {currentMessages.map(msg => {
-                return <div>{msg.text}</div>
-            })}
-        </>
+        return messages.filter(x => x.packet <= currentTick && x.packet > currentTick - 500);
     }, [currentTick, messages])
 
     const highlightContent = useMemo(() => {
@@ -901,7 +903,11 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
                         </Popover>
                     </div>
                     <div className={styles.chatMessages} style={{ bottom: isMobile ? 122 : 82 }}>
-                        <Popover content={chatContent} trigger="click" placement="topLeft" open={showChat}>
+                        <Popover content={
+                            chatContent.map(msg => {
+                                return <div>{msg.text}</div>
+                            })
+                        } trigger="click" placement="topLeft" open={showChat && chatContent.length !== 0}>
                             <Button icon={<WechatWorkOutlined />} onClick={() => setShowChat(!showChat)} />
                         </Popover>
                     </div>

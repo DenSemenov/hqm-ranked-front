@@ -102,7 +102,6 @@ const StoriesComponent = () => {
 
     useEffect(() => {
         if (storiesOpen && !scene) {
-            console.log("scene")
             ReplayService.getDefaultScene().then((scene) => {
                 setScene(scene);
             })
@@ -366,7 +365,7 @@ const StoriesComponent = () => {
                     }
                 })
 
-                return <Tooltip title={isMobile ? "" : x.name} >
+                return <Tooltip title={isMobile ? "" : x.name} key={x.playerId}>
                     <div className={unwatchedFound ? styles.storyAvatarContainer : styles.storyAvatarContainerWatched} onClick={() => openStories(x.playerId)}>
                         <Avatar size={44} src={storageUrl + "images/" + x.playerId + ".png"}>{getAvatarName(x.name)}</Avatar>
                     </div>

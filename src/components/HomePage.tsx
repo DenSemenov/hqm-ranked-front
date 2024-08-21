@@ -20,17 +20,17 @@ const HomePage = () => {
                 <Col span={14} style={{ height: "100%" }}>
                     <Row gutter={[16, 16]} style={{ height: "100%" }}>
                         <Col span={24} style={{ height: "calc(-16px + 70%)" }}>
-                            <Card style={{ height: "100%" }} id="playerCard">
+                            <Card bordered={false} style={{ height: "100%" }} id="playerCard">
                                 <PlayersTable />
                             </Card>
                         </Col>
                         <Col span={12} style={{ height: "calc(-16px + 30%)" }} >
-                            <Card style={{ height: "100%", padding: 16 }}>
+                            <Card bordered={false} style={{ height: "100%", padding: 16 }}>
                                 <Servers />
                             </Card>
                         </Col>
                         <Col span={12} style={{ height: "calc(-16px + 30%)" }} >
-                            <Card style={{ height: "100%", padding: 16 }}>
+                            <Card bordered={false} style={{ height: "100%", padding: 16 }}>
                                 <Actions />
                             </Card>
                         </Col>
@@ -40,17 +40,17 @@ const HomePage = () => {
                 <Col span={10} style={{ height: "100%" }}>
                     <Row gutter={[16, 16]} style={{ height: "100%" }}>
                         <Col span={24} style={{ height: 80 }}>
-                            <Card style={{ height: "100%", padding: 16 }}>
+                            <Card bordered={false} style={{ height: "100%", padding: 16 }}>
                                 <StoriesComponent />
                             </Card>
                         </Col>
                         <Col span={24} style={{ height: "calc(-118px + 70%)" }} >
-                            <Card style={{ height: "100%" }}>
+                            <Card bordered={false} style={{ height: "100%" }}>
                                 <Games />
                             </Card>
                         </Col>
                         <Col span={24} style={{ height: "calc(-16px + 30%)" }} >
-                            <Card style={{ height: "100%", padding: 16 }} id="stats-container">
+                            <Card bordered={false} style={{ height: "100%", padding: 16 }} id="stats-container">
                                 <Carousel style={{ height: "100%", padding: isMobile ? 16 : 0 }} fade waitForAnimate autoplay>
                                     <Events />
                                     <DailyStats />

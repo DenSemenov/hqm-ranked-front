@@ -90,7 +90,7 @@ const Servers = () => {
     return (
         <Carousel style={{ height: "calc(-24px + 100%)", padding: isMobile ? 16 : 0 }} fade waitForAnimate >
             {filteredServers.map(server => {
-                return <><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                return <><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} key={server.id}>
                     <Title level={3} style={{ display: "flex", alignItems: "center" }}>
                         {server.name}
                     </Title>

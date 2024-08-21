@@ -5,6 +5,8 @@ export default class ReplayService {
     static async getDefaultScene() {
         const scene = new THREE.Scene();
 
+        scene.background = new THREE.Color(0xff0000);
+
         var lightAmb = new THREE.AmbientLight(0xffffff, 0.7);
         scene.add(lightAmb);
         var light = new THREE.DirectionalLight(0xffffff, 1);

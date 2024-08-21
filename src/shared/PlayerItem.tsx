@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './PlayerItem.module.css'
 import { Avatar, Col, Popover, Row, Tooltip, Typography } from 'antd';
-import { useMemo, useState } from 'react';
+import { CSSProperties, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectClearImageCache, selectCurrentPlayerLiteData, selectStorageUrl } from 'stores/season';
 import { selectCurrentUser, selectTheme, setHoveredPosition } from 'stores/auth';
@@ -25,11 +25,12 @@ interface IProps {
     type?: PlayerItemType,
     size?: number
     bordered?: boolean
+    style?: CSSProperties
 }
 
 const { Text, Title } = Typography;
 
-const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, bordered = false }: IProps) => {
+const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, bordered = false, style = {} }: IProps) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -134,7 +135,7 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
     }, [size, shopSelects])
 
     return (
-        <Link to={"/player?id=" + id} >
+        <Link to={"/player?id=" + id} style={style}>
             <Tooltip arrow={false} overlayInnerStyle={{ background: "transparent" }} placement="topRight" title={<HoveredPlayerItem />}>
                 <div
                     className={styles.playerItem + " " + (isCurrent ? styles.currentUserTextStyle : undefined)}

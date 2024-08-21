@@ -13,6 +13,8 @@ import { orderBy, sum, uniqBy } from "lodash";
 import { LoadingOutlined } from "@ant-design/icons";
 import { IInstanceType } from "models/IInstanceType";
 import TeamItem from "shared/TeamItem";
+import { IoMdDownload } from "react-icons/io";
+import { FaPlay } from "react-icons/fa";
 
 const { Text, Title } = Typography;
 
@@ -34,7 +36,7 @@ const Game = () => {
     }, []);
 
     const getPeriodWithTime = (period: number, time: number) => {
-        let p = period + " period";
+        let p = period + "p";
         if (period > 3) {
             p = "OT";
         }
@@ -48,7 +50,7 @@ const Game = () => {
             secString = "0" + secString;
         }
 
-        return p + " " + m + ":" + secString;
+        return <><Text type="secondary">{p} </Text> <Text>{m + ":" + secString}</Text></>
     }
 
     const goals = useMemo(() => {
@@ -65,7 +67,7 @@ const Game = () => {
         <Row gutter={[0, 16]}>
 
             <Col xs={24} sm={8}>
-                <Card
+                <Card bordered={false}
                     styles={{ body: { padding: 0 } }}
                     title={currentGameData.instanceType === IInstanceType.Teams ? <div className={styles.team}>
                         <TeamItem id={currentGameData.redTeamId as string} name={currentGameData.redTeamName as string} />
@@ -152,20 +154,22 @@ const Game = () => {
                 </Card>
             </Col>
             <Col xs={24} sm={8} className={styles.centerData}>
-                <Title level={3}>{currentGameData.redScore + " - " + currentGameData.blueScore}</Title>
+                <Title level={1}>{currentGameData.redScore + " - " + currentGameData.blueScore}</Title>
                 <Text type="secondary">{convertDate(currentGameData.date)}</Text>
-                <Tag>{currentGameData.state}</Tag>
-                {currentGameData.replayId &&
-                    <Link to={currentGameData.replayUrl}>
-                        <Button type="primary" >Download replay</Button>
-                    </Link>
-                }
-                {currentGameData.hasReplayFragments &&
-                    <Button type="primary" onClick={() => navigate("/replay?id=" + currentGameData.replayId)}>Watch replay</Button>
-                }
+                <div style={{ display: "flex", gap: 8 }}>
+                    <Tag>{currentGameData.state}</Tag>
+                    {currentGameData.replayId &&
+                        <Link to={currentGameData.replayUrl}>
+                            <Button type="primary" size="small" icon={<IoMdDownload />} />
+                        </Link>
+                    }
+                    {currentGameData.hasReplayFragments &&
+                        <Button type="primary" onClick={() => navigate("/replay?id=" + currentGameData.replayId)} size="small" icon={<FaPlay />} />
+                    }
+                </div>
             </Col>
             <Col xs={24} sm={8} className="right-align">
-                <Card
+                <Card bordered={false}
                     styles={{ body: { padding: 0 } }}
                     title={currentGameData.instanceType === IInstanceType.Teams ? <div className={styles.team}>
                         <TeamItem id={currentGameData.blueTeamId as string} name={currentGameData.blueTeamName as string} />
@@ -252,28 +256,32 @@ const Game = () => {
                 </Card>
             </Col>
             {currentGameData.hasReplayFragments &&
-                <>
-                    <Title level={5}>Goals</Title>
-                    <Row gutter={[16, 16]} style={{ width: "calc(16px + 100%)" }}>
+                <Col span={24} className="center-align">
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                         {goals.map(goal => {
-                            return <Col sm={4} xs={8} >
-                                <Card title={"Goal"} extra={<Text type="secondary">{getPeriodWithTime(goal.period, goal.time)}</Text>}>
-                                    <Row style={{ padding: "8px 16px" }}>
-                                        <Col span={18}>
-                                            <Title level={5}>{goal.goalBy}</Title>
-                                        </Col>
-                                        <Col span={6} className="right-align">
-                                            <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
-                                                e.stopPropagation();
-                                                navigate("/replay?id=" + currentGameData.replayId + "&t=" + goal.packet)
-                                            }} />
-                                        </Col>
-                                    </Row>
-                                </Card>
-                            </Col>
+                            const player = currentGameData.players.find(x => x.name === goal.goalBy)
+                            if (player) {
+                                const isRed = player.team === 0;
+                                return <div style={{ display: "flex", gap: 8 }}>
+                                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                        <PlayerItem id={player.id} name={player.name} style={isRed ? {} : { opacity: 0 }} />
+                                    </div>
+                                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8 }}>
+                                        <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate("/replay?id=" + currentGameData.replayId + "&t=" + goal.packet)
+                                        }} >
+                                            {getPeriodWithTime(goal.period, goal.time)}
+                                        </Button>
+                                    </div>
+                                    <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                                        <PlayerItem id={player.id} name={player.name} style={!isRed ? {} : { opacity: 0 }} />
+                                    </div>
+                                </div>
+                            }
                         })}
-                    </Row>
-                </>
+                    </div>
+                </Col>
             }
         </Row>
     ) : <div className='content-loading-in'>

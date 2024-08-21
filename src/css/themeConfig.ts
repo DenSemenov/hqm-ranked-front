@@ -11,6 +11,9 @@ export const getTheme = (dark: boolean) => {
         components: {
             Avatar: {
                 borderRadius: 0
+            },
+            Card: {
+                colorBorder: "transparent"
             }
         },
         algorithm: [(dark ? AntdTheme.darkAlgorithm : AntdTheme.defaultAlgorithm)],

@@ -78,7 +78,7 @@ const MapComponent = () => {
                     items.push(item);
                 }
             })
-            console.log(items);
+
             return items.map(p => {
                 const point = map.latLngToContainerPoint({
                     lat: p.lat,

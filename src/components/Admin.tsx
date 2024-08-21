@@ -711,7 +711,6 @@ const Admin = () => {
 
     return (
         <Tabs
-            type="card"
             items={[
                 {
                     label: "Servers",

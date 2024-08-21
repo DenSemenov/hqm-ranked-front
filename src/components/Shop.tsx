@@ -201,7 +201,6 @@ const Shop = () => {
 
     return <Tabs
         tabPosition={isMobile ? "top" : "left"}
-        type="card"
         style={{ height: "100%" }}
         items={[
             {

@@ -135,6 +135,7 @@ const TransferMarket = () => {
             {transferMarkets.map(fa => {
                 return <Col sm={6} xs={12}>
                     <Card
+                        bordered={false}
                         hoverable
                         cover={<img
                             onClick={() => navigate("/team?id=" + fa.teamId)} style={{ borderRadius: 8, objectFit: "cover" }} alt={fa.teamName} height={150} src={storageUrl + "images/" + fa.teamId + ".png"} />}

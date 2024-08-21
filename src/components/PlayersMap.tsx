@@ -89,19 +89,19 @@ const MapComponent = () => {
                         <Popover zIndex={10001} content={<div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                             {_.orderBy(p.players, "isHidden").map((pl, index) => {
                                 if (pl.isHidden) {
-                                    return <Avatar style={{ color: "white", background: "black" }} size={24} shape='circle' ><QuestionOutlined /></Avatar>
+                                    return <Avatar style={{ color: "white", background: "black" }} shape='circle' ><QuestionOutlined /></Avatar>
                                 } else {
-                                    return <PlayerItem size={24} id={pl.playerId} name={pl.playerName} bordered />
+                                    return <PlayerItem id={pl.playerId} name={pl.playerName} bordered />
                                 }
 
                             })}
                         </div>}>
                             {_.orderBy(p.players, "isHidden")[0].isHidden &&
-                                <Avatar style={{ color: "white", background: "black" }} size={diff * 24} shape='circle' >{p.players.length}</Avatar>
+                                <Avatar style={{ color: "white", background: "black" }} shape='circle' >{p.players.length}</Avatar>
                             }
                             {!_.orderBy(p.players, "isHidden")[0].isHidden &&
                                 <Badge count={"+" + (p.players.length - 1)} style={{ backgroundColor: 'black', color: "white" }}>
-                                    <PlayerItem size={diff * 24} id={_.orderBy(p.players, "isHidden")[0].playerId} name={_.orderBy(p.players, "isHidden")[0].playerName} bordered type={PlayerItemType.Avatar} />
+                                    <PlayerItem id={_.orderBy(p.players, "isHidden")[0].playerId} name={_.orderBy(p.players, "isHidden")[0].playerName} bordered type={PlayerItemType.Avatar} />
                                 </Badge>
                             }
                         </Popover>
@@ -110,9 +110,9 @@ const MapComponent = () => {
                         <div style={{ display: "flex", gap: 8, position: "absolute", justifyContent: "center", alignItems: "center" }}>
                             {p.players.map(pl => {
                                 if (pl.isHidden) {
-                                    return <Avatar size={diff * 24} icon={<QuestionOutlined />} shape='circle' style={{ color: "white", background: "black" }} />
+                                    return <Avatar icon={<QuestionOutlined />} shape='circle' style={{ color: "white", background: "black" }} />
                                 } else {
-                                    return <PlayerItem size={diff * 24} id={pl.playerId} name={pl.playerName} type={PlayerItemType.Avatar} bordered />
+                                    return <PlayerItem id={pl.playerId} name={pl.playerName} type={PlayerItemType.Avatar} bordered />
                                 }
 
                             })}
@@ -121,10 +121,10 @@ const MapComponent = () => {
                     {p.players.length === 1 &&
                         <>
                             {p.players[0].isHidden &&
-                                <Avatar size={diff * 24} shape='circle' style={{ color: "white", background: "black" }} ><QuestionOutlined /></Avatar>
+                                <Avatar shape='circle' style={{ color: "white", background: "black" }} ><QuestionOutlined /></Avatar>
                             }
                             {!p.players[0].isHidden &&
-                                <PlayerItem size={diff * 24} id={p.players[0].playerId} name={p.players[0].playerName} type={PlayerItemType.Avatar} bordered />
+                                <PlayerItem id={p.players[0].playerId} name={p.players[0].playerName} type={PlayerItemType.Avatar} bordered />
                             }
                         </>
 

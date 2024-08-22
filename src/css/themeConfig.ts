@@ -6,7 +6,8 @@ export const getTheme = (dark: boolean) => {
             sizeStep: 4,
             fontSize: 14,
             borderRadius: 16,
-            boxShadow: "4px 4px 8px 0px rgba(34, 60, 80, 0.2)"
+            boxShadow: "4px 4px 8px 0px rgba(34, 60, 80, 0.2)",
+            fontFamily: "custom-font"
         },
         components: {
             Avatar: {

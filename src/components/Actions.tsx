@@ -10,7 +10,10 @@ import { useAppDispatch } from "hooks/useAppDispatch";
 import { selectTransferMarkets } from "stores/teams";
 import { getTransferMarket } from "stores/teams/async-actions";
 import { selectWebsiteSettings } from "stores/auth";
-import { FaDiscord } from "react-icons/fa";
+import { FaDiscord, FaMapMarkedAlt, FaQuestion, FaShoppingCart } from "react-icons/fa";
+import { MdOutlineRule, MdQueryStats } from "react-icons/md";
+import { FaPeopleGroup } from "react-icons/fa6";
+import { BiTransfer } from "react-icons/bi";
 
 const Actions = () => {
     const dispatch = useAppDispatch();
@@ -28,27 +31,27 @@ const Actions = () => {
 
     return (
         <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "center", height: "100%", flexWrap: "wrap", alignContent: "center" }}>
-            <Button size="large" type="primary" onClick={() => setRulesOpen(true)}>Rules</Button>
+            <Button size="large" type="primary" onClick={() => setRulesOpen(true)} icon={<MdOutlineRule />} >Rules</Button>
             <Link to={"/shop"}  >
-                <Button size="large" style={{ background: "linear-gradient(145deg, #1a2a6c, #b21f1f, #fdbb2d)" }}>Shop</Button>
+                <Button size="large" style={{ background: "linear-gradient(145deg, #1a2a6c, #b21f1f, #fdbb2d)" }} icon={<FaShoppingCart />}>Shop</Button>
             </Link>
             {currentMode === IInstanceType.Teams &&
                 <Link to={"/free-agents"}  >
-                    <Button size="large" type="primary" >Free agents</Button>
+                    <Button size="large" type="primary" icon={<FaPeopleGroup />}>Free agents</Button>
                 </Link>
             }
             {currentMode === IInstanceType.Teams &&
                 <Badge count={transferMarkets.length}>
                     <Link to={"/transfer-market"}  >
-                        <Button size="large" type="primary" >Transfer market</Button>
+                        <Button size="large" type="primary" icon={<BiTransfer />}>Transfer market</Button>
                     </Link>
                 </Badge>
             }
             <Link to={"/top"}  >
-                <Button size="large" >Top stats</Button>
+                <Button size="large" icon={<MdQueryStats />}>Top stats</Button>
             </Link>
             <Link to={"/map"}  >
-                <Button size="large" >Map</Button>
+                <Button size="large" icon={<FaMapMarkedAlt />}>Map</Button>
             </Link>
             {websiteSettings && websiteSettings.discordJoinLink &&
                 <Link to={websiteSettings.discordJoinLink} target="_blank" rel="noopener noreferrer" >
@@ -56,6 +59,9 @@ const Actions = () => {
                 </Link>
             }
             <Rules open={rulesOpen} onClose={() => setRulesOpen(false)} />
+            <Link to={"/faq"}  >
+                <Button size="large" icon={<FaQuestion />}>FAQ</Button>
+            </Link>
         </div>
     )
 }

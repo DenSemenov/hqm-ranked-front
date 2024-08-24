@@ -54,6 +54,7 @@ import AvatarShapes from 'shared/AvatarShapes';
 import Shop from 'components/Shop';
 import { getShopSelects } from 'stores/shop/async-actions';
 import ReplayTesting from 'components/ReplayTesting';
+import Faq from 'components/Faq';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -115,6 +116,8 @@ function App() {
         return concatTitle("Team settings")
       case "transfer-market":
         return concatTitle("Transfer market")
+      case "faq":
+        return concatTitle("FAQ")
       default:
         return concatTitle("");
     }
@@ -295,6 +298,7 @@ function App() {
         <Route path="/map" element={<PlayersMap />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/replay-testing" element={<ReplayTesting />} />
+        <Route path="/faq" element={<Faq />} />
 
       </Routes>
     }
@@ -323,6 +327,7 @@ function App() {
         <Route path="/map" element={<PlayersMap />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/replay-testing" element={<ReplayTesting />} />
+        <Route path="/faq" element={<Faq />} />
       </Routes>
     }
   }, [currentMode])

@@ -283,7 +283,7 @@ const ReplayViewer = ({ externalId, pause, externalScene, externalPlayerName, re
 
     useEffect(() => {
         if (dataReady && sceneReady && onReady) {
-            onReady(currentTick, currentId);
+            onReady(min, currentId);
         }
     }, [dataReady, sceneReady])
 

@@ -42,17 +42,17 @@ const Teams = () => {
                 <Col span={14} style={{ height: "100%" }}>
                     <Row gutter={[16, 16]} style={{ height: "100%" }}>
                         <Col span={24} style={{ height: "calc(-16px + 70%)" }}>
-                            <Card bordered={false} style={{ height: "100%" }} id="playerCard">
+                            <Card style={{ height: "100%" }} id="playerCard">
                                 <TeamsTable />
                             </Card>
                         </Col>
                         <Col span={12} style={{ height: "calc(-16px + 30%)" }} >
-                            <Card bordered={false} style={{ height: "100%", padding: 16 }}>
+                            <Card style={{ height: "100%", padding: 16 }}>
                                 <Servers />
                             </Card>
                         </Col>
                         <Col span={12} style={{ height: "calc(-16px + 30%)" }} >
-                            <Card bordered={false} style={{ height: "100%", padding: 16 }}>
+                            <Card style={{ height: "100%", padding: 16 }}>
                                 <Actions />
                             </Card>
                         </Col>
@@ -62,17 +62,17 @@ const Teams = () => {
                 <Col span={10} style={{ height: "100%" }}>
                     <Row gutter={[16, 16]} style={{ height: "100%" }}>
                         <Col span={24} style={{ height: 62 }}>
-                            <Card bordered={false} style={{ height: "100%", padding: 12 }}>
+                            <Card style={{ height: "100%", padding: 12 }}>
                                 <TeamsActions />
                             </Card>
                         </Col>
                         <Col span={24} style={{ height: 80 }}>
-                            <Card bordered={false} style={{ height: "100%", padding: 16 }}>
+                            <Card style={{ height: "100%", padding: 16 }}>
                                 <StoriesComponent />
                             </Card>
                         </Col>
                         <Col span={24} style={{ height: "calc(-198px + 100%)" }} >
-                            <Card bordered={false} style={{ height: "100%" }}>
+                            <Card style={{ height: "100%" }}>
                                 <TeamsGames />
                             </Card>
                         </Col>

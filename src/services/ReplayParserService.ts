@@ -1,10 +1,73 @@
 import { IReplayMessage, IReplayPlayer, IReplayPuck, IReplayTick, PlayerInList } from "models/IReplayTick";
 import { HQMMessageReader } from "./HQMMessageReader";
 import HqmParse from "./HqmParse";
-import { ReplayMessageType, ReplayTeam } from "models/IReplayViewerResponse";
+import { ReplayMessage, ReplayMessageType, ReplayPlayer, ReplayPuck, ReplayTeam, ReplayTick } from "models/IReplayViewerResponse";
 import { IDictionary } from "models/IDictionary";
 
 export default class ReplayParserService {
+    static transformKeys = (obj: any[]) => {
+        return obj.map((x, index) => {
+            return {
+                packetNumber: index,
+                redScore: x.rs,
+                blueScore: x.bs,
+                time: x.t,
+                period: x.p,
+                pucks: x.pc.map((pc: any) => {
+                    return {
+                        index: pc.i,
+                        posX: pc.x,
+                        posY: pc.y,
+                        posZ: pc.z,
+                        rotX: pc.rx,
+                        rotY: pc.ry,
+                        rotZ: pc.rz,
+                    } as ReplayPuck
+                }),
+                players: x.pl.map((pl: any) => {
+                    return {
+                        index: pl.i,
+                        posX: pl.x,
+                        posY: pl.y,
+                        posZ: pl.z,
+                        rotX: pl.rx,
+                        rotY: pl.ry,
+                        rotZ: pl.rz,
+                        stickPosX: pl.spx,
+                        stickPosY: pl.spy,
+                        stickPosZ: pl.spz,
+                        stickRotX: pl.srx,
+                        stickRotY: pl.sry,
+                        stickRotZ: pl.srz,
+                        headTurn: pl.ht,
+                        bodyLean: pl.bl
+                    } as ReplayPlayer
+                }),
+                messages: x.m.map((m: any) => {
+                    return {
+                        replayMessageType: m.rmt,
+                        objectIndex: m.oi,
+                        playerIndex: m.pi,
+                        message: m.m,
+                        goalIndex: m.gi,
+                        assistIndex: m.ai,
+                        updatePlayerIndex: m.upi,
+                        playerName: m.pn,
+                        inServer: m.is,
+                        team: m.t
+                    } as ReplayMessage
+                }),
+                playersInList: x.pil.map((pil: any) => {
+                    return {
+                        index: pil.i,
+                        name: pil.n,
+                        team: pil.t
+                    } as any
+                }),
+            } as ReplayTick
+        })
+    }
+
     static async parseHrpFile(data: Uint8Array) {
         let replayTicks: IReplayTick[] = [];
 

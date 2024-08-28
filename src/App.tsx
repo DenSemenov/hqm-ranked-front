@@ -55,6 +55,7 @@ import Shop from 'components/Shop';
 import { getShopSelects } from 'stores/shop/async-actions';
 import ReplayTesting from 'components/ReplayTesting';
 import Faq from 'components/Faq';
+import ReplayViewerNew from 'components/ReplayViewerNew';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -147,7 +148,7 @@ function App() {
     justifyContent: "space-between",
     width: "100vw",
     padding: "0 32px",
-    background: "#141414"
+    background: "rgb(20 20 20 / 45%)"
   };
 
   const footerStyle: React.CSSProperties = {
@@ -299,6 +300,7 @@ function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/replay-testing" element={<ReplayTesting />} />
         <Route path="/faq" element={<Faq />} />
+        <Route path="/replay-viewer-new" element={<ReplayViewerNew />} />
 
       </Routes>
     }
@@ -328,6 +330,7 @@ function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/replay-testing" element={<ReplayTesting />} />
         <Route path="/faq" element={<Faq />} />
+        <Route path="/replay-viewer-new" element={<ReplayViewerNew />} />
       </Routes>
     }
   }, [currentMode])
@@ -337,7 +340,7 @@ function App() {
       theme={getTheme(true)}
     >
       <Flex gap="middle" className='main-layoutr' >
-        <Layout style={{ height: "100vh" }}>
+        <Layout style={{ height: "100vh" }} className='layout'>
           {!loadingUser &&
             <>
               <Layout.Header style={headerStyle}>

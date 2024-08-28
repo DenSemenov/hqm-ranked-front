@@ -31,7 +31,7 @@ const Games = () => {
     const setTableHeightAction = () => {
         const gc = document.getElementById("games-container");
         if (gc) {
-            let h = gc.clientHeight;
+            let h = gc.clientHeight - 56;
             setHeight(h);
         }
 

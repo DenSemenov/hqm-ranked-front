@@ -46,7 +46,7 @@ const PlayersTable = () => {
             }
             <Table
                 dataSource={currentSeasonStats}
-                bordered={false}
+
                 scroll={{
                     y: !isMobile ? height : undefined
                 }}

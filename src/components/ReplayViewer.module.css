@@ -5,9 +5,10 @@
     gap: 16px;
     bottom: 16px;
     left: 16px;
-    background-color: #141414;
+    background-color: rgba(17, 25, 40, 0.75);
     padding: 8px;
     border-radius: 8px;
+    backdrop-filter: blur(16px) saturate(180%);
 }
 
 .sliderItem {

@@ -84,7 +84,7 @@ const Admin = () => {
     const serversTab = useMemo(() => {
         return <Table
             dataSource={servers}
-            bordered={false}
+
             pagination={false}
             rowKey={"id"}
             footer={() => <div style={{ display: "flex", gap: 8 }}>
@@ -215,7 +215,7 @@ const Admin = () => {
             <Col span={24}>
                 <Table
                     dataSource={filtered}
-                    bordered={false}
+
                     rowKey={"id"}
                     columns={[
                         {
@@ -332,7 +332,7 @@ const Admin = () => {
     const adminsTab = useMemo(() => {
         return <Table
             dataSource={admins}
-            bordered={false}
+
             pagination={false}
             footer={() => <Popover
                 title="Ban player"
@@ -415,7 +415,7 @@ const Admin = () => {
                 layout="vertical"
                 style={{ display: "flex", flexDirection: "column", gap: 16 }}
             >
-                <Card bordered={false} title="Main" >
+                <Card title="Main" >
                     <div style={{ padding: 16 }}>
                         <Form.Item
                             label="Nickname change days limit"
@@ -462,7 +462,7 @@ const Admin = () => {
                         </Form.Item>
                     </div>
                 </Card>
-                <Card bordered={false} title="Discord" >
+                <Card title="Discord" >
                     <div style={{ padding: 16 }}>
                         <Form.Item
                             label="Discord connect required"
@@ -512,7 +512,7 @@ const Admin = () => {
                         </Form.Item>
                     </div>
                 </Card>
-                <Card bordered={false} title="Teams" >
+                <Card title="Teams" >
                     <div style={{ padding: 16 }}>
                         <Form.Item
                             label="Team max players"
@@ -523,7 +523,7 @@ const Admin = () => {
                         </Form.Item>
                     </div>
                 </Card>
-                <Card bordered={false} title="Spotify" >
+                <Card title="Spotify" >
                     <div style={{ padding: 16 }}>
                         <Form.Item
                             label="Spotify clientId"
@@ -545,7 +545,7 @@ const Admin = () => {
                         </Form.Item>
                     </div>
                 </Card>
-                <Card bordered={false} title="S3" >
+                <Card title="S3" >
                     <div style={{ padding: 16 }}>
                         <Form.Item
                             label="S3 Domain"
@@ -599,7 +599,7 @@ const Admin = () => {
     const storiesTab = useMemo(() => {
         return <Table
             dataSource={adminStories}
-            bordered={false}
+
             pagination={false}
             rowKey={"id"}
             footer={() => <Popover
@@ -682,7 +682,7 @@ const Admin = () => {
     const unapprovedUsersTab = useMemo(() => {
         return <Table
             dataSource={unapprovedUsers}
-            bordered={false}
+
             pagination={false}
             rowKey={"id"}
             columns={[

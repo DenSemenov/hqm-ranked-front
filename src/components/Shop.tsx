@@ -172,7 +172,7 @@ const Shop = () => {
         const nothingSelected = groupItems.filter(x => x.isSelected).length === 0;
         return <Row gutter={[16, 16]} style={{ paddingTop: isMobile ? 16 : 0 }}>
             <Col sm={8} xs={12}>
-                <Card title={"Default"} bordered={false} >
+                <Card title={"Default"}  >
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 16 }}>
                         {getContentByGroup(group, ShopItemType.Circle)}
                         <Button type="primary" disabled={nothingSelected} onClick={() => onSelectShopItem(null, group)} >{nothingSelected ? "Selected" : "Select"}</Button>
@@ -181,7 +181,7 @@ const Shop = () => {
             </Col>
             {groupItems.map(item => {
                 return <Col sm={8} xs={12}>
-                    <Card hoverable title={group === ShopItemGroup.AvatarShape ? item.description : undefined} bordered={false} extra={<div style={{ display: "flex", gap: 8, alignItems: "center", justifyContent: "end" }}>  <FaCoins color={"gold"} />{item.cost}</div>}>
+                    <Card hoverable title={group === ShopItemGroup.AvatarShape ? item.description : undefined} extra={<div style={{ display: "flex", gap: 8, alignItems: "center", justifyContent: "end" }}>  <FaCoins color={"gold"} />{item.cost}</div>}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 16 }}>
                             {getContentByGroup(group, item.type)}
                             {!item.isPurchased &&

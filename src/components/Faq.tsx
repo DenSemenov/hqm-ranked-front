@@ -32,7 +32,7 @@ const Faq = () => {
     ]
 
     return <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <Card title="Basics" bordered={false}>
+        <Card title="Basics" >
             <div style={{ padding: 24 }}>
                 <Text >
                     Firstly welcome to the community and the game. There are some things everyone should know before jumping into this game. This game starts out very very difficult so don't feel discouraged. It's a lot to take in at once, but the key is to keep practicing. Start by getting used to stick handling in shooting on servers by yourself. As you become more comfortable with that, move up to playing in pick up games with other people. The barrier to entry can feel more like a cliff, once you get over that first hump, it's insanely fun. You will never experience anything else like it.
@@ -40,7 +40,7 @@ const Faq = () => {
                 </Text>
             </div>
         </Card>
-        <Card title="Controls" bordered={false}>
+        <Card title="Controls" >
             <div style={{ padding: 24, display: "flex", flexDirection: "column" }}>
                 <Text >Left mouse: snap view to puck</Text>
                 <Text >Right mouse: freelook</Text>
@@ -60,7 +60,7 @@ const Faq = () => {
                 </Text>
             </div>
         </Card>
-        <Card title="Server commands" bordered={false}>
+        <Card title="Server commands" >
             <div style={{ padding: 24, display: "flex", flexDirection: "column" }}>
                 <Text >{"/l <password>: login on server"}</Text>
                 <Text >{"/p <char>: pick player"}</Text>
@@ -71,7 +71,7 @@ const Faq = () => {
                 <Text >{"/vp: vote for pause game"}</Text>
             </div>
         </Card>
-        <Card title="Tutorials" bordered={false}>
+        <Card title="Tutorials" >
             <div style={{ padding: 8 }}>
                 <Row gutter={[32, 32]}>
                     {tutorials.map(tutorial => {

@@ -5,7 +5,7 @@ import TeamsGames from "./TeamsGames";
 const TeamsControl = () => {
     return (
         <>
-            <Card bordered={false} style={{ padding: 8, margin: "16px" }}>
+            <Card style={{ padding: 8, margin: "16px" }}>
                 <TeamsActions />
             </Card>
             <TeamsGames />

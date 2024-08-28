@@ -132,7 +132,7 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
                 {avatarName}
             </Avatar>
         </div>
-    }, [size, shopSelects])
+    }, [size, id, shopSelects])
 
     return (
         <Link to={"/player?id=" + id} style={style}>

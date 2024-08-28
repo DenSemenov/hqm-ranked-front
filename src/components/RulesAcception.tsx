@@ -36,7 +36,7 @@ const RulesAcception = () => {
         <div className={styles.container}>
             <Title level={3}>Ban reasons</Title>
             {rules.rules.map(rule => {
-                return <Card bordered={false} title={rule.title} >
+                return <Card title={rule.title} >
                     <div style={{ padding: 16 }}>{rule.description}</div>
                 </Card>
             })}

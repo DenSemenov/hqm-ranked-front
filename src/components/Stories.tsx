@@ -16,6 +16,7 @@ import { cloneDeep, orderBy } from "lodash";
 import { HeartFilled, HeartOutlined, LinkOutlined } from '@ant-design/icons';
 import { selectCurrentUser } from "stores/auth";
 import { RiVolumeMuteFill, RiVolumeUpFill } from "react-icons/ri";
+import ReplayViewerNew from "./ReplayViewerNew";
 
 const { Text, Title } = Typography;
 
@@ -223,6 +224,7 @@ const StoriesComponent = () => {
     const replayComponent = useMemo(() => {
         const player = stories.find(x => x.playerId === selectedPlayer);
         if (player) {
+            console.log(player.playerId);
             return (
                 <div>
                     <div className={styles.storyAvatar}>
@@ -261,13 +263,21 @@ const StoriesComponent = () => {
                             <Button size="large" type="text" icon={isLiked ? <HeartFilled style={{ color: "#FF7276" }} /> : <HeartOutlined />} onClick={() => likeDislike(player.goals[currentStoryIndex].id)} />
                         </Badge>
                     </div>
-                    <ReplayViewer
+
+                    {/* <ReplayViewer
                         externalId={player.goals[currentStoryIndex].id}
                         externalPlayerName={player.name}
                         pause={!play}
                         onReady={onReady}
                         onTickChanged={setCurrentTick}
                         externalScene={scene}
+                    /> */}
+                    <ReplayViewerNew
+                        externalId={player.goals[currentStoryIndex].id}
+                        externalPlayerName={player.name}
+                        pause={!play}
+                        onReady={onReady}
+                        onTickChanged={setCurrentTick}
                     />
                 </div>
             );
@@ -308,7 +318,7 @@ const StoriesComponent = () => {
                 )
             }
         }
-    }, [stories, currentUser, currentStoryIndex, selectedPlayer, isLiked, play, mainStories, isMuted, onReady, setCurrentTick])
+    }, [currentStoryIndex, selectedPlayer, isLiked, play, mainStories, isMuted])
 
     const size = useMemo(() => {
         if (isMobile) {

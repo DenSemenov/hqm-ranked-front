@@ -40,7 +40,7 @@ const TeamsTable = () => {
                         label: 'Teams',
                         children: <Table
                             dataSource={currentTeamsStats.teams}
-                            bordered={false}
+
                             scroll={{
                                 y: !isMobile ? height : undefined
                             }}
@@ -130,7 +130,7 @@ const TeamsTable = () => {
                         label: 'Players',
                         children: <Table
                             dataSource={currentTeamsStats.players}
-                            bordered={false}
+
                             scroll={{
                                 y: !isMobile ? height : undefined
                             }}

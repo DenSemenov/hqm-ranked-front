@@ -23,7 +23,7 @@ const Rules = ({ open, onClose }: IProps) => {
         <Modal title={"Rules"} open={open} onCancel={onClose} footer={[]} width={1000}>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 {rules.rules.map(rule => {
-                    return <Card bordered={false} title={rule.title} key={rule.id}>
+                    return <Card title={rule.title} key={rule.id}>
                         <div style={{ padding: 16 }}>{rule.description}</div>
                     </Card>
                 })}

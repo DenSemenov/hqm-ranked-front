@@ -133,10 +133,10 @@ const TeamsGames = () => {
                     </Popover>
                 }
                 {gameInvites.length !== 0 &&
-                    <Card bordered={false} title={"Game invites"}>
+                    <Card title={"Game invites"}>
                         <div className={styles.gameInviteContainer}>
                             {gameInvites.map(x => {
-                                return <Card bordered={false} hoverable className={styles.gameInviteItem} >
+                                return <Card hoverable className={styles.gameInviteItem} >
                                     <div className={styles.timeTitle}>
                                         {x.isCurrentTeam && teamsState.team &&
                                             <TeamItem id={teamsState.team.id} name={teamsState.team.name} />

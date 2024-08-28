@@ -218,7 +218,7 @@ const Header = () => {
                         }}
                     />
                 </Card>}>
-                    <Tag style={{ height: 20, marginLeft: 16 }}>{leftDays + " days left"}</Tag>
+                    <Tag style={{ height: 20, marginLeft: 16 }}>{leftDays + "d left"}</Tag>
                 </Popover>
             }
         }
@@ -251,7 +251,7 @@ const Header = () => {
         switch (item.contractType) {
             case ContractType.Assists:
                 text = `Do ${item.count} assists`;
-                color = "linear-gradient(to top, #b92b27, #1565c0)";
+                color = "linear-gradient(to top, #b92b2763, #1565c0)";
                 break;
             case ContractType.WinWith800Elo:
                 text = `Win ${item.count} games with a player less than 800 elo`;
@@ -284,10 +284,10 @@ const Header = () => {
             current = <span>{item.currentCount + "/" + item.count}</span>
         }
         return <Badge.Ribbon text={current} placement="end" style={{ top: "calc(-54px + 100%)", display: item.isSelected ? undefined : "none" }} key={item.id}>
-            <div className={styles.contactCard} style={{ background: color, filter: item.isHidden ? "grayscale()" : undefined, outline: item.isSelected ? "4px solid #1c40af" : undefined }} onClick={() => onSelectContract(item)}>
+            <div className={styles.contactCard} style={{ background: "rgba(17, 25, 40, 0.75)", border: "1px solid rgba(255, 255, 255, 0.125)", filter: item.isHidden ? "grayscale()" : undefined, outline: item.isSelected ? "4px solid #1c40af" : undefined }} onClick={() => onSelectContract(item)}>
                 <div className={styles.contactCardPoints} style={{ bottom: item.isSelected ? 32 : 8 }}><FaCoins color={"gold"} />{item.points}</div>
                 {item.isSelected &&
-                    <Tag className={styles.contactCardDate}>{leftDays + " days left"}</Tag>
+                    <Tag className={styles.contactCardDate}>{leftDays + "d left"}</Tag>
                 }
 
                 <div className={styles.contactCardText} >
@@ -319,7 +319,7 @@ const Header = () => {
                 </div>
             }
         >
-            <Button style={{ background: 'linear-gradient(135deg, #6253E1, #04BEFE)' }} size="small">
+            <Button type="primary" size="small">
                 <Text>CONTRACTS</Text>
             </Button>
         </Popover>
@@ -333,14 +333,14 @@ const Header = () => {
     return (
         <>
             <div style={{ display: "flex", gap: 4, alignItems: "center", cursor: "pointer" }}>
-                <svg height="36" width={currentMode === IInstanceType.Ranked ? 36 : 12} onClick={() => onChangeMode(IInstanceType.Ranked)} className={currentMode !== IInstanceType.Ranked ? styles.filteredLogo : undefined}>
-                    <image href="/icons/logo.svg" height="36" width="36" />
-                </svg>
+                <div className={styles.rankedLogo + " " + (currentMode !== IInstanceType.Ranked ? styles.filteredLogo : undefined)} onClick={() => onChangeMode(IInstanceType.Ranked)}>
+                    RNKD
+                </div>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M13.2939 7.17041L11.9998 12L10.7058 16.8297" stroke="#4d4d4d" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
                 <div className={styles.teamsLogo + " " + (currentMode !== IInstanceType.Teams ? styles.filteredLogo : undefined)} onClick={() => onChangeMode(IInstanceType.Teams)}>
-                    {currentMode === IInstanceType.Teams ? "TEAMS" : "T"}
+                    TEAMS
                 </div>
                 {endsIn}
             </div>

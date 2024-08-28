@@ -67,7 +67,7 @@ const Game = () => {
         <Row gutter={[0, 16]}>
 
             <Col xs={24} sm={8}>
-                <Card bordered={false}
+                <Card
                     styles={{ body: { padding: 0 } }}
                     title={currentGameData.instanceType === IInstanceType.Teams ? <div className={styles.team}>
                         <TeamItem id={currentGameData.redTeamId as string} name={currentGameData.redTeamName as string} />
@@ -78,7 +78,7 @@ const Game = () => {
                 >
                     <Table
                         dataSource={currentGameData.players.filter(x => x.team == 0)}
-                        bordered={false}
+
                         pagination={false}
                         rowKey={"id"}
                         columns={[
@@ -169,7 +169,7 @@ const Game = () => {
                 </div>
             </Col>
             <Col xs={24} sm={8} className="right-align">
-                <Card bordered={false}
+                <Card
                     styles={{ body: { padding: 0 } }}
                     title={currentGameData.instanceType === IInstanceType.Teams ? <div className={styles.team}>
                         <TeamItem id={currentGameData.blueTeamId as string} name={currentGameData.blueTeamName as string} />
@@ -180,7 +180,7 @@ const Game = () => {
                 >
                     <Table
                         dataSource={currentGameData.players.filter(x => x.team == 1)}
-                        bordered={false}
+
                         pagination={false}
                         rowKey={"id"}
                         columns={[

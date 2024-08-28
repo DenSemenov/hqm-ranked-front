@@ -9,6 +9,13 @@ body {
   line-height: normal;
 }
 
+.layout {
+  background-color: #111927;
+  background-image:
+    radial-gradient(at 47% 33%, hsl(162.00, 77%, 40%) 0, transparent 59%),
+    radial-gradient(at 82% 65%, hsl(218.00, 39%, 11%) 0, transparent 55%);
+}
+
 .app {
   height: 100vh;
 }
@@ -336,4 +343,19 @@ div {
 .brCircle {
   background-image: url('/public/assets/shop/circle.gif') !important;
   background-size: cover;
+}
+
+.ant-card {
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.ant-popover-inner,
+.ant-modal-content {
+  background-color: rgba(17, 25, 40, 0.75) !important;
+  backdrop-filter: blur(16px) saturate(180%);
+}
+
+.ant-modal-header {
+  background-color: transparent !important;
 }

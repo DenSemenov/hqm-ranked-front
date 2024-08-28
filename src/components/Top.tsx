@@ -33,7 +33,7 @@ const Top = () => {
 
     return <Table
         dataSource={topStats}
-        bordered={false}
+
         scroll={{
             y: !isMobile ? height : undefined
         }}

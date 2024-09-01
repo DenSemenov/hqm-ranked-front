@@ -7,7 +7,7 @@ export interface IReplayTick {
     pc: IReplayPuck[];
     pl: IReplayPlayer[];
     m: IReplayMessage[];
-    pil: PlayerInList[];
+    pil: IPlayerInList[];
 }
 
 export interface IReplayPuck {
@@ -42,7 +42,7 @@ export interface IReplayPlayer {
 export interface IReplayMessage {
     rmt: ReplayMessageType;
     oi: number | null;
-    pi: number | null;
+    pi: number;
     m: string | null;
     gi: number | null;
     ai: number | null;
@@ -52,7 +52,7 @@ export interface IReplayMessage {
     t: ReplayTeam;
 }
 
-export interface PlayerInList {
+export interface IPlayerInList {
     li: number | null;
     i: number;
     n: string;

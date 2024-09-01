@@ -164,7 +164,7 @@ const Game = () => {
                         </Link>
                     }
                     {currentGameData.hasReplayFragments &&
-                        <Button type="primary" onClick={() => navigate("/replay?id=" + currentGameData.replayId)} size="small" icon={<FaPlay />} />
+                        <Button type="primary" onClick={() => navigate("/replay?id=" + currentGameData.id)} size="small" icon={<FaPlay />} />
                     }
                 </div>
             </Col>

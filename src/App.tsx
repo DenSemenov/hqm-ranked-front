@@ -284,7 +284,7 @@ function App() {
         <Route path="/registration" element={<RegisterModal />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/replay" element={<ReplayViewer />} />
+        <Route path="/replay" element={<ReplayViewerNew />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/servers" element={<Servers />} />
         <Route path="/other" element={<Other />} />
@@ -314,7 +314,7 @@ function App() {
         <Route path="/registration" element={<RegisterModal />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/replay" element={<ReplayViewer />} />
+        <Route path="/replay" element={<ReplayViewerNew />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/servers" element={<Servers />} />
         <Route path="/other" element={<Other />} />

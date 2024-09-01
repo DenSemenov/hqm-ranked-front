@@ -74,10 +74,9 @@
 
 .score {
     position: absolute;
-    top: 58px;
-    left: calc(-75px + 50%);
+    left: calc(-93px + 50%);
     display: flex;
-    width: 150px;
+    width: 186px;
     gap: 16px;
     align-items: center;
     justify-content: center;

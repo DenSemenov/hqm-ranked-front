@@ -39,6 +39,8 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
     const clearImageCache = useSelector(selectClearImageCache);
     const shopSelects = useSelector(selectShopSelects);
 
+    var timeout: NodeJS.Timeout | undefined;
+
     const avatarName = useMemo(() => {
         return name ? name[0].toUpperCase() : ""
     }, [name])
@@ -55,9 +57,12 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
 
     const onGetLiteData = (e: any) => {
         if (id) {
-            dispatch(getPlayerLiteData({
-                id: id
-            }))
+            timeout = setTimeout(function () {
+                dispatch(getPlayerLiteData({
+                    id: id
+                }))
+            }, 3000)
+
         }
     }
 
@@ -141,6 +146,11 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
                     className={styles.playerItem + " " + (isCurrent ? styles.currentUserTextStyle : undefined)}
                     key={key}
                     onMouseOver={onGetLiteData}
+                    onMouseDown={() => {
+                        if (timeout) {
+                            clearTimeout(timeout);
+                        }
+                    }}
                 >
                     {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
                         avatar

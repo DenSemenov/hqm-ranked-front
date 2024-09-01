@@ -1,23 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import jQuery from "jquery";
 import * as THREE from "three";
 import styles from './ReplayViewer.module.css'
 import ReplayParserService from "services/ReplayParserService";
-import { IFragment, IReplayViewerResponse, ReplayMessage, ReplayMessageType, ReplayPlayer, ReplayPuck, ReplayTick } from "models/IReplayViewerResponse";
+import { ReplayMessageType } from "models/IReplayViewerResponse";
 import ReplayService from "services/ReplayService";
-import { ReplayTeam } from "models/IReplayTick";
+import { IPlayerInList, IReplayMessage, IReplayPlayer, IReplayPuck, IReplayTick, ReplayTeam } from "models/IReplayTick";
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { Font, FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { isMobile } from "react-device-detect";
-import { Button, Select, Slider } from "antd";
+import { Button, Slider } from "antd";
 import { CaretRightOutlined, PauseOutlined, LoadingOutlined, WarningOutlined } from "@ant-design/icons";
-import { URL } from "url";
 import { useAppDispatch } from "hooks/useAppDispatch";
-import { getStoryReplayViewer } from "stores/season/async-actions";
+import { getGameData } from "stores/season/async-actions";
 import { useSelector } from "react-redux";
 import { selectStorageUrl } from "stores/season";
-
-const tempDataUrl = "https://s3.timeweb.cloud/27d30bc2-08dbec28-3409-4942-b60d-37f2afd0d688/2d0ffa37-84c4-4572-a0d1-a85e8c8f877b/replayGoals/ebff8df9-fd3a-46c0-9440-eb2b335af4a3e995f12b-479c-4486-909f-5c58707d85d6.json";
+import { useSearchParams } from "react-router-dom";
+import { IGameResponse } from "models/IGameResponse";
 
 const redMaterial = new THREE.MeshPhongMaterial({
     color: 0x8c1010,
@@ -28,14 +27,17 @@ const blueMaterial = new THREE.MeshPhongMaterial({
 
 interface IProps {
     externalId?: string;
+    externalUrl?: string;
     externalPlayerName?: string;
     pause?: boolean;
     onReady?: (startTick: number, currentId: string) => void;
     onTickChanged?: (tick: number) => void;
 }
 
-const ReplayViewerNew = ({ externalId, pause, externalPlayerName, onReady, onTickChanged }: IProps) => {
+const ReplayViewerNew = ({ externalId, externalUrl, pause, externalPlayerName, onReady, onTickChanged }: IProps) => {
     const dispatch = useAppDispatch();
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const storageUrl = useSelector(selectStorageUrl);
 
@@ -52,24 +54,55 @@ const ReplayViewerNew = ({ externalId, pause, externalPlayerName, onReady, onTic
         setSceneReady(false);
         setDataReady(false);
 
-        if (externalId) {
+        if (externalId && externalUrl) {
             setCurrentId(externalId);
 
-            dispatch(getStoryReplayViewer({
-                id: externalId,
-            })).unwrap().then((data: IReplayViewerResponse) => {
-                const path = storageUrl + data.url;
-                jQuery.getJSON(path, function (data) {
-                    const d = ReplayParserService.transformKeys(data);
-
-                    setMin(d[0].packetNumber)
-                    setCurrentTick(d[0].packetNumber)
-                    setMax(d[d.length - 1].packetNumber)
-                    setLoading(false);
-                    setDataReady(true);
-                    init(d);
+            const path = storageUrl + externalUrl;
+            jQuery.getJSON(path, (data: IReplayTick[]) => {
+                const max = data[data.length - 1].pn + 1;
+                data.forEach((element, index) => {
+                    data.push({
+                        ...element,
+                        pn: max + index,
+                    })
                 });
+
+                data.forEach((element, index) => {
+                    element.pn = index;
+                });
+
+                setMin(data[0].pn)
+                setCurrentTick(data[0].pn)
+                setMax(data[data.length - 1].pn)
+                setLoading(false);
+                setDataReady(true);
+                init(data);
             });
+        } else {
+            const id = searchParams.get("id");
+            const t = searchParams.get("t");
+
+            if (id) {
+                setCurrentId(id);
+
+                dispatch(getGameData({
+                    id: id
+                })).unwrap().then((data: IGameResponse) => {
+                    fetch(data.replayUrl).then(response => {
+                        response.arrayBuffer().then(buffer => {
+                            const bytes = new Uint8Array(buffer);
+                            ReplayParserService.parseHrpFile(bytes).then((result) => {
+                                setMin(result[0].pn)
+                                setCurrentTick(result[0].pn)
+                                setMax(result[result.length - 1].pn)
+                                setLoading(false);
+                                setDataReady(true);
+                                init(result);
+                            })
+                        });
+                    })
+                });
+            }
         }
     }, [externalId])
 
@@ -111,7 +144,7 @@ const ReplayViewerNew = ({ externalId, pause, externalPlayerName, onReady, onTic
         }
     }, [dataReady, sceneReady])
 
-    const init = async (data: ReplayTick[]) => {
+    const init = async (data: IReplayTick[]) => {
         let w = 0;
         let h = 0;
 
@@ -139,23 +172,25 @@ const ReplayViewerNew = ({ externalId, pause, externalPlayerName, onReady, onTic
 
             setSceneReady(true);
 
+            let currentPlayerList: IPlayerInList[] = [];
+
             function animate() {
                 const currentIdDiv = document.getElementById("currentId");
                 const currentIdTemp = currentIdDiv ? currentIdDiv.innerText : "";
 
                 setTimeout(function () {
-                    if (externalId === currentIdTemp) {
+                    if (externalId === currentIdTemp || !externalId) {
                         requestAnimationFrame(animate);
                     }
                 }, 10);
 
                 const frameNumber = getFrame();
-                const frame = data[frameNumber];
-
+                const frame = data.find(x => x.pn === frameNumber);
                 if (frame) {
-                    processMessages(frame.messages.filter(x => x.replayMessageType === ReplayMessageType.PlayerUpdate), scene, camera, font);
-                    processMovement(frame.players, frame.pucks, scene, camera);
-                    processCamera(camera, frame.pucks[0], frame)
+                    currentPlayerList = processMessages(frame.m, scene, font, currentPlayerList);
+                    processMovement(frame.pl, frame.pc, scene, camera);
+                    processCamera(camera, frame.pc[0], frame, currentPlayerList, frame.pn > 300)
+                    processOverlays(frame)
                 }
 
                 const rv = document.getElementById("replay-viewer");
@@ -185,56 +220,100 @@ const ReplayViewerNew = ({ externalId, pause, externalPlayerName, onReady, onTic
         return 0;
     }
 
-    const processCamera = (camera: THREE.PerspectiveCamera, puck: ReplayPuck, frame: ReplayTick) => {
-        const playerInList = frame.playersInList.find(x => x.name === externalPlayerName);
+    const processOverlays = (frame: IReplayTick) => {
+        const scoreContent = document.getElementById("score-content");
+        if (scoreContent) {
+
+            let p = frame.p + " period";
+            if (frame.p > 3) {
+                p = "OT";
+            }
+
+            const m = Math.floor(frame.t / 100 / 60);
+            const s = frame.t / 100 - m * 60;
+
+            let secString = Math.round(s).toString();
+
+            if (secString.length === 1) {
+                secString = "0" + secString;
+            }
+
+            const timeWithPeriod = p + " " + m + ":" + secString;
+
+            scoreContent.innerText = frame.rs + " - " + frame.bs + " " + timeWithPeriod;
+        }
+    }
+
+    const processCamera = (camera: THREE.PerspectiveCamera, puck: IReplayPuck, frame: IReplayTick, currentPlayerList: IPlayerInList[], netView: boolean) => {
+        const playerInList = currentPlayerList.find(x => x.n === externalPlayerName);
         if (playerInList) {
-            const playerObject = frame.players.find(x => x.index === playerInList.index);
+            const playerObject = frame.pl.find(x => x.i === playerInList.i);
             if (playerObject) {
-                const firstPuck = puck;
-                const puckPos = new THREE.Vector3(firstPuck.posX, 0, firstPuck.posZ);
-                const position = new THREE.Vector3(playerObject.posX, playerObject.posY, playerObject.posZ);
-                var dir = new THREE.Vector3();
-                var vec = dir.subVectors(puckPos, position).normalize();
-                var euler = new THREE.Euler(vec.x, vec.y, vec.z);
-                const quaternion = new THREE.Quaternion().setFromEuler(euler);
-                const offset = new THREE.Vector3(0, 0, playerInList.team === ReplayTeam.Red ? 9 : -9);
-                const rotatedOffset = offset.applyQuaternion(quaternion);
-                const positionBehind = position.clone().add(rotatedOffset);
-                camera.position.set(Math.min(Math.max(positionBehind.x, 1), 29), 2, Math.min(Math.max(positionBehind.z, 1), 60));
-                camera.lookAt(puckPos)
+                if (!netView) {
+                    const firstPuck = puck;
+                    const puckPos = new THREE.Vector3(firstPuck.x, 0, firstPuck.z);
+                    const position = new THREE.Vector3(playerObject.x, playerObject.y, playerObject.z);
+                    var dir = new THREE.Vector3();
+                    var vec = dir.subVectors(puckPos, position).normalize();
+                    var euler = new THREE.Euler(vec.x, vec.y, vec.z);
+                    const quaternion = new THREE.Quaternion().setFromEuler(euler);
+                    const offset = new THREE.Vector3(0, 0, playerInList.t === ReplayTeam.Red ? 9 : -9);
+                    const rotatedOffset = offset.applyQuaternion(quaternion);
+                    const positionBehind = position.clone().add(rotatedOffset);
+                    camera.position.set(Math.min(Math.max(positionBehind.x, 1), 29), 2, Math.min(Math.max(positionBehind.z, 1), 60));
+                    camera.lookAt(puckPos)
+                } else {
+                    const firstPuck = puck;
+                    const puckPos = new THREE.Vector3(firstPuck.x, 0, firstPuck.z);
+                    camera.position.set(15, 2.5, playerObject.tm === ReplayTeam.Red ? 60 : 1);
+                    camera.lookAt(puckPos)
+                }
             }
         } else {
-            const howLongFromCenter = puck.posZ - 30.5;
-            const x = puck.posX * 0.5;
+            const howLongFromCenter = puck.z - 30.5;
+            const x = puck.x * 0.5;
             camera.position.setZ(30.5 + howLongFromCenter * 0.2);
-            camera.position.setY(2 + (0.1 * puck.posX));
+            camera.position.setY(2 + (0.1 * puck.x));
             camera.position.setX(x);
-            camera.lookAt(puck.posX, puck.posY, puck.posZ);
+            camera.lookAt(puck.x, puck.y, puck.z);
         }
 
 
     }
 
-    const processMovement = (players: ReplayPlayer[], pucks: ReplayPuck[], scene: THREE.Scene, camera: THREE.PerspectiveCamera) => {
+    const processMovement = (players: IReplayPlayer[], pucks: IReplayPuck[], scene: THREE.Scene, camera: THREE.PerspectiveCamera) => {
         players.forEach(player => {
-            moveObject("upper", player.index, player, scene, camera);
-            moveObject("lower", player.index, player, scene, camera);
-            moveObject("stick", player.index, player, scene, camera);
-            moveObject("text", player.index, player, scene, camera);
-            moveObject("textPlane", player.index, player, scene, camera);
-            moveObject("avatarPlane", player.index, player, scene, camera);
+            moveObject("upper", player.i, player, scene, camera);
+            moveObject("lower", player.i, player, scene, camera);
+            moveObject("stick", player.i, player, scene, camera);
+            moveObject("text", player.i, player, scene, camera);
         })
 
         pucks.forEach(puck => {
-            movePuck(puck.index, puck, scene);
+            movePuck(puck.i, puck, scene);
+        })
+
+        const toRemove: string[] = [];
+        scene.traverse(object => {
+            if (object.isObject3D) {
+                if (object.name.startsWith("puck") && pucks.filter(x => "puck" + x.i === object.name).length === 0) {
+                    toRemove.push(object.name);
+                }
+            }
+        })
+        toRemove.forEach(x => {
+            const toRemoveObject = scene.getObjectByName(x);
+            if (toRemoveObject) {
+                toRemoveObject.removeFromParent();
+            }
         })
     }
 
-    const movePuck = (index: number, puck: ReplayPuck, scene: THREE.Scene) => {
-        const object = scene.getObjectByName("puck" + puck.index);
+    const movePuck = (index: number, puck: IReplayPuck, scene: THREE.Scene) => {
+        const object = scene.getObjectByName("puck" + puck.i);
         if (object) {
-            object.position.set(puck.posX, puck.posY, puck.posZ);
-            object.rotation.set(puck.rotX, -puck.rotY, puck.rotZ);
+            object.position.set(puck.x, puck.y, puck.z);
+            object.rotation.set(puck.rx, -puck.ry, puck.rz);
         } else {
             const objectLower = scene.getObjectByName("basepuck");
             if (objectLower) {
@@ -245,93 +324,125 @@ const ReplayViewerNew = ({ externalId, pause, externalPlayerName, onReady, onTic
         }
     }
 
-    const moveObject = (name: string, index: number, player: ReplayPlayer, scene: THREE.Scene, camera: THREE.PerspectiveCamera) => {
-        const object = scene.getObjectByName(name + player.index);
+    const removeObject = (name: string, index: number, scene: THREE.Scene) => {
+        const object = scene.getObjectByName(name + index);
+        if (object) {
+            scene.remove(object);
+        }
+
+    }
+
+    const moveObject = (name: string, index: number, player: IReplayPlayer, scene: THREE.Scene, camera: THREE.PerspectiveCamera) => {
+        const object = scene.getObjectByName(name + player.i);
         if (object) {
             if (name === "stick") {
-                object.position.set(player.stickPosX, player.stickPosY, player.stickPosZ);
-                object.rotation.set(player.stickRotX, -player.stickRotY, player.stickRotZ);
+                object.position.set(player.spx, player.spy, player.spz);
+                object.rotation.set(player.srx, -player.sry, player.srz);
             } else if (name === "text") {
-                object.position.set(player.posX, player.posY + 1, player.posZ);
+                object.position.set(player.x, player.y + 1, player.z);
                 object.lookAt(camera.position)
             } else {
-                object.position.set(player.posX, player.posY, player.posZ);
-                object.rotation.set(player.rotX, -player.rotY, player.rotZ);
+                object.position.set(player.x, player.y, player.z);
+                object.rotation.set(player.rx, -player.ry, player.rz);
             }
 
             if (name === "upper") {
-                object.rotateOnAxis(new THREE.Vector3(1, 0, 0), -player.bodyLean);
-                object.rotateOnAxis(new THREE.Vector3(0, 1, 0), player.headTurn);
+                object.rotateOnAxis(new THREE.Vector3(1, 0, 0), -player.bl);
+                object.rotateOnAxis(new THREE.Vector3(0, 1, 0), player.ht);
             }
 
         }
     }
 
-    const processMessages = (msgs: ReplayMessage[], scene: THREE.Scene, camera: THREE.PerspectiveCamera, font: Font) => {
+    const processMessages = (msgs: IReplayMessage[], scene: THREE.Scene, font: Font, playerInList: IPlayerInList[]) => {
         msgs.forEach(msg => {
-            const team = msg.team === ReplayTeam.Red ? "red" : "blue";
-            const objectUpper = scene.getObjectByName("base" + team + "upper");
-            const isExistsUpper = scene.getObjectByName("upper" + msg.objectIndex);
-            if (objectUpper && !isExistsUpper) {
-                const newObject = objectUpper.clone();
-                newObject.name = "upper" + msg.objectIndex;
-                scene.add(newObject);
-            }
-
-            const objectLower = scene.getObjectByName("base" + team + "lower");
-            const isExistsLower = scene.getObjectByName("lower" + msg.objectIndex);
-            if (objectLower && !isExistsLower) {
-                const newObject = objectLower.clone();
-                newObject.name = "lower" + msg.objectIndex;
-                scene.add(newObject);
-            }
-
-            const objectStick = scene.getObjectByName("basestick");
-            const isExistsStick = scene.getObjectByName("stick" + msg.objectIndex);
-            if (objectStick && !isExistsStick) {
-                const newObject = objectStick.clone();
-                newObject.name = "stick" + msg.objectIndex;
-                newObject.traverse(function (child) {
-                    if (child instanceof THREE.Mesh) {
-
-                        child.material = (msg.team === ReplayTeam.Red) ? redMaterial : blueMaterial;
-                    }
-                });
-                scene.add(newObject);
-            }
-
-
-            const isExistsText = scene.getObjectByName("text" + msg.objectIndex);
-            if (!isExistsText) {
-                const geometry = new TextGeometry(msg.playerName, {
-                    font: font,
-                    size: 0.15,
-                    depth: 0.1,
-                })
-
-                geometry.center();
-
-                const color = msg.team === ReplayTeam.Red ? 0x8c1010 : 0x10108c;
-
-                var group = new THREE.Object3D();
-                group.name = "text" + msg.objectIndex;
-                group.updateMatrix();
-
-                const mesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({ color: color })]);
-                group.add(mesh);
-
-                const size = mesh.geometry.boundingBox;
-                if (size) {
-                    const geometry = rectangleRounded(size.max.x - size.min.x + 0.2, 0.25, 0.1, 10);
-                    const material = new THREE.MeshBasicMaterial({ color: color, side: THREE.FrontSide, transparent: true, opacity: 0.1 });
-                    const plane = new THREE.Mesh(geometry, material);
-
-                    group.add(plane);
+            if (msg.rmt === ReplayMessageType.PlayerUpdate) {
+                if (playerInList.filter(x => x.i === msg.pi).length === 0) {
+                    playerInList.push({
+                        i: msg.pi,
+                        n: msg.pn,
+                        t: msg.t
+                    } as IPlayerInList)
                 }
-                scene.add(group);
-            }
 
+                if (msg.t !== ReplayTeam.Spectator) {
+                    const team = msg.t === ReplayTeam.Red ? "red" : "blue";
+                    const objectUpper = scene.getObjectByName("base" + team + "upper");
+                    const isExistsUpper = scene.getObjectByName("upper" + msg.oi);
+                    if (objectUpper && !isExistsUpper) {
+                        const newObject = objectUpper.clone();
+                        newObject.name = "upper" + msg.oi;
+                        scene.add(newObject);
+                    }
+
+                    const objectLower = scene.getObjectByName("base" + team + "lower");
+                    const isExistsLower = scene.getObjectByName("lower" + msg.oi);
+                    if (objectLower && !isExistsLower) {
+                        const newObject = objectLower.clone();
+                        newObject.name = "lower" + msg.oi;
+                        scene.add(newObject);
+                    }
+
+                    const objectStick = scene.getObjectByName("basestick");
+                    const isExistsStick = scene.getObjectByName("stick" + msg.oi);
+                    if (objectStick && !isExistsStick) {
+                        const newObject = objectStick.clone();
+                        newObject.name = "stick" + msg.oi;
+                        newObject.traverse(function (child) {
+                            if (child instanceof THREE.Mesh) {
+
+                                child.material = (msg.t === ReplayTeam.Red) ? redMaterial : blueMaterial;
+                            }
+                        });
+                        scene.add(newObject);
+                    }
+
+
+                    const isExistsText = scene.getObjectByName("text" + msg.oi);
+                    if (!isExistsText) {
+                        const geometry = new TextGeometry(msg.pn, {
+                            font: font,
+                            size: 0.15,
+                            depth: 0.1,
+                        })
+
+                        geometry.center();
+
+                        const color = msg.t === ReplayTeam.Red ? 0x8c1010 : 0x10108c;
+
+                        var group = new THREE.Object3D();
+                        group.name = "text" + msg.oi;
+                        group.updateMatrix();
+
+                        const mesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({ color: color })]);
+                        group.add(mesh);
+
+                        const size = mesh.geometry.boundingBox;
+                        if (size) {
+                            const geometry = rectangleRounded(size.max.x - size.min.x + 0.2, 0.25, 0.1, 10);
+                            const material = new THREE.MeshBasicMaterial({ color: color, side: THREE.FrontSide, transparent: true, opacity: 0.1 });
+                            const plane = new THREE.Mesh(geometry, material);
+
+                            group.add(plane);
+                        }
+                        scene.add(group);
+                    }
+                } else {
+                    const player = playerInList[msg.pi]
+                    if (player) {
+                        removeObject("upper", player.i, scene)
+                        removeObject("lower", player.i, scene)
+                        removeObject("stick", player.i, scene)
+                        removeObject("text", player.i, scene)
+                        removeObject("lower", player.i, scene)
+
+                        playerInList = playerInList.filter((x, index) => index !== msg.pi)
+                    }
+                }
+            }
         })
+
+        return playerInList;
     }
 
     const rectangleRounded = (w: number, h: number, r: number, s: number) => {
@@ -390,7 +501,10 @@ const ReplayViewerNew = ({ externalId, pause, externalPlayerName, onReady, onTic
                     className={styles.replayCanvas}
                 />
             </div>
-            <div className={styles.slider} style={{ bottom: isMobile ? 56 : 16, display: "none" }} >
+            <div className={styles.score} style={externalId ? { opacity: 0.5, bottom: 16 } : { top: 68 }}>
+                <span id="score-content" />
+            </div>
+            <div className={styles.slider} style={{ bottom: isMobile ? 56 : 16, display: externalId ? "none" : undefined }} >
                 <Button type="text" icon={loading ? <LoadingOutlined /> : (paused ? <CaretRightOutlined /> : <PauseOutlined />)} onClick={onPlayPause} />
                 <Slider
                     id="loop-slider"

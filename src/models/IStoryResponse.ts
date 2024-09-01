@@ -14,6 +14,7 @@ export interface IStoryGoalResponse {
     likes: IStoryLikeResponse[]
     music: IStoryGoalMusicResponse;
     instanceType: IInstanceType
+    url: string;
 }
 
 export interface IStoryGoalMusicResponse {

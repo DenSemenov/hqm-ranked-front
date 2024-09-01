@@ -52,7 +52,7 @@ const StoriesComponent = () => {
     }, []);
 
     useEffect(() => {
-        if (currentTick === startTick + 296) {
+        if (currentTick === startTick + 600) {
             next();
         }
     }, [currentTick, startTick]);
@@ -263,16 +263,8 @@ const StoriesComponent = () => {
                             <Button size="large" type="text" icon={isLiked ? <HeartFilled style={{ color: "#FF7276" }} /> : <HeartOutlined />} onClick={() => likeDislike(player.goals[currentStoryIndex].id)} />
                         </Badge>
                     </div>
-
-                    {/* <ReplayViewer
-                        externalId={player.goals[currentStoryIndex].id}
-                        externalPlayerName={player.name}
-                        pause={!play}
-                        onReady={onReady}
-                        onTickChanged={setCurrentTick}
-                        externalScene={scene}
-                    /> */}
                     <ReplayViewerNew
+                        externalUrl={player.goals[currentStoryIndex].url}
                         externalId={player.goals[currentStoryIndex].id}
                         externalPlayerName={player.name}
                         pause={!play}
@@ -459,7 +451,7 @@ const StoriesComponent = () => {
                     <div className={styles.storyReplayRight} onClick={next} />
                     <div className={styles.storyTimeline}>
                         {currentPlayer && currentPlayer.goals.map((goal, index) => {
-                            const percent = ((currentTick - startTick) / 296 * 100);
+                            const percent = ((currentTick - startTick) / 600 * 100);
                             const watched = watchedStories.includes(goal.id);
                             let background = "rgba(255, 255, 255, 0.12)";
                             if (loadingIndex === index) {

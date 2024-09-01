@@ -72,7 +72,7 @@ const Games = () => {
                                     {game.hasReplayFragments &&
                                         <Button size="small" icon={<CaretRightOutlined />} type="primary" onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate("/replay?id=" + game.replayId)
+                                            navigate("/replay?id=" + game.gameId)
                                         }} />
                                     }
                                     <Tag style={{ marginRight: 0 }}>{game.status}</Tag>

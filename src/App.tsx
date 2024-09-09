@@ -56,6 +56,7 @@ import { getShopSelects } from 'stores/shop/async-actions';
 import ReplayTesting from 'components/ReplayTesting';
 import Faq from 'components/Faq';
 import ReplayViewerNew from 'components/ReplayViewerNew';
+import ServerDeploy from 'shared/ServerDeploy';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -301,7 +302,7 @@ function App() {
         <Route path="/replay-testing" element={<ReplayTesting />} />
         <Route path="/faq" element={<Faq />} />
         <Route path="/replay-viewer-new" element={<ReplayViewerNew />} />
-
+        <Route path="/server-deploy" element={<ServerDeploy />} />
       </Routes>
     }
     if (currentMode === IInstanceType.Teams) {
@@ -331,6 +332,7 @@ function App() {
         <Route path="/replay-testing" element={<ReplayTesting />} />
         <Route path="/faq" element={<Faq />} />
         <Route path="/replay-viewer-new" element={<ReplayViewerNew />} />
+        <Route path="/server-deploy" element={<ServerDeploy />} />
       </Routes>
     }
   }, [currentMode])

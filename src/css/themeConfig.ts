@@ -16,27 +16,13 @@ export const getTheme = (dark: boolean) => {
             },
             Card: {
                 colorBorder: "transparent",
-                colorBgContainer: "rgba(17, 25, 40, 0.75)",
-            },
-            Table: {
-                colorBgContainer: "rgba(17, 25, 40, 0.75)",
-            },
-            Button: {
-                colorBgContainer: "rgba(17, 25, 40, 0.75)",
             },
             Popover: {
-                colorBgContainer: "rgba(17, 25, 40, 0.75)",
                 colorBgMask: "rgba(17, 25, 40, 0.75)",
             },
             Tag: {
                 colorBorder: "1px solid rgba(255, 255, 255, 0.125)"
             },
-            Modal: {
-                colorBgContainer: "rgba(17, 25, 40, 0.75)",
-            },
-            Input: {
-                colorBgContainer: "rgba(17, 25, 40, 0.75)",
-            }
         },
         algorithm: [(dark ? AntdTheme.darkAlgorithm : AntdTheme.defaultAlgorithm)],
     } as ThemeConfig

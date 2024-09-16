@@ -108,7 +108,7 @@ body {
 }
 
 .ant-typography {
-  margin: 0
+  margin: 0 !important
 }
 
 .warning-tags {
@@ -349,10 +349,15 @@ div {
 
 .ant-popover-inner,
 .ant-modal-content {
-  background-color: rgba(17, 25, 40, 0.75) !important;
+  background-color: rgba(37, 37, 37, 0.75) !important;
   backdrop-filter: blur(16px) saturate(180%);
 }
 
 .ant-modal-header {
   background-color: transparent !important;
+}
+
+.ant-list-item:hover {
+  background-color: #3f3f3f24;
+  cursor: pointer;
 }

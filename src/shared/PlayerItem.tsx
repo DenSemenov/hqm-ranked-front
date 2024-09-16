@@ -26,11 +26,12 @@ interface IProps {
     size?: number
     bordered?: boolean
     style?: CSSProperties
+    isOnlyAvatar?: boolean
 }
 
 const { Text, Title } = Typography;
 
-const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, bordered = false, style = {} }: IProps) => {
+const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, bordered = false, isOnlyAvatar, style = {} }: IProps) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -57,11 +58,9 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
 
     const onGetLiteData = (e: any) => {
         if (id) {
-            timeout = setTimeout(function () {
-                dispatch(getPlayerLiteData({
-                    id: id
-                }))
-            }, 3000)
+            dispatch(getPlayerLiteData({
+                id: id
+            }))
 
         }
     }
@@ -126,8 +125,8 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
 
         const url = storageUrl + "images/" + id + ".png" + "?t=" + query;
 
-        return <div className={styles.border + " " + br} style={{ width: s + 8, height: s + 8, padding: 4, clipPath: "url(#" + clip + "-border)" }} >
-            <Avatar
+        if (isOnlyAvatar) {
+            return <Avatar
                 style={{ width: s, clipPath: "url(#" + clip + ")" }}
                 size={s}
                 shape="square"
@@ -136,8 +135,20 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
             >
                 {avatarName}
             </Avatar>
-        </div>
-    }, [size, id, shopSelects])
+        } else {
+            return <div className={styles.border + " " + br} style={{ width: s + 8, height: s + 8, padding: 4, clipPath: "url(#" + clip + "-border)" }} >
+                <Avatar
+                    style={{ width: s, clipPath: "url(#" + clip + ")" }}
+                    size={s}
+                    shape="square"
+                    src={id ? url : "/icons/avatar-template.jpg"}
+                    rootClassName='player-item'
+                >
+                    {avatarName}
+                </Avatar>
+            </div>
+        }
+    }, [size, id, shopSelects, isOnlyAvatar])
 
     return (
         <Link to={"/player?id=" + id} style={style}>

@@ -8,6 +8,7 @@ import events from "./events";
 import teams from "./teams";
 import contract from "./contract";
 import shop from "./shop";
+import weeklyTourney from "./weekly-tourney";
 
 export const store = configureStore({
     reducer: {
@@ -18,7 +19,8 @@ export const store = configureStore({
         events,
         teams,
         contract,
-        shop
+        shop,
+        weeklyTourney
     },
     preloadedState: loadState(),
 });

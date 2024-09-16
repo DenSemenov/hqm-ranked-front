@@ -8,6 +8,10 @@ export const convertFullDate = (date: Date) => {
     return new Date(date).toLocaleTimeString(navigator.language, { hour: '2-digit', minute: '2-digit' });
 }
 
+export const convertFullDateWithDate = (date: Date) => {
+    return new Date(date).toLocaleDateString(navigator.language, { hour: '2-digit', minute: '2-digit' });
+}
+
 export const getWeekEnd = () => {
     const dateObj = new Date();
     const day = dateObj.getDay();

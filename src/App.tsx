@@ -57,6 +57,9 @@ import ReplayTesting from 'components/ReplayTesting';
 import Faq from 'components/Faq';
 import ReplayViewerNew from 'components/ReplayViewerNew';
 import ServerDeploy from 'shared/ServerDeploy';
+import { getCurrentWeeklyTourneyId, getWeeklyTourney, getWeeklyTourneys } from 'stores/weekly-tourney/async-actions';
+import WeeklyTourney from 'stores/weekly-tourney';
+import WeeklyTourneyComponent from 'components/WeeklyTourneyComponent';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -194,6 +197,8 @@ function App() {
     dispatch(getHomeStats());
     dispatch(getContracts());
     dispatch(getShopSelects());
+    dispatch(getCurrentWeeklyTourneyId());
+    dispatch(getWeeklyTourneys());
   }, [])
 
   useEffect(() => {
@@ -303,6 +308,7 @@ function App() {
         <Route path="/faq" element={<Faq />} />
         <Route path="/replay-viewer-new" element={<ReplayViewerNew />} />
         <Route path="/server-deploy" element={<ServerDeploy />} />
+        <Route path="/weekly-tourney" element={<WeeklyTourneyComponent />} />
       </Routes>
     }
     if (currentMode === IInstanceType.Teams) {
@@ -333,6 +339,7 @@ function App() {
         <Route path="/faq" element={<Faq />} />
         <Route path="/replay-viewer-new" element={<ReplayViewerNew />} />
         <Route path="/server-deploy" element={<ServerDeploy />} />
+        <Route path="/weekly-tourney" element={<WeeklyTourneyComponent />} />
       </Routes>
     }
   }, [currentMode])

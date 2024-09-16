@@ -1,7 +1,7 @@
-import { Card, Carousel, Col, Flex, Row } from "antd";
+import { Card, Carousel, Col, Row } from "antd";
 import PlayersTable from "./PlayersTable";
 import Games from "./Games";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { isMobile } from "react-device-detect";
 import Events from "./Events";
 import Servers from "./Servers";
@@ -9,8 +9,21 @@ import Actions from "./Actions";
 import StoriesComponent from "./Stories";
 import DailyStats from "./DailyStats";
 import WeekyStats from "./WeeklyStats";
+import WeeklyTourneyCard from "./WeeklyTourneyCard";
+import { selectCurrentWeeklyTourney } from "stores/weekly-tourney";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+    const navigate = useNavigate();
+
+    const currentWeeklyTourney = useSelector(selectCurrentWeeklyTourney);
+
+    useEffect(() => {
+        if (currentWeeklyTourney) {
+            // navigate("/weekly-tourney?id=" + currentWeeklyTourney)
+        }
+    }, [currentWeeklyTourney])
 
     const content = useMemo(() => {
         if (isMobile) {
@@ -53,6 +66,7 @@ const HomePage = () => {
                             <Card style={{ height: "100%", padding: 16 }} id="stats-container" >
                                 <Carousel style={{ height: "100%", padding: isMobile ? 16 : 0 }} fade waitForAnimate autoplay>
                                     <Events />
+                                    <WeeklyTourneyCard />
                                     <DailyStats />
                                     <WeekyStats />
                                 </Carousel>

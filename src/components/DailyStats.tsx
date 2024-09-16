@@ -23,7 +23,6 @@ const DailyStats = () => {
             let h = gc.clientHeight - 64;
             setHeight(h);
         }
-
     }
 
     const data = useMemo(() => {

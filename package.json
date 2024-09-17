@@ -5,6 +5,7 @@
   "dependencies": {
     "@ant-design/plots": "^2.2.4",
     "@firebase/messaging": "^0.12.9",
+    "@g-loot/react-tournament-brackets": "^1.0.31-rc",
     "@microsoft/signalr": "^8.0.0",
     "@react-spring/web": "^9.7.3",
     "@react-three/drei": "^9.111.3",

@@ -90,6 +90,7 @@ const Admin = () => {
             footer={() => <div style={{ display: "flex", gap: 8 }}>
                 <Button onClick={() => onAddServer(IInstanceType.Ranked)}>Add ranked server</Button>
                 <Button onClick={() => onAddServer(IInstanceType.Teams)}>Add teams server</Button>
+                <Button onClick={() => onAddServer(IInstanceType.WeeklyTourney)}>Add weekly tourney server</Button>
             </div>}
             columns={[
                 {
@@ -105,6 +106,9 @@ const Admin = () => {
                         }
                         if (value === 1) {
                             return <Tag>Teams</Tag>
+                        }
+                        if (value === 2) {
+                            return <Tag>Weekly tourney</Tag>
                         }
                     },
                 },

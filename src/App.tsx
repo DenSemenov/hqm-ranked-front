@@ -236,6 +236,7 @@ function App() {
     singnalR.onHeartbeat = onHeartbeat;
     singnalR.onGamesChange = onGamesChange;
     singnalR.onInvitesChange = onInvitesChange;
+    singnalR.onWeeklyTourneyChange = onWeeklyTourneyChange;
   }, []);
 
   useEffect(() => {
@@ -276,6 +277,13 @@ function App() {
 
   const onInvitesChange = () => {
     dispatch(getGameInvites());
+  }
+
+  const onWeeklyTourneyChange = (id: string) => {
+    dispatch(getWeeklyTourneys())
+    dispatch(getWeeklyTourney({
+      id: id
+    }))
   }
 
   const routes = useMemo(() => {

@@ -7,8 +7,35 @@
 }
 
 .game {
+    margin-top: 1px;
     width: 100%;
     border-radius: 8px;
-    padding: 16px;
-    border: 1px solid rgba(253, 253, 253, 0.12);
+    border: 1px solid #303030;
+}
+
+.teamWithScore {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px;
+    background-color: rgba(20, 20, 20, 0.45);
+}
+
+.winner {
+    background-color: #179c75;
+}
+
+.red {
+    border-radius: 8px 8px 0 0;
+}
+
+.blue {
+    border-radius: 0 0 8px 8px;
+}
+
+.emptyTeam {
+    height: 16px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.12) 25%, rgba(255, 255, 255, 0.18) 37%, rgba(255, 255, 255, 0.12) 63%);
+    margin: 8px;
+    border-radius: 8px;
 }

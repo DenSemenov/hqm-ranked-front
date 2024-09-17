@@ -224,7 +224,6 @@ const StoriesComponent = () => {
     const replayComponent = useMemo(() => {
         const player = stories.find(x => x.playerId === selectedPlayer);
         if (player) {
-            console.log(player.playerId);
             return (
                 <div>
                     <div className={styles.storyAvatar}>

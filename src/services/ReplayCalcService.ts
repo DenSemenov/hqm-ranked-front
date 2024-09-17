@@ -24,8 +24,6 @@ export default class ReplayCalcService {
             }
         })
 
-        console.log(result.goals);
-
         var withVectors: any[] = [];
 
         let prevTick: any = null;

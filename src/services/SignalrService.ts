@@ -7,6 +7,7 @@ export default class SignalrService {
     onHeartbeat: ((data: IHeartbeatResponse) => void) | undefined;
     onGamesChange: (() => void) | undefined;
     onInvitesChange: (() => void) | undefined;
+    onWeeklyTourneyChange: ((data: string) => void) | undefined;
 
     async invoke(methodName: string, ...params: any[]) {
         if (this.connection && this.connection.state === signalR.HubConnectionState.Connected) {
@@ -41,6 +42,7 @@ export default class SignalrService {
         connection.on("onHeartbeat", this.onHeartbeatEvent);
         connection.on("onGamesChange", this.onGamesChangeEvent);
         connection.on("onInvitesChange", this.onInvitesChangeEvent);
+        connection.on("onWeeklyTourneyChange", this.onWeeklyTourneyChangeEvent);
 
         connection.onclose((e) => {
             console.log(e);
@@ -52,6 +54,12 @@ export default class SignalrService {
                 localStorage.setItem("connectionId", connection.connectionId);
             }
         }).catch(reason => console.log(reason.message, reason.stack));
+    }
+
+    onWeeklyTourneyChangeEvent = (data: string) => {
+        if (this.onWeeklyTourneyChange) {
+            this.onWeeklyTourneyChange(data);
+        }
     }
 
     onHeartbeatEvent = (data: IHeartbeatResponse) => {

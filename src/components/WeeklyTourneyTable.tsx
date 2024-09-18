@@ -11,7 +11,6 @@ import SingleEliminationBracket from "shared/Brackets/SingleElimBasket";
 import { getCalculatedStyles } from "shared/Brackets/settings";
 import { calculateSVGDimensions } from "shared/Brackets/calculate-svg-dimensions";
 import PlayerItem from "shared/PlayerItem";
-const brackets = require('@g-loot/react-tournament-brackets');
 
 const { Text, Title } = Typography;
 
@@ -92,29 +91,11 @@ const WeeklyTourneyTable = () => {
         </div>
     }
 
-    const darkTheme = brackets.createTheme({
-        textColor: { main: 'white', highlighted: '#07090D', dark: '#3E414D' },
-        matchBackground: { wonColor: '#daebf9', lostColor: '#96c6da' },
-        score: {
-            background: { wonColor: '#87b2c4', lostColor: '#87b2c4' },
-            text: { highlightedWonColor: '#7BF59D', highlightedLostColor: '#FB7E94' },
-        },
-        border: {
-            color: '#CED1F2',
-            highlightedColor: '#da96c6',
-        },
-        roundHeader: { backgroundColor: '#da96c6', fontColor: '#000' },
-        connectorColor: '#CED1F2',
-        connectorColorHighlight: '#da96c6',
-        svgBackground: 'transparent',
-    });
-
     const content = useMemo(() => {
         switch (selectedTab) {
             case SelectedTab.Brackets:
                 return <SingleEliminationBracket
                     matches={matches}
-                    theme={darkTheme}
                     matchComponent={match}
                 />
             case SelectedTab.Teams:

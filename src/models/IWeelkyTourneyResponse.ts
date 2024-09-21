@@ -30,7 +30,10 @@ export interface IWeeklyTourneyTeam {
 export interface IWeeklyTourneyTeamPlayer {
     id: number;
     name: string;
-
+    gp: number;
+    goals: number;
+    assists: number;
+    points: number;
 }
 
 export interface IWeeklyTourneyGame {
@@ -44,6 +47,7 @@ export interface IWeeklyTourneyGame {
     redScore: number;
     blueScore: number;
     index: number;
+    state: string;
 }
 
 export interface IWeeklyTourneyRegistrationPlayer {

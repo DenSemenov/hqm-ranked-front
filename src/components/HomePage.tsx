@@ -21,7 +21,7 @@ const HomePage = () => {
 
     useEffect(() => {
         if (currentWeeklyTourney) {
-            // navigate("/weekly-tourney?id=" + currentWeeklyTourney)
+            navigate("/weekly-tourney?id=" + currentWeeklyTourney)
         }
     }, [currentWeeklyTourney])
 

@@ -361,3 +361,13 @@ div {
   background-color: #3f3f3f24;
   cursor: pointer;
 }
+
+.left-align {
+  text-align: left !important;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}

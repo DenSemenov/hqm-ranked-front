@@ -19,18 +19,27 @@
     align-items: center;
     padding: 0 8px;
     background-color: rgba(20, 20, 20, 0.45);
+    width: calc(-24px + 100%);
 }
 
 .winner {
+    background-color: #179c7434;
+}
+
+.winnerAll {
     background-color: #179c75;
 }
 
+.retired {
+    background-color: #ff00000f;
+}
+
 .red {
-    border-radius: 8px 8px 0 0;
+    border-radius: 8px 0 0 0;
 }
 
 .blue {
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 0 8px;
 }
 
 .emptyTeam {
@@ -38,4 +47,17 @@
     background: linear-gradient(90deg, rgba(255, 255, 255, 0.12) 25%, rgba(255, 255, 255, 0.18) 37%, rgba(255, 255, 255, 0.12) 63%);
     margin: 8px;
     border-radius: 8px;
+}
+
+.state {
+    position: absolute;
+    right: 0;
+    top: 1px;
+    background-color: rgba(20, 20, 20, 1);
+    width: 24px;
+    height: 100%;
+    writing-mode: vertical-rl;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

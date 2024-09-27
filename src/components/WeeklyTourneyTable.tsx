@@ -1,4 +1,4 @@
-import { Card, Col, Divider, message, notification, Radio, Row, Skeleton, Typography } from "antd";
+import { Card, Col, Divider, message, notification, Radio, Row, Skeleton, Table, Typography } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectWeeklyTourney } from "stores/weekly-tourney";
@@ -18,7 +18,8 @@ const { Text, Title } = Typography;
 
 const enum SelectedTab {
     Brackets,
-    Teams
+    Teams,
+    Players
 }
 
 const WeeklyTourneyTable = () => {
@@ -27,6 +28,20 @@ const WeeklyTourneyTable = () => {
     const [selectedTab, setSelectedTab] = useState<SelectedTab>(SelectedTab.Brackets);
     const [notificationShowed, setNotificationShowed] = useState<boolean>(false);
     const [api, contextHolder] = notification.useNotification();
+    const [height, setHeight] = useState<number>(0);
+
+    useEffect(() => {
+        setTableHeightAction();
+        window.addEventListener('resize', setTableHeightAction, true);
+    }, [isMobile]);
+
+    const setTableHeightAction = () => {
+        const playerCard = document.getElementById("wt-table");
+        if (playerCard) {
+            let h = playerCard.clientHeight - 120;
+            setHeight(h);
+        }
+    }
 
     const legend = (round: number) => {
         const maxRound = _.max(weeklyTourney.tourney?.games.map(x => x.playoffType));
@@ -101,7 +116,7 @@ const WeeklyTourneyTable = () => {
                 <div className={styles.teamWithScore + " " + (data.match.participants[0].isWinner ? winnerStyle : loserStyle) + " " + styles.red}>
                     {data.match.participants[0].id &&
                         <>
-                            <WTTeam id={data.match.participants[0].id} name={data.match.participants[0].name} crossed={!data.match.participants[0].isWinner} />
+                            <WTTeam id={data.match.participants[0].id} name={data.match.participants[0].name} crossed={!data.match.participants[0].isWinner} players={weeklyTourney.tourney?.teams.find(x => x.id === data.match.participants[0].id)?.players} />
                             {(data.match.participants[0].score !== 0 || data.match.participants[1].score !== 0) &&
                                 <Title level={5}>{data.match.participants[0].score}</Title>
                             }
@@ -115,7 +130,7 @@ const WeeklyTourneyTable = () => {
                 <div className={styles.teamWithScore + " " + (data.match.participants[1].isWinner ? winnerStyle : loserStyle) + " " + styles.blue}>
                     {data.match.participants[1].id &&
                         <>
-                            <WTTeam id={data.match.participants[1].id} name={data.match.participants[1].name} crossed={!data.match.participants[1].isWinner} />
+                            <WTTeam id={data.match.participants[1].id} name={data.match.participants[1].name} crossed={!data.match.participants[1].isWinner} players={weeklyTourney.tourney?.teams.find(x => x.id === data.match.participants[1].id)?.players} />
                             {(data.match.participants[0].score !== 0 || data.match.participants[1].score !== 0) &&
                                 <Title level={5}>{data.match.participants[1].score}</Title>
                             }
@@ -186,6 +201,114 @@ const WeeklyTourneyTable = () => {
                         </Col>
                     })}
                 </Row>
+            case SelectedTab.Players:
+                const data: any[] = [];
+                weeklyTourney.tourney?.teams.forEach(t => {
+                    t.players.forEach(p => {
+                        data.push({
+                            playerId: p.id,
+                            nickname: p.name,
+                            gp: p.gp,
+                            goals: p.goals,
+                            assists: p.assists,
+                            points: p.points,
+                            teamId: t.id,
+                            teamName: t.name
+                        })
+                    })
+                })
+                return <Table
+                    dataSource={_.orderBy(data, "points", "desc")}
+                    rowKey={"nickname"}
+                    scroll={{
+                        y: !isMobile ? height : undefined
+                    }}
+                    pagination={false}
+                    columns={[
+                        {
+                            title: "#",
+                            width: 70,
+                            dataIndex: "place",
+                            render(value, record, index) {
+                                return index + 1;
+                            },
+                        },
+                        {
+                            title: "NICKNAME",
+                            width: 160,
+                            dataIndex: "nickname",
+                            ellipsis: true,
+                            fixed: "left",
+                            render(value, record, index) {
+                                return <PlayerItem id={record.playerId} name={record.nickname} />
+                            },
+                        },
+                        {
+                            title: "TEAM",
+                            width: 160,
+                            dataIndex: "nickname",
+                            ellipsis: true,
+                            fixed: "left",
+                            render(value, record, index) {
+                                return <WTTeam id={record.teamId} name={record.teamName} players={weeklyTourney.tourney?.teams.find(x => x.id === record.teamId)?.players} />
+                            },
+                        },
+                        {
+                            title: "GP",
+                            width: 90,
+                            align: "right",
+                            dataIndex: "g",
+                            render(value, record, index) {
+                                return record.gp
+                            },
+                        },
+                        {
+                            title: "G",
+                            width: 90,
+                            align: "right",
+                            dataIndex: "g",
+                            render(value, record, index) {
+                                return record.goals
+                            },
+                        },
+                        {
+                            title: "GPG",
+                            width: 70,
+                            align: "right",
+                            dataIndex: "gpg",
+                            render(value, record, index) {
+                                return Math.floor(record.goals / (record.gp) * 100) / 100
+                            },
+                        },
+                        {
+                            title: "A",
+                            width: 90,
+                            align: "right",
+                            dataIndex: "g",
+                            render(value, record, index) {
+                                return record.assists
+                            },
+                        },
+                        {
+                            title: "APG",
+                            width: 70,
+                            align: "right",
+                            dataIndex: "apg",
+                            render(value, record, index) {
+                                return Math.floor(record.assists / (record.gp) * 100) / 100
+                            },
+                        },
+                        {
+                            title: "P",
+                            width: 90,
+                            align: "right",
+                            dataIndex: "g",
+                            render(value, record, index) {
+                                return record.points
+                            },
+                        },
+                    ]}
+                />
         }
     }, [weeklyTourney, selectedTab, matches, match])
 
@@ -204,6 +327,10 @@ const WeeklyTourneyTable = () => {
                         {
                             label: "Teams",
                             value: SelectedTab.Teams
+                        },
+                        {
+                            label: "Players",
+                            value: SelectedTab.Players
                         },
                     ]} onChange={(e) => setSelectedTab(e.target.value)} value={selectedTab} optionType="button" />
                 </Col>

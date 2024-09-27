@@ -4,9 +4,8 @@ import HomePage from './components/HomePage';
 import Header from './components/Header';
 import { App as AppComponent, ConfigProvider, theme as AntdTheme, Tag, Flex, Layout, notification, Button } from 'antd';
 import { isMobile } from 'react-device-detect';
-import PlayersTable from 'components/PlayersTable';
 import Games from 'components/Games';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { Suspense, useContext, useEffect, useMemo, useState } from 'react';
 import { getCurrentUser, getPlayerWarnings, getWebsiteSettings } from 'stores/auth/async-actions';
 import { getHomeStats, getSeasons, getSeasonsGames, getSeasonsStats, getStorage } from 'stores/season/async-actions';
 import { getActiveServers } from 'stores/server/async-actions';
@@ -15,57 +14,59 @@ import { useSelector } from 'react-redux';
 import { selectCurrentGameData, selectCurrentMode, selectCurrentPlayerData, selectCurrentSeason, selectLoading } from 'stores/season';
 import { selectCurrentUser, selectHoveredPosition, selectIsAuth, selectLoadingUser, selectTheme, setLoadingUser, setTheme } from 'stores/auth';
 import Player from 'components/Player';
-import LoginModal from 'components/LoginModal';
-import RegisterModal from 'components/RegisterModal';
-import Admin from 'components/Admin';
 import { LoadingOutlined } from "@ant-design/icons";
-import ProfilePage from 'components/ProfilePage';
-import Game from 'components/Game';
 import SignalrService from 'services/SignalrService';
 import { IHeartbeatResponse } from 'models/IHeartbeatResponse';
 import { setUpdatedServer } from 'stores/server';
-import ReplayViewer from 'components/ReplayViewer';
 import { initializeFirebase } from 'firebaseService';
-import Notifications from 'components/Notifications';
 import { getTheme } from 'css/themeConfig';
 import Footer from 'components/Footer';
-import Servers from 'components/Servers';
-import Other from 'components/Other';
-import RulesAcception from 'components/RulesAcception';
-import Top from 'components/Top';
-import Patrol from 'components/Patrol';
 import { IInstanceType } from 'models/IInstanceType';
 import Teams from 'components/Teams';
-import FreeAgents from 'components/FreeAgents';
-import Team from 'components/Team';
-import TeamSettings from 'components/TeamSettings';
 import TeamsGames from 'components/TeamsGames';
 import TeamsControl from 'components/TeamsControl';
 import { useTransition, animated, useSpring } from "react-spring";
-import DiscordLogin from 'components/DiscordLogin';
 import { IPlayerWarningResponse, WarningType } from 'models/IPlayerWarningResponse';
-import TransferMarket from 'components/TransferMarket';
 import { getGameInvites, getTeamsState } from 'stores/teams/async-actions';
 import { selectCurrentTeam } from 'stores/teams';
-import PlayersMap from 'components/PlayersMap';
 import { getCoins, getContracts } from 'stores/contract/async-actions';
 import HoveredPlayerItem from 'shared/HoveredPlayerItem';
 import AvatarShapes from 'shared/AvatarShapes';
-import Shop from 'components/Shop';
 import { getShopSelects } from 'stores/shop/async-actions';
-import ReplayTesting from 'components/ReplayTesting';
-import Faq from 'components/Faq';
-import ReplayViewerNew from 'components/ReplayViewerNew';
 import ServerDeploy from 'shared/ServerDeploy';
 import { getCurrentWeeklyTourneyId, getWeeklyTourney, getWeeklyTourneys } from 'stores/weekly-tourney/async-actions';
-import WeeklyTourney from 'stores/weekly-tourney';
-import WeeklyTourneyComponent from 'components/WeeklyTourneyComponent';
+import { lazy } from 'react';
 
-function App() {
+const PlayersTable = lazy(() => import('./components/PlayersTable'));
+const Game = lazy(() => import('./components/Game'));
+const LoginModal = lazy(() => import('./components/LoginModal'));
+const RegisterModal = lazy(() => import('./components/RegisterModal'));
+const Admin = lazy(() => import('./components/Admin'));
+const ProfilePage = lazy(() => import('./components/ProfilePage'));
+const ReplayViewerNew = lazy(() => import('./components/ReplayViewerNew'));
+const Notifications = lazy(() => import('./components/Notifications'));
+const Servers = lazy(() => import('./components/Servers'));
+const Other = lazy(() => import('./components/Other'));
+const RulesAcception = lazy(() => import('./components/RulesAcception'));
+const Top = lazy(() => import('./components/Top'));
+const Patrol = lazy(() => import('./components/Patrol'));
+const FreeAgents = lazy(() => import('./components/FreeAgents'));
+const Team = lazy(() => import('./components/Team'));
+const TeamSettings = lazy(() => import('./components/TeamSettings'));
+const DiscordLogin = lazy(() => import('./components/DiscordLogin'));
+const TransferMarket = lazy(() => import('./components/TransferMarket'));
+const PlayersMap = lazy(() => import('./components/PlayersMap'));
+const Shop = lazy(() => import('./components/Shop'));
+const ReplayTesting = lazy(() => import('./components/ReplayTesting'));
+const Faq = lazy(() => import('./components/Faq'));
+const WeeklyTourneyComponent = lazy(() => import('./components/WeeklyTourneyComponent'));
+
+const App = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const springProps = useSpring({ to: { opacity: 1 }, from: { opacity: 0 } });
+
+  const [api, contextHolder] = notification.useNotification();
 
   const currentSeason = useSelector(selectCurrentSeason);
   const theme = useSelector(selectTheme);
@@ -129,11 +130,6 @@ function App() {
   }
 
   useEffect(() => {
-    springProps.opacity.reset();
-    springProps.opacity.start();
-  }, [location.pathname, currentMode]);
-
-  useEffect(() => {
     window.document.title = getTitle(location.pathname.replace("/", ""))
   }, [location.pathname, currentMode, currentPlayerData, currentGameData, currentTeamData]);
 
@@ -179,7 +175,7 @@ function App() {
       dispatch(setLoadingUser(false))
 
       if (!logInWarningShown) {
-        notification.warning({
+        api.warning({
           message: <div style={{ display: "flex", flexDirection: "column" }}>
             <span>{"Please log in to access all the features of the site"}</span>
             <Link to={"/login"} >
@@ -364,9 +360,9 @@ function App() {
                 <Header />
               </Layout.Header>
               <Layout.Content style={contentStyle} id="layout">
-                <animated.div style={springProps} className={"animated"}>
+                <Suspense fallback={<LoadingOutlined />}>
                   {routes}
-                </animated.div>
+                </Suspense>
               </Layout.Content>
               {isMobile &&
                 <Layout.Footer style={footerStyle}>
@@ -381,6 +377,7 @@ function App() {
               <LoadingOutlined style={{ fontSize: 64 }} />
             </div>
           }
+          {contextHolder}
         </Layout>
       </Flex>
 

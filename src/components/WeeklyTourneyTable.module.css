@@ -55,6 +55,7 @@
     top: 1px;
     background-color: rgba(20, 20, 20, 1);
     width: 24px;
+    font-size: 8px;
     height: 100%;
     writing-mode: vertical-rl;
     display: flex;

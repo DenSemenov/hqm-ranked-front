@@ -12,7 +12,6 @@ export interface IWeeklyTourneyState {
 const initialState: IWeeklyTourneyState = {
     weeklyTourney: {
         state: WeeklyTourneyState.Canceled,
-        startDate: new Date()
     },
     currentWeeklyTourneyId: undefined,
     weeklyTourneys: []

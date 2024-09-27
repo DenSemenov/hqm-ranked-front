@@ -90,16 +90,17 @@ const Servers = () => {
     return (
         <Carousel style={{ height: "calc(-24px + 100%)", padding: isMobile ? 16 : 0 }} fade waitForAnimate >
             {filteredServers.map(server => {
-                return <><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} key={server.id}>
-                    <Title level={3} style={{ display: "flex", alignItems: "center" }}>
-                        {server.name}
-                    </Title>
-                    {getStateById(server.state)}
-                </div>
-                    <div style={{ height: "calc(-68px + 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+                return <div key={server.id} style={{ height: "100%" }}>
+                    <div key={server.id + "1"} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} >
+                        <Title level={3} style={{ display: "flex", alignItems: "center" }}>
+                            {server.name}
+                        </Title>
+                        {getStateById(server.state)}
+                    </div>
+                    <div key={server.id + "2"} style={{ height: "calc(-68px + 100%)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
                         {getBodyByStateId(server)}
                     </div>
-                </>
+                </div>
             })}
         </Carousel>
     )

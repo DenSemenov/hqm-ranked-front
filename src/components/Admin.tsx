@@ -514,6 +514,12 @@ const Admin = () => {
                         >
                             <Input />
                         </Form.Item>
+                        <Form.Item
+                            label="Web url"
+                            name="webUrl"
+                        >
+                            <Input />
+                        </Form.Item>
                     </div>
                 </Card>
                 <Card title="Teams" >

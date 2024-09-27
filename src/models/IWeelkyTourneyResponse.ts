@@ -1,6 +1,5 @@
 export interface IWeelkyTourneyResponse {
     state: WeeklyTourneyState;
-    startDate: Date;
     registration?: IWeeklyTourneyRegistration
     tourney?: IWeeklyTourney
 }

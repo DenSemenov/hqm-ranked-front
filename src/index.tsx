@@ -5,17 +5,20 @@ import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { store } from './stores';
 import { BrowserRouter } from 'react-router-dom';
+import React from 'react';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 
 
 root.render(
-  <BrowserRouter>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </BrowserRouter>
+  <React.StrictMode>
+    <BrowserRouter>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
 reportWebVitals();

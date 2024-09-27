@@ -19,4 +19,5 @@ export interface ISettingsResponse {
     teamsMaxPlayer: number;
     discordAppClientId: number;
     discordApprove: boolean;
+    webUrl: string;
 }

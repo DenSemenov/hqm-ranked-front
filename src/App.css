@@ -371,3 +371,7 @@ div {
   align-items: center;
   justify-content: end;
 }
+
+.slick-slide>div>div {
+  height: 100%;
+}

@@ -209,7 +209,7 @@ const Header = () => {
                         options={seasons.map(x => {
                             return {
                                 value: x.id,
-                                label: <><Text>{x.name}</Text><Text style={{ marginLeft: 8 }} type="secondary">{new Date(x.dateStart).toLocaleDateString() + " - " + new Date(x.dateEnd).toLocaleDateString()}</Text></>
+                                label: <><Text>{x.name + " "}</Text><Text style={{ marginLeft: 8 }} type="secondary">{new Date(x.dateStart).toLocaleDateString() + " - " + new Date(x.dateEnd).toLocaleDateString()}</Text></>
                             }
                         })}
                         value={currentSeason}

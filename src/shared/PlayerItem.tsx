@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './PlayerItem.module.css'
-import { Avatar, Col, Popover, Row, Tooltip, Typography } from 'antd';
+import { Avatar, Badge, Col, Popover, Row, Tooltip, Typography } from 'antd';
 import { CSSProperties, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectClearImageCache, selectCurrentPlayerLiteData, selectStorageUrl } from 'stores/season';
@@ -153,6 +153,7 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
     return (
         <Link to={"/player?id=" + id} style={style}>
             <Tooltip arrow={false} overlayInnerStyle={{ background: "transparent" }} placement="topRight" title={<HoveredPlayerItem />}>
+
                 <div
                     className={styles.playerItem + " " + (isCurrent ? styles.currentUserTextStyle : undefined)}
                     key={key}
@@ -164,7 +165,9 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
                     }}
                 >
                     {(type === PlayerItemType.Both || type === PlayerItemType.Avatar) &&
-                        avatar
+                        <Badge count={isCurrent ? <div style={{ background: "#179c75", width: 32, borderRadius: 4, padding: "0 4px" }}><Text >you</Text></div> : undefined} offset={[-21, 46]} >
+                            {avatar}
+                        </Badge>
                     }
                     {(type === PlayerItemType.Both || type === PlayerItemType.Name) &&
                         name

@@ -7,7 +7,7 @@ export const getTheme = (dark: boolean) => {
             fontSize: 14,
             borderRadius: 12,
             boxShadow: "4px 4px 8px 0px rgba(34, 60, 80, 0.2)",
-            fontFamily: "custom-font",
+            fontFamily: "Fredoka",
             colorPrimary: "#17B486",
         },
         components: {

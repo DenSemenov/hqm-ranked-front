@@ -4,15 +4,13 @@ html {
 
 body {
   margin: 0;
-  font-family: custom-font;
+  font-family: "Fredoka", sans-serif;
 }
 
 code {
-  font-family: custom-font;
+  font-family: "Fredoka", sans-serif;
 }
 
-@font-face {
-  font-family: "custom-font";
-  src: url("fonts/Azonix.woff") format('woff');
-  font-weight: bold;
+.ant-table-cell-content {
+  overflow: visible !important;
 }

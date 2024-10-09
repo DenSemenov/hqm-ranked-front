@@ -27,7 +27,7 @@ $api.interceptors.response.use(
     },
     async (error) => {
         if (error.config.url.endsWith("api/player/GetCurrentUser")) {
-            localStorage.removeItem("token");
+            localStorage.clear();
             window.location.reload();
         }
         if (error.response.status === 401) {

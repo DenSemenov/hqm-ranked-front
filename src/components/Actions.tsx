@@ -10,7 +10,7 @@ import { useAppDispatch } from "hooks/useAppDispatch";
 import { selectTransferMarkets } from "stores/teams";
 import { getTransferMarket } from "stores/teams/async-actions";
 import { selectWebsiteSettings } from "stores/auth";
-import { FaDiscord, FaMapMarkedAlt, FaQuestion, FaShoppingCart } from "react-icons/fa";
+import { FaDiscord, FaMapMarkedAlt, FaQuestion, FaShoppingCart, FaTelegram } from "react-icons/fa";
 import { MdOutlineRule, MdQueryStats } from "react-icons/md";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { BiTransfer } from "react-icons/bi";
@@ -56,6 +56,11 @@ const Actions = () => {
             {websiteSettings && websiteSettings.discordJoinLink &&
                 <Link to={websiteSettings.discordJoinLink} target="_blank" rel="noopener noreferrer" >
                     <Button size="large" type="dashed" icon={<FaDiscord />} >Discord</Button>
+                </Link>
+            }
+            {websiteSettings && websiteSettings.telegramJoinLink &&
+                <Link to={websiteSettings.telegramJoinLink} target="_blank" rel="noopener noreferrer" >
+                    <Button size="large" type="dashed" icon={<FaTelegram />} >Telegram</Button>
                 </Link>
             }
             <Rules open={rulesOpen} onClose={() => setRulesOpen(false)} />

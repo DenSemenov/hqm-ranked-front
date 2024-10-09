@@ -522,6 +522,40 @@ const Admin = () => {
                         </Form.Item>
                     </div>
                 </Card>
+                <Card title="Telegram" >
+                    <div style={{ padding: 16 }}>
+                        <Form.Item
+                            label="Telegram join link"
+                            name="telegramJoinLink"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Telegram group ID"
+                            name="telegramGroupId"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Telegram bot token"
+                            name="telegramBotToken"
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Notifications thread ID"
+                            name="notificationThreadId"
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                        <Form.Item
+                            label="News thread ID"
+                            name="newsThreadId"
+                        >
+                            <InputNumber />
+                        </Form.Item>
+                    </div>
+                </Card>
                 <Card title="Teams" >
                     <div style={{ padding: 16 }}>
                         <Form.Item

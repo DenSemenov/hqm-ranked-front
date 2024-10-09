@@ -25,7 +25,8 @@ const initialState: IAuthState = {
     theme: null,
     websiteSettings: {
         discordAppClientId: "",
-        discordJoinLink: ""
+        discordJoinLink: "",
+        telegramJoinLink: ""
     },
     playerMap: [],
     hoveredPosition: undefined

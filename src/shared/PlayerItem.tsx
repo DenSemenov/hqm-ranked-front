@@ -173,6 +173,7 @@ const PlayerItem = ({ id, name, key = 0, type = PlayerItemType.Both, size, borde
                         name
                     }
                 </div>
+
             </Tooltip>
         </Link>
     )

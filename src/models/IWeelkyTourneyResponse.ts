@@ -9,6 +9,13 @@ export interface IWeeklyTourneyRegistration {
     tourneyName: string;
     weekNumber: number;
     players: IWeeklyTourneyRegistrationPlayer[]
+    parties: IWeeklyTourneyRegistrationParty[]
+    allPlayers: IWeeklyTourneyRegistrationPlayer[]
+}
+
+export interface IWeeklyTourneyRegistrationParty {
+    partyId: string;
+    players: IWeeklyTourneyRegistrationPlayer[]
 }
 
 export interface IWeeklyTourney {
@@ -52,8 +59,14 @@ export interface IWeeklyTourneyGame {
 export interface IWeeklyTourneyRegistrationPlayer {
     id: number;
     name: string;
+    state: WeeklyTourneyPartyPlayerState
 }
 
+export enum WeeklyTourneyPartyPlayerState {
+    Host,
+    Waiting,
+    Accepted
+}
 
 export enum WeeklyTourneyState {
     Registration,

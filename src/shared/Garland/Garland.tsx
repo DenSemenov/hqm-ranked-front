@@ -106,12 +106,6 @@ const Garland = () => {
 
 export default Garland;
 
-function randomInteger(min: number, max: number) {
-  // случайное число от min до (max+1)
-  let rand = min + Math.random() * (max + 1 - min);
-  return Math.floor(rand);
-}
-
 function getUniqueRandomNumbers(count: number, min: number, max: number) {
   // Создаем массив чисел от 1 до 36
   const numbers = Array.from({ length: 36 }, (_, i) => i + 1);

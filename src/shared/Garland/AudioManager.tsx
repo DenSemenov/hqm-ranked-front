@@ -10,8 +10,6 @@ const AudioContextProvider = createContext<AudioContextType | undefined>(undefin
 const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [audioCtx, setAudioCtx] = useState<AudioContext | null>(null);
   const [buffers, setBuffers] = useState<AudioBuffer[]>([]);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Generate sound URLs pointing to the public folder
   const soundUrls: string[] = React.useMemo(() => {
@@ -26,7 +24,6 @@ const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     setAudioCtx(context);
 
     try {
-      setIsLoading(true);
       // Load all sounds in parallel using Promise.all
       const bufferPromises = soundUrls.map(async (url) => {
         const response = await fetch(url);
@@ -40,11 +37,9 @@ const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       const fetchedBuffers = await Promise.all(bufferPromises);
       setBuffers(fetchedBuffers);
-      setIsLoaded(true);
-    } catch (error) {
-      console.error('Error loading sounds:', error);
-    } finally {
-      setIsLoading(false);
+    } 
+    catch (error) {
+      //console.error('Error loading sounds:', error);
     }
   };
 
@@ -67,7 +62,7 @@ const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       }
 
       if (!buffers[index]) {
-        console.warn(`Buffer for index ${index} is not loaded yet.`);
+        //console.warn(`Buffer for index ${index} is not loaded yet.`);
         return;
       }
 
@@ -79,7 +74,7 @@ const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
       source.start(audioCtx.currentTime);
     } else {
-      console.error('AudioContext is not initialized.');
+      //console.error('AudioContext is not initialized.');
     }
   };
 

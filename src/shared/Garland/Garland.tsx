@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
-import { AudioProvider, useAudio } from './AudioManager';
+import { useAudio } from './AudioManager';
 import Ball from './Ball';
 import './Ball.css';
 
 const TOTAL_NOTES = 9;
-const TOTAL_SOUNDS = 36;
 
 const Garland = () => {
   const { playSound } = useAudio();
   const [balls, setBalls] = useState<any[]>([]);
-  const [numbers, _] = useState<any[]>(getUniqueRandomNumbers(9, 1, TOTAL_SOUNDS));
 
   useEffect(() => {
     const keyToIndexMap: { [key: string]: number } = {
@@ -96,7 +94,7 @@ const Garland = () => {
   }, []);
 
   return (
-    <div className='b-page_newyear'>
+    <div className='b-page_newyear' style={{zIndex: 0}}>
       <div className='b-page__content'>
         <div className='b-head-decor'>{balls.map((ball) => ball)}</div>
       </div>

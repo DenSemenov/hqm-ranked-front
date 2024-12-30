@@ -36,6 +36,7 @@ import { getShopSelects } from 'stores/shop/async-actions';
 import ServerDeploy from 'shared/ServerDeploy';
 import { getCurrentWeeklyTourneyId, getWeeklyTourney, getWeeklyTourneys } from 'stores/weekly-tourney/async-actions';
 import { lazy } from 'react';
+import Snowfall from 'react-snowfall'
 
 const PlayersTable = lazy(() => import('./components/PlayersTable'));
 const Game = lazy(() => import('./components/Game'));
@@ -380,6 +381,7 @@ const App = () => {
           {contextHolder}
         </Layout>
       </Flex>
+      <Snowfall snowflakeCount={30}/>
 
     </ConfigProvider>
   );

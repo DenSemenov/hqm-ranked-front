@@ -51,7 +51,7 @@ const Garland = () => {
     };
 
     const handleKeyDown = async (event: KeyboardEvent) => {
-      const keyCode = event.keyCode.toString();
+      const keyCode = event.key;
       const index = keyToIndexMap[keyCode];
       if (index !== undefined && index < TOTAL_NOTES) {
         await playSound(index);

@@ -515,9 +515,9 @@ const Header = () => {
         </div>
         {endsIn}
       </div>
-      <AudioProvider>
+      {/* <AudioProvider>
         <Garland />
-      </AudioProvider>
+      </AudioProvider> */}
       <div className={styles.headerContainerLogin}>
         {contractsContent}
         {/* <ThemeButton /> */}

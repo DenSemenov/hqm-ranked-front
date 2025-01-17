@@ -381,7 +381,7 @@ const App = () => {
           {contextHolder}
         </Layout>
       </Flex>
-      <Snowfall snowflakeCount={30}/>
+      {/* <Snowfall snowflakeCount={30}/> */}
 
     </ConfigProvider>
   );
